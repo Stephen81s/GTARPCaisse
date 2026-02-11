@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+
+  <!-- ============================================================
+       🎨 STYLES GLOBAUX
+       ------------------------------------------------------------
+       Chargement du fichier styles.html
+       ============================================================ -->
+  <?!= include('styles'); ?>
+
+  <title>La Confrérie du Néant — Interface Caisse</title>
+</head>
+
+<body onload="initInterface(); startClock();">
+
+  <!-- ============================================================
+       🏷️ TITRE PRINCIPAL
+       ============================================================ -->
+  <h1>La Confrérie du Néant — Caisse</h1>
+
+  <!-- ============================================================
+       🕒 HORLOGE (mise à jour par script_horloge)
+       ============================================================ -->
+  <div id="horloge" style="font-size:18px; margin-bottom:15px; opacity:0.8;">
+    --
+  </div>
+
+  <!-- ============================================================
+       🧭 HEADER — NAVIGATION + VISUEL CAISSES
+       ------------------------------------------------------------
+       - À gauche : boutons de navigation
+       - À droite : montants légale / illégale (visuel uniquement)
+       ============================================================ -->
+  <div id="nav" style="
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+  ">
+
+    <!-- 🔹 Boutons de navigation -->
+    <div id="nav-buttons">
+      <button onclick="showInterface('interface_caisse')">Caisse</button>
+      <button onclick="showInterface('interface_ticket')">Ticket</button>
+      <button onclick="showInterface('interface_ressource')">Ressource</button>
+      <button onclick="showInterface('interface_service')">Service</button>
+      <button onclick="showInterface('interface_home')">Accueil</button>
+    </div>
+
+    <!-- 🔹 VISUEL CAISSES (pas interactif) -->
+    <div id="nav-caisses" style="display:flex; gap:15px;">
+
+      <div class="caisse-nav-box">
+        <div class="caisse-nav-titre">Légale</div>
+        <div class="caisse-nav-montant" id="navLegal">0.00 $</div>
+      </div>
+
+      <div class="caisse-nav-box">
+        <div class="caisse-nav-titre">Illégale</div>
+        <div class="caisse-nav-montant" id="navIllegal">0.00 $</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       🧩 INTERFACES (HTML UNIQUEMENT)
+       ------------------------------------------------------------
+       Chaque interface est un fichier HTML séparé
+       ============================================================ -->
+  <?!= include('interface_home'); ?>
+  <?!= include('interface_caisse'); ?>
+  <?!= include('interface_ticket'); ?>
+  <?!= include('interface_ressource'); ?>
+  <?!= include('interface_service'); ?>
+
+  <!-- ============================================================
+       🦶 PIED DE PAGE
+       ============================================================ -->
+  <footer style="margin-top: 40px; text-align:center; opacity:0.6;">
+    <p>© LCDStef — Toute reproduction ou utilisation, même partielle, est interdite sans accord préalable.</p>
+  </footer>
+
+  <!-- ============================================================
+       📜 SCRIPTS (HTML UNIQUEMENT)
+       ------------------------------------------------------------
+       Ordre important :
+       1. Interface & logique
+       2. Header caisse (montants)
+       3. Initialisation globale
+       ============================================================ -->
+
+  <?!= include('script_interface'); ?>
+  <?!= include('script_caisse'); ?>
+  <?!= include('script_totaux'); ?>
+  <?!= include('script_ticket'); ?>
+  <?!= include('script_ressource'); ?>
+  <?!= include('script_service'); ?>
+
+  <?!= include('script_horloge'); ?>
+
+  <!-- 🔹 Script du header caisse (montants légale / illégale) -->
+  <?!= include('script_header_caisse'); ?>
+
+  <!-- 🔹 Initialisation générale -->
+  <?!= include('script_init_html'); ?>
+
+</body>
+</html>
