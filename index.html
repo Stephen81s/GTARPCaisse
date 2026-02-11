@@ -5,82 +5,46 @@
   <title>Confrérie du Néant – Interface</title>
 
   <!-- CSS GLOBAL -->
-  <link rel="stylesheet" href="css/style.css">
-
-  <!-- CSS MODULES -->
-  <link rel="stylesheet" href="css/caisse.css">
+  <link rel="stylesheet" href="css/style.css?v=1.0">
 </head>
 
 <body>
 
-  <!-- ============================================================
-       INTERFACE : ACCUEIL
-       ============================================================ -->
-  <div id="interface_home" class="interface" style="display:block;">
-    <!-- On importe directement ton fichier HTML -->
-    <!-- Tu peux aussi copier/coller le contenu ici si tu préfères -->
-    <script>
-      fetch("interfaces/interface_home.html")
+  <!-- INTERFACES -->
+  <div id="interface_home" class="interface" style="display:block;"></div>
+  <div id="interface_caisse" class="interface"></div>
+  <div id="interface_ticket" class="interface"></div>
+  <div id="interface_ressource" class="interface"></div>
+  <div id="interface_service" class="interface"></div>
+
+  <!-- CHARGEMENT DES INTERFACES -->
+  <script>
+    const interfaces = [
+      { id: "interface_home", file: "interfaces/home.html" },
+      { id: "interface_caisse", file: "interfaces/caisse.html" },
+      { id: "interface_ticket", file: "interfaces/ticket.html" },
+      { id: "interface_ressource", file: "interfaces/ressource.html" },
+      { id: "interface_service", file: "interfaces/service.html" }
+    ];
+
+    interfaces.forEach(intf => {
+      fetch(intf.file)
         .then(r => r.text())
-        .then(html => document.getElementById("interface_home").innerHTML = html);
-    </script>
-  </div>
+        .then(html => {
+          document.getElementById(intf.id).innerHTML = html;
+        });
+    });
+  </script>
 
-  <!-- ============================================================
-       INTERFACE : CAISSE
-       ============================================================ -->
-  <div id="interface_caisse" class="interface" style="display:none;">
-    <script>
-      fetch("interfaces/interface_caisse.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("interface_caisse").innerHTML = html);
-    </script>
-  </div>
+  <!-- JS GLOBAL -->
+  <script src="js/api.js?v=1.0"></script>
+  <script src="js/navigation.js?v=1.0"></script>
 
-  <!-- ============================================================
-       INTERFACE : TICKET
-       ============================================================ -->
-  <div id="interface_ticket" class="interface" style="display:none;">
-    <script>
-      fetch("interfaces/interface_ticket.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("interface_ticket").innerHTML = html);
-    </script>
-  </div>
-
-  <!-- ============================================================
-       INTERFACE : RESSOURCE
-       ============================================================ -->
-  <div id="interface_ressource" class="interface" style="display:none;">
-    <script>
-      fetch("interfaces/interface_ressource.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("interface_ressource").innerHTML = html);
-    </script>
-  </div>
-
-  <!-- ============================================================
-       INTERFACE : SERVICE
-       ============================================================ -->
-  <div id="interface_service" class="interface" style="display:none;">
-    <script>
-      fetch("interfaces/interface_service.html")
-        .then(r => r.text())
-        .then(html => document.getElementById("interface_service").innerHTML = html);
-    </script>
-  </div>
-
-  <!-- ============================================================
-       JAVASCRIPT GLOBAL
-       ============================================================ -->
-  <script src="js/api.js"></script>
-  <script src="js/navigation.js"></script>
-
-  <!-- MODULES JS -->
-  <script src="js/caisse.js"></script>
-  <script src="js/ticket.js"></script>
-  <script src="js/ressource.js"></script>
-  <script src="js/service.js"></script>
+  <!-- MODULES -->
+  <script src="js/caisse.js?v=1.0"></script>
+  <script src="js/ticket.js?v=1.0"></script>
+  <script src="js/ressource.js?v=1.0"></script>
+  <script src="js/service.js?v=1.0"></script>
 
 </body>
 </html>
