@@ -1,0 +1,84 @@
+<!-- ============================================================
+     🟨 INTERFACE : RESSOURCE (Dépôt / Retrait)
+     ============================================================ -->
+
+<div id="interface_ressource" style="display:none;">
+
+  <div
+    class="bloc-caisse encadrement-legal"
+    style="
+      max-width: 400px;
+      margin: 40px auto;        /* CENTRAGE */
+      text-align: center;       /* ALIGNEMENT */
+      padding: 20px;
+    "
+  >
+
+    <!-- Titre -->
+    <div class="titre-caisse legal" style="margin-bottom:15px;">
+      Ressource financière
+    </div>
+
+    <!-- Montant -->
+    <label for="montantRessource" style="display:block; margin-bottom:8px;">
+      Montant
+    </label>
+    <input
+      id="montantRessource"
+      type="number"
+      min="0"
+      value="0"
+      style="
+        width: 100%;
+        margin-bottom: 15px;
+        text-align: center;
+      "
+    >
+
+    <!-- Type d’opération -->
+    <label for="typeRessource" style="display:block; margin-bottom:8px;">
+      Type d’opération
+    </label>
+    <select
+      id="typeRessource"
+      style="
+        width: 100%;
+        margin-bottom: 15px;
+        text-align: center;
+      "
+    >
+      <option value="depot">Dépôt</option>
+      <option value="retrait">Retrait</option>
+    </select>
+
+    <!-- Origine -->
+    <label for="origineRessource" style="display:block; margin-bottom:8px;">
+      Origine
+    </label>
+    <select
+      id="origineRessource"
+      style="
+        width: 100%;
+        margin-bottom: 15px;
+        text-align: center;
+      "
+    >
+      <option value="legal">Légal</option>
+      <option value="illegal">Illégal</option>
+    </select>
+
+    <!-- Bouton valider -->
+    <button
+      onclick="validerRessource()"
+      class="btn-valider-ticket"
+      style="
+        width: 100%;
+        margin-top: 10px;
+      "
+    >
+      Valider l’opération
+    </button>
+
+  </div>
+
+</div>

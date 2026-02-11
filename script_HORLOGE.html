@@ -1,0 +1,61 @@
+<script>
+/****************************************************
+ * ⏱️ JS_HORLOGE — Horloge en temps réel (Version PRO)
+ * --------------------------------------------------
+ * Format demandé :
+ *   JJ/MM/AAAA — HH:MM:SS
+ ****************************************************/
+console.log("⏱️ [JS_HORLOGE] Module chargé.");
+
+
+
+/****************************************************
+ * 🕒 updateClock()
+ * --------------------------------------------------
+ * Met à jour l’affichage complet :
+ *   - Jour (numérique)
+ *   - Mois (numérique)
+ *   - Année
+ *   - Heure
+ ****************************************************/
+function updateClock() {
+    const now = new Date();
+
+    // Heure
+    const heures = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const secondes = String(now.getSeconds()).padStart(2, "0");
+
+    // Date
+    const jour = String(now.getDate()).padStart(2, "0");
+    const mois = String(now.getMonth() + 1).padStart(2, "0"); // +1 car 0 = janvier
+    const annee = now.getFullYear();
+
+    const horloge = document.getElementById("horloge");
+
+    if (horloge) {
+        horloge.textContent = `${jour}/${mois}/${annee} — ${heures}:${minutes}:${secondes}`;
+    }
+}
+
+
+
+/****************************************************
+ * ▶️ startClock()
+ ****************************************************/
+function startClock() {
+    console.log("▶️ [JS_HORLOGE] Horloge démarrée.");
+    updateClock();
+    setInterval(updateClock, 1000);
+}
+
+
+
+/****************************************************
+ * 🚀 Lancement automatique
+ ****************************************************/
+window.addEventListener("load", () => {
+    console.log("⏱️ [JS_HORLOGE] Lancement automatique de l’horloge.");
+    startClock();
+});
+</script>

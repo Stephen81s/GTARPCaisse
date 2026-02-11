@@ -1,0 +1,54 @@
+<!-- ============================================================
+     🎟️ INTERFACE : TICKET LOTERIE (centrée)
+     ============================================================ -->
+
+<div id="interface_ticket" style="display:none;">
+
+  <div
+    class="bloc-caisse encadrement-legal"
+    style="
+      max-width: 400px;
+      margin: 40px auto;      /* CENTRAGE HORIZONTAL */
+      text-align: center;     /* CENTRAGE DU CONTENU */
+      padding: 20px;
+    "
+  >
+
+    <!-- Titre -->
+    <div class="titre-caisse legal" style="margin-bottom:15px;">
+      Ticket Loterie
+    </div>
+
+    <!-- Champ ticket -->
+    <label for="ticket-id" style="display:block; margin-bottom:8px;">
+      Code du ticket
+    </label>
+
+    <input
+      type="text"
+      id="ticket-id"
+      placeholder="LTD-LOT-2026-XXXX-XXXX"
+      class="input-ticket"
+      autocomplete="off"
+      style="
+        width: 100%;
+        text-align: center;
+        margin-bottom: 15px;
+      "
+    >
+
+    <!-- Bouton valider -->
+    <button
+      onclick="validerTicketUI()"
+      class="btn-valider-ticket"
+      style="
+        width: 100%;
+        margin-top: 10px;
+      "
+    >
+      Valider le ticket
+    </button>
+
+  </div>
+
+</div>

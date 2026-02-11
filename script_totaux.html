@@ -1,0 +1,69 @@
+<script>
+/****************************************************
+ * script_totaux.html
+ * --------------------------------------------------
+ * Gestion des totaux :
+ *  - Total global (montant de l’opération)
+ *  - Remise
+ *  - Livraison
+ *
+ * ⚠️ IMPORTANT :
+ *  On NE met plus à jour :
+ *    - totalLegal
+ *    - totalIllegal
+ *
+ *  Ces valeurs viennent UNIQUEMENT de la feuille Compta.
+ ****************************************************/
+
+/****************************************************
+ * 🧮 updateTotalGlobal()
+ * --------------------------------------------------
+ * Calcule uniquement :
+ *   - totalGlobal = somme des lignes ± remise + livraison
+ *
+ * Ne touche PAS :
+ *   - #totalLegal
+ *   - #totalIllegal
+ ****************************************************/
+function updateTotalGlobal() {
+  console.log("🔄 Recalcul du total global…");
+
+  const lignes = document.querySelectorAll("#articlesTable tbody tr");
+
+  let totalOperation = 0;
+
+  lignes.forEach(tr => {
+    const total = Number(tr.querySelector(".total-ligne")?.textContent) || 0;
+    totalOperation += total;
+  });
+
+  // Remise
+  const remise = Number(document.getElementById("remise")?.value) || 0;
+
+  // Livraison
+  const livraison = Number(document.getElementById("livraison")?.value) || 0;
+
+  // Total global = total des articles - remise + livraison
+  const totalGlobal = totalOperation - remise + livraison;
+
+  const globalBox = document.getElementById("totalGlobal");
+  if (globalBox) {
+    globalBox.textContent = totalGlobal.toFixed(2) + " $";
+    console.log("🧮 Total global mis à jour :", totalGlobal);
+  }
+
+  // ❗ NE PAS TOUCHER totalLegal / totalIllegal ici
+  // Ils sont mis à jour uniquement via updateComptaUI()
+}
+
+/****************************************************
+ * 🎧 Écouteurs sécurisés (DOM prêt)
+ ****************************************************/
+window.addEventListener("DOMContentLoaded", () => {
+  const remise = document.getElementById("remise");
+  const livraison = document.getElementById("livraison");
+
+  if (remise) remise.addEventListener("input", updateTotalGlobal);
+  if (livraison) livraison.addEventListener("input", updateTotalGlobal);
+});
+</script>

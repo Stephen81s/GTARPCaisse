@@ -1,0 +1,346 @@
+<script>
+/********************************************************************
+ * @file script_caisse.html
+ * @description Module CAISSE — Front complet :
+ *              - Chargement des listes (opérations, employés, clients, paiements)
+ *              - Gestion des lignes articles (template → clone → ligne visible)
+ *              - Calculs : prix, remises, totaux + livraison
+ *              - Couleurs selon type caisse (legal / illegal / violet / rupture)
+ *              - Vérification du stock
+ *
+ * Auteur : Stephen
+ * Version : 5.4.0
+ * Mis à jour : 2026-02-10 • 13:30 (CET)
+ *
+ * Contraintes :
+ *   - Doit être chargé AVANT script_init_html.html
+ *   - Repose sur la structure de interface_caisse.html
+ ********************************************************************/
+
+console.log("📄 [CAISSE] Module caisse chargé.");
+
+/********************************************************************
+ * VARIABLES GLOBALES
+ ********************************************************************/
+let ARTICLES_DATA = {};
+let TYPES_OPERATION = {};
+let ARTICLES_READY = false;
+
+/********************************************************************
+ * INIT CAISSE — appelé par script_init_html
+ ********************************************************************/
+function initCaisse(data) {
+  console.log("🚀 [CAISSE] Initialisation…");
+
+  TYPES_OPERATION = data.typesOperation || [];
+
+  remplirTypesOperation(data.typesOperation);
+  remplirEmployes(data.employes);
+  remplirClients(data.clients);
+  remplirPaiements(data.paiements);
+  remplirArticles(data.articles);
+
+  ajouterLigneArticle();
+
+  console.log("🟩 [CAISSE] Initialisation terminée.");
+}
+
+/********************************************************************
+ * REMPLISSAGE DES LISTES
+ ********************************************************************/
+function remplirTypesOperation(types) {
+  const sel = document.getElementById("typeOperation");
+  sel.innerHTML = "";
+
+  (types || []).forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t.nom;
+    opt.textContent = t.nom;
+    sel.appendChild(opt);
+  });
+
+  sel.addEventListener("change", updateAllLines);
+}
+
+function remplirEmployes(list) {
+  const sel = document.getElementById("employe");
+  sel.innerHTML = "";
+
+  (list || []).forEach(e => {
+    const opt = document.createElement("option");
+    opt.value = e.nom;
+    opt.textContent = e.nom;
+    sel.appendChild(opt);
+  });
+}
+
+function remplirClients(list) {
+  console.log("📥 [CAISSE] Chargement des clients…");
+
+  const sel = document.getElementById("client");
+  sel.innerHTML = "";
+
+  const empty = document.createElement("option");
+  empty.value = "";
+  empty.textContent = "";
+  sel.appendChild(empty);
+
+  (list || []).forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.full;
+    opt.textContent = c.full;
+    sel.appendChild(opt);
+  });
+
+  sel.value = "";
+
+  console.log("🟩 [CAISSE] Clients chargés, aucun sélectionné.");
+}
+
+function remplirPaiements(list) {
+  console.log("📥 [CAISSE] Chargement des modes de paiement…");
+
+  const sel = document.getElementById("paiement");
+  sel.innerHTML = "";
+
+  (list || []).forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p;
+    opt.textContent = p;
+    sel.appendChild(opt);
+  });
+
+  console.log("🟩 [CAISSE] Modes de paiement chargés :", (list || []).length);
+}
+
+function remplirArticles(list) {
+  console.log("📥 [CAISSE] Chargement articles…");
+
+  ARTICLES_READY = false;
+  ARTICLES_DATA = {};
+
+  const dl = document.getElementById("articlesList");
+  dl.innerHTML = "";
+
+  (list || []).forEach(a => {
+    ARTICLES_DATA[a.nom] = a;
+
+    const opt = document.createElement("option");
+    opt.value = a.nom;
+    dl.appendChild(opt);
+  });
+
+  ARTICLES_READY = true;
+
+  console.log("🟩 [CAISSE] Articles chargés :", Object.keys(ARTICLES_DATA).length);
+}
+
+/********************************************************************
+ * TEMPLATE → CLONE → LIGNE VISIBLE (CORRIGÉ)
+ ********************************************************************/
+function ajouterLigneArticle() {
+  console.log("➕ [CAISSE] Ajout d’une ligne…");
+
+  const template = document.querySelector(".template-ligne");
+  if (!template) {
+    console.error("💥 [CAISSE] Template .template-ligne introuvable");
+    return;
+  }
+
+  const clone = template.cloneNode(true);
+
+  // Correction critique : conserver la classe .ligne-article
+  clone.classList.remove("template-ligne");
+  clone.classList.add("ligne-article");
+
+  clone.style.display = "flex";
+  clone.querySelector(".articleInput").value = "";
+  clone.querySelector(".prixUnitaire").value = "";
+  clone.querySelector(".quantite").value = 1;
+  clone.querySelector(".remiseMontant").value = "";
+  clone.querySelector(".totalLigne").value = "";
+
+  attachLineEvents(clone);
+  document.getElementById("lignesReelles").appendChild(clone);
+
+  // Initialisation visuelle
+  updateLine(clone);
+}
+
+document.getElementById("ajouterLigne").addEventListener("click", ajouterLigneArticle);
+
+/********************************************************************
+ * ATTACHEMENT DES ÉVÉNEMENTS SUR UNE LIGNE
+ ********************************************************************/
+function attachLineEvents(ligne) {
+  const articleInput   = ligne.querySelector(".articleInput");
+  const quantiteInput  = ligne.querySelector(".quantite");
+  const remiseInput    = ligne.querySelector(".remiseMontant");
+  const remiseTypeSel  = ligne.querySelector(".remiseType");
+  const btnDupliquer   = ligne.querySelector(".dupliquerLigne");
+  const btnSupprimer   = ligne.querySelector(".supprimerLigne");
+
+  if (!articleInput || !quantiteInput || !remiseInput || !remiseTypeSel) {
+    console.error("💥 [CAISSE] Structure de ligne invalide, impossible d’attacher les événements.");
+    return;
+  }
+
+  articleInput.addEventListener("input", () => {
+    console.log("✏️ [CAISSE] Article modifié :", articleInput.value);
+    updateLine(ligne);
+  });
+
+  quantiteInput.addEventListener("input", () => {
+    updateLine(ligne);
+  });
+
+  remiseInput.addEventListener("input", () => {
+    updateLine(ligne);
+  });
+
+  remiseTypeSel.addEventListener("change", () => {
+    updateLine(ligne);
+  });
+
+  if (btnDupliquer) {
+    btnDupliquer.addEventListener("click", () => {
+      console.log("📄 [CAISSE] Duplication de ligne…");
+      ajouterLigneArticle();
+    });
+  }
+
+  if (btnSupprimer) {
+    btnSupprimer.addEventListener("click", () => {
+      console.log("🗑 [CAISSE] Suppression de ligne…");
+      ligne.remove();
+      updateTotals();
+    });
+  }
+}
+
+/********************************************************************
+ * RECALCUL GLOBAL
+ ********************************************************************/
+function updateAllLines() {
+  console.log("🔄 [CAISSE] Recalcul de toutes les lignes…");
+
+  document.querySelectorAll("#lignesReelles .ligne-article").forEach(ligne => {
+    updateLine(ligne);
+  });
+
+  updateTotals();
+}
+
+/********************************************************************
+ * MISE À JOUR D’UNE LIGNE
+ ********************************************************************/
+function updateLine(ligne) {
+  if (!ARTICLES_READY) {
+    console.warn("⚠️ [CAISSE] Articles non prêts, updateLine ignoré.");
+    return;
+  }
+
+  const articleInput  = ligne.querySelector(".articleInput");
+  const prixInput     = ligne.querySelector(".prixUnitaire");
+  const qteInput      = ligne.querySelector(".quantite");
+  const remiseInput   = ligne.querySelector(".remiseMontant");
+  const remiseTypeSel = ligne.querySelector(".remiseType");
+  const totalInput    = ligne.querySelector(".totalLigne");
+
+  const nomArticle = (articleInput.value || "").trim();
+  const qte        = Number(qteInput.value) || 0;
+  const remiseVal  = Number(remiseInput.value) || 0;
+  const remiseType = remiseTypeSel.value || "€";
+
+  // Reset visuel de base
+  ligne.classList.remove("legal", "illegal", "violet", "rupture");
+  prixInput.value  = "";
+  totalInput.value = "";
+
+  if (!nomArticle) {
+    // Ligne vide → rien à calculer
+    return;
+  }
+
+  const art = ARTICLES_DATA[nomArticle];
+  if (!art) {
+    console.warn("⚠️ [CAISSE] Article introuvable dans ARTICLES_DATA :", nomArticle);
+    return;
+  }
+
+  // Prix unitaire = prixVente
+  const pu = Number(art.prixVente) || 0;
+  prixInput.value = pu.toFixed(2);
+
+  // Application de la remise
+  let totalBrut = pu * qte;
+  let totalNet  = totalBrut;
+
+  if (remiseVal > 0) {
+    if (remiseType === "€") {
+      totalNet = Math.max(0, totalBrut - remiseVal);
+    } else if (remiseType === "%") {
+      const coef = Math.max(0, 1 - (remiseVal / 100));
+      totalNet = totalBrut * coef;
+    }
+  }
+
+  totalInput.value = totalNet.toFixed(2);
+
+  // Couleurs selon type caisse
+  const typeCaisse = String(art.typeCaisse || "").trim().toLowerCase();
+
+  if (typeCaisse === "legal") {
+    ligne.classList.add("legal");
+  } else if (typeCaisse === "illegal") {
+    ligne.classList.add("illegal");
+  } else if (typeCaisse === "violet") {
+    ligne.classList.add("violet");
+  }
+
+  // Vérification du stock
+  const stock = Number(art.stock) || 0;
+  if (stock > 0 && qte > stock) {
+    console.warn("⚠️ [CAISSE] Rupture potentielle : demandé", qte, " / stock", stock, "pour", nomArticle);
+    ligne.classList.add("rupture");
+  }
+
+  // Mise à jour du total global
+  updateTotals();
+}
+
+/********************************************************************
+ * MISE À JOUR DU TOTAL GLOBAL (articles + livraison)
+ ********************************************************************/
+function updateTotals() {
+  let totalArticles = 0;
+
+  document.querySelectorAll("#lignesReelles .ligne-article").forEach(ligne => {
+    const totalInput = ligne.querySelector(".totalLigne");
+    const val = Number(totalInput.value) || 0;
+    totalArticles += val;
+  });
+
+  // Livraison
+  const livMontantInput = document.getElementById("livraisonMontant");
+  const livTypeSelect   = document.getElementById("livraisonType");
+
+  const livVal  = Number(livMontantInput.value) || 0;
+  const livType = livTypeSelect.value || "€";
+
+  let totalFinal = totalArticles;
+
+  if (livVal > 0) {
+    if (livType === "€") {
+      totalFinal += livVal;
+    } else if (livType === "%") {
+      totalFinal += totalArticles * (livVal / 100);
+    }
+  }
+
+  const spanTotal = document.getElementById("totalArticle");
+  spanTotal.textContent = totalFinal.toFixed(2);
+
+  console.log("🧮 [CAISSE] Total articles :", totalArticles.toFixed(2), "| Total final :", totalFinal.toFixed(2));
+}
+</script>

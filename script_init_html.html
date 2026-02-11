@@ -1,0 +1,81 @@
+<script>
+/********************************************************************
+ * @file script_init_html.html
+ * @description Initialisation globale du front :
+ *              - Attente du DOM
+ *              - Chargement de l’interface HOME
+ *              - Chargement des données CAISSE (backend)
+ *              - Démarrage de l’horloge
+ *
+ * Auteur : Stephen
+ * Version : 1.2.0
+ * Mis à jour : 2026-02-10 • 10:42 (CET)
+ *
+ * Historique interne :
+ *   - 2026-02-10 : Stabilisation complète de l’ordre de chargement
+ *   - 2026-02-10 : Ajout des logs structurés
+ *   - 2026-02-10 : Correction initInterface() non défini
+ *   - 2026-02-10 : Correction du chargement des données caisse
+ *
+ * Notes :
+ *   - Ce script DOIT être chargé en DERNIER dans index.html
+ *   - Ne contient aucune logique métier
+ *   - Ne doit jamais appeler de fonctions avant DOMContentLoaded
+ ********************************************************************/
+
+console.log("📄 [INIT_HTML] script_init_html chargé");
+
+window.addEventListener("DOMContentLoaded", () => {
+  console.log("🚀 [INIT_HTML] DOM prêt → lancement de l'initialisation globale");
+
+  /************************************************************
+   * 1) Initialisation de l’interface
+   ************************************************************/
+  try {
+    if (typeof initInterface === "function") {
+      console.log("▶️ [INIT_HTML] Appel initInterface()…");
+      initInterface();
+      console.log("🟩 [INIT_HTML] initInterface() exécuté avec succès");
+    } else {
+      console.error("💥 [INIT_HTML] initInterface() introuvable !");
+    }
+  } catch (err) {
+    console.error("💥 [INIT_HTML] ERREUR dans initInterface()");
+    console.error(err);
+  }
+
+  /************************************************************
+   * 2) Chargement des données CAISSE
+   ************************************************************/
+  try {
+    console.log("📡 [INIT_HTML] Chargement des données caisse…");
+
+    google.script.run
+      .withSuccessHandler(initCaisse)
+      .getInitialDataCaisse();
+
+    console.log("🟩 [INIT_HTML] Appel getInitialDataCaisse() envoyé");
+  } catch (err) {
+    console.error("💥 [INIT_HTML] ERREUR appel getInitialDataCaisse()");
+    console.error(err);
+  }
+
+  /************************************************************
+   * 3) Démarrage de l’horloge
+   ************************************************************/
+  try {
+    if (typeof startClock === "function") {
+      console.log("▶️ [INIT_HTML] Démarrage horloge…");
+      startClock();
+      console.log("🟩 [INIT_HTML] startClock() exécuté avec succès");
+    } else {
+      console.error("💥 [INIT_HTML] startClock() introuvable !");
+    }
+  } catch (err) {
+    console.error("💥 [INIT_HTML] ERREUR dans startClock()");
+    console.error(err);
+  }
+
+  console.log("🏁 [INIT_HTML] Initialisation globale terminée");
+});
+</script>

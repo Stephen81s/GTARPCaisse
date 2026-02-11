@@ -1,0 +1,58 @@
+<!-- ********************************************************************
+     @file script_interface.html
+     @description Gestion de l’affichage des interfaces :
+                  - Home
+                  - Caisse
+                  - Ticket
+                  - Ressource
+                  - Service
+
+     Auteur : Stephen
+     Version : 2.1.0
+     Mis à jour : 2026-02-10
+********************************************************************* -->
+
+<script>
+console.log("[script_interface] Chargement du gestionnaire d’interfaces…");
+
+/**
+ * @function showInterface
+ * @description Affiche une interface et masque toutes les autres.
+ * @param {string} id - ID de l’interface à afficher
+ */
+function showInterface(id) {
+  console.log("[showInterface] Demande d’affichage :", id);
+
+  const interfaces = [
+    "interface_home",
+    "interface_caisse",
+    "interface_ticket",
+    "interface_ressource",
+    "interface_service"
+  ];
+
+  // Masquer toutes les interfaces
+  interfaces.forEach(name => {
+    const el = document.getElementById(name);
+    if (el) {
+      el.style.display = "none";
+    }
+  });
+
+  // Afficher l’interface demandée
+  const target = document.getElementById(id);
+  if (target) {
+    // IMPORTANT : ne pas forcer display:block
+    target.style.display = "";
+    console.log("[showInterface] Interface affichée :", id);
+  } else {
+    console.warn("[showInterface] Interface introuvable :", id);
+  }
+}
+
+// Affichage par défaut : HOME
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("[script_interface] DOM chargé → affichage HOME");
+  showInterface("interface_home");
+});
+</script>

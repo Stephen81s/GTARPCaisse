@@ -1,0 +1,111 @@
+<!-- ============================================================
+     🏠 INTERFACE : ACCUEIL
+     ------------------------------------------------------------
+     Page d’accueil de l’interface :
+       - Présentation
+       - Navigation interne
+       - Liens réseaux
+     ============================================================ -->
+
+<div id="interface_home" style="display:block;">
+
+  <!-- ============================================================
+       🖼️ BLOC PRINCIPAL (image + contenu)
+       ============================================================ -->
+  <div
+    class="bloc-caisse encadrement-legal"
+    style="
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 25px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 30px;
+      text-align: left;
+      flex-wrap: nowrap;
+    "
+  >
+
+    <!-- ============================================================
+         📸 IMAGE À GAUCHE
+         ============================================================ -->
+    <img
+      src="https://i.imgur.com/aFbuv5q.png"
+      alt="Logo Confrérie du Néant"
+      style="
+        width: 280px;
+        height: auto;
+        border-radius: 8px;
+        flex-shrink: 0;
+      "
+    >
+
+    <!-- ============================================================
+         📄 CONTENU À DROITE
+         ============================================================ -->
+    <div style="flex: 1; min-width: 300px; text-align:center;">
+
+      <!-- Titre principal -->
+      <div class="titre-caisse legal" style="margin-bottom:15px;">
+        La Confrérie du Néant
+      </div>
+
+      <!-- Sous-texte -->
+      <p style="opacity:0.8; margin-bottom:20px;">
+        Bienvenue dans l’interface de gestion.<br>
+        Choisissez une section ou visitez nos réseaux.
+      </p>
+
+      <!-- ============================================================
+           🔘 NAVIGATION INTERNE
+           ============================================================ -->
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:25px;">
+
+        <!-- IMPORTANT : IDs cohérents avec showInterface() -->
+        <button onclick="showInterface('interface_caisse')">📦 Ouvrir la Caisse</button>
+        <button onclick="showInterface('interface_ticket')">🎟️ Ticket Loterie</button>
+        <button onclick="showInterface('interface_ressource')">🟨 Ressource</button>
+        <button onclick="showInterface('interface_service')">🟪 Service</button>
+
+      </div>
+
+      <!-- ============================================================
+           🌐 LIENS RÉSEAUX
+           ============================================================ -->
+      <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap;">
+
+        <a href="https://www.youtube.com/@lcdstef" target="_blank"
+           style="padding:10px 15px; border-radius:6px; background:#cc0000; color:white; text-decoration:none;">
+          ▶️ YouTube
+        </a>
+
+        <a href="https://www.twitch.tv/lcdstef" target="_blank"
+           style="padding:10px 15px; border-radius:6px; background:#9146FF; color:white; text-decoration:none;">
+          🎮 Twitch
+        </a>
+
+        <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238"
+           target="_blank"
+           style="padding:10px 15px; border-radius:6px; background:black; color:white; text-decoration:none;">
+          🎵 TikTok
+        </a>
+
+        <a href="https://discord.gg/8fJFMs5eXK" target="_blank"
+           style="padding:10px 15px; border-radius:6px; background:#5865F2; color:white; text-decoration:none;">
+          💬 Discord
+        </a>
+
+        <a href="https://streamlabs.com/lcdstef" target="_blank"
+           style="padding:10px 15px; border-radius:6px; background:#00A8FF; color:white; text-decoration:none;">
+          💸 Streamlabs
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
