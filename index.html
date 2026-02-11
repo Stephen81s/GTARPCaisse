@@ -2,111 +2,85 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
+  <title>Confrérie du Néant – Interface</title>
 
-  <!-- ============================================================
-       🎨 STYLES GLOBAUX
-       ------------------------------------------------------------
-       Chargement du fichier styles.html
-       ============================================================ -->
-  <?!= include('styles'); ?>
+  <!-- CSS GLOBAL -->
+  <link rel="stylesheet" href="css/style.css">
 
-  <title>La Confrérie du Néant — Interface Caisse test</title>
+  <!-- CSS MODULES -->
+  <link rel="stylesheet" href="css/caisse.css">
 </head>
 
-<body onload="initInterface(); startClock();">
+<body>
 
   <!-- ============================================================
-       🏷️ TITRE PRINCIPAL
+       INTERFACE : ACCUEIL
        ============================================================ -->
-  <h1>La Confrérie du Néant — Caisse</h1>
-
-  <!-- ============================================================
-       🕒 HORLOGE (mise à jour par script_horloge)
-       ============================================================ -->
-  <div id="horloge" style="font-size:18px; margin-bottom:15px; opacity:0.8;">
-    --
+  <div id="interface_home" class="interface" style="display:block;">
+    <!-- On importe directement ton fichier HTML -->
+    <!-- Tu peux aussi copier/coller le contenu ici si tu préfères -->
+    <script>
+      fetch("interfaces/interface_home.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("interface_home").innerHTML = html);
+    </script>
   </div>
 
   <!-- ============================================================
-       🧭 HEADER — NAVIGATION + VISUEL CAISSES
-       ------------------------------------------------------------
-       - À gauche : boutons de navigation
-       - À droite : montants légale / illégale (visuel uniquement)
+       INTERFACE : CAISSE
        ============================================================ -->
-  <div id="nav" style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:20px;
-  ">
-
-    <!-- 🔹 Boutons de navigation -->
-    <div id="nav-buttons">
-      <button onclick="showInterface('interface_caisse')">Caisse</button>
-      <button onclick="showInterface('interface_ticket')">Ticket</button>
-      <button onclick="showInterface('interface_ressource')">Ressource</button>
-      <button onclick="showInterface('interface_service')">Service</button>
-      <button onclick="showInterface('interface_home')">Accueil</button>
-    </div>
-
-    <!-- 🔹 VISUEL CAISSES (pas interactif) -->
-    <div id="nav-caisses" style="display:flex; gap:15px;">
-
-      <div class="caisse-nav-box">
-        <div class="caisse-nav-titre">Légale</div>
-        <div class="caisse-nav-montant" id="navLegal">0.00 $</div>
-      </div>
-
-      <div class="caisse-nav-box">
-        <div class="caisse-nav-titre">Illégale</div>
-        <div class="caisse-nav-montant" id="navIllegal">0.00 $</div>
-      </div>
-
-    </div>
-
+  <div id="interface_caisse" class="interface" style="display:none;">
+    <script>
+      fetch("interfaces/interface_caisse.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("interface_caisse").innerHTML = html);
+    </script>
   </div>
 
   <!-- ============================================================
-       🧩 INTERFACES (HTML UNIQUEMENT)
-       ------------------------------------------------------------
-       Chaque interface est un fichier HTML séparé
+       INTERFACE : TICKET
        ============================================================ -->
-  <?!= include('interface_home'); ?>
-  <?!= include('interface_caisse'); ?>
-  <?!= include('interface_ticket'); ?>
-  <?!= include('interface_ressource'); ?>
-  <?!= include('interface_service'); ?>
+  <div id="interface_ticket" class="interface" style="display:none;">
+    <script>
+      fetch("interfaces/interface_ticket.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("interface_ticket").innerHTML = html);
+    </script>
+  </div>
 
   <!-- ============================================================
-       🦶 PIED DE PAGE
+       INTERFACE : RESSOURCE
        ============================================================ -->
-  <footer style="margin-top: 40px; text-align:center; opacity:0.6;">
-    <p>© LCDStef — Toute reproduction ou utilisation, même partielle, est interdite sans accord préalable.</p>
-  </footer>
+  <div id="interface_ressource" class="interface" style="display:none;">
+    <script>
+      fetch("interfaces/interface_ressource.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("interface_ressource").innerHTML = html);
+    </script>
+  </div>
 
   <!-- ============================================================
-       📜 SCRIPTS (HTML UNIQUEMENT)
-       ------------------------------------------------------------
-       Ordre important :
-       1. Interface & logique
-       2. Header caisse (montants)
-       3. Initialisation globale
+       INTERFACE : SERVICE
        ============================================================ -->
+  <div id="interface_service" class="interface" style="display:none;">
+    <script>
+      fetch("interfaces/interface_service.html")
+        .then(r => r.text())
+        .then(html => document.getElementById("interface_service").innerHTML = html);
+    </script>
+  </div>
 
-  <?!= include('script_interface'); ?>
-  <?!= include('script_caisse'); ?>
-  <?!= include('script_totaux'); ?>
-  <?!= include('script_ticket'); ?>
-  <?!= include('script_ressource'); ?>
-  <?!= include('script_service'); ?>
+  <!-- ============================================================
+       JAVASCRIPT GLOBAL
+       ============================================================ -->
+  <script src="js/api.js"></script>
+  <script src="js/navigation.js"></script>
 
-  <?!= include('script_horloge'); ?>
-
-  <!-- 🔹 Script du header caisse (montants légale / illégale) -->
-  <?!= include('script_header_caisse'); ?>
-
-  <!-- 🔹 Initialisation générale -->
-  <?!= include('script_init_html'); ?>
+  <!-- MODULES JS -->
+  <script src="js/caisse.js"></script>
+  <script src="js/ticket.js"></script>
+  <script src="js/ressource.js"></script>
+  <script src="js/service.js"></script>
 
 </body>
 </html>

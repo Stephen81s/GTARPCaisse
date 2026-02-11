@@ -1,247 +1,154 @@
 /**
  * ============================================================
- *  📄 Annuaire.gs — VERSION RECONSTRUITE & COMMENTÉE
+ *  📄 Annuaire.gs — VERSION 2.0 (RECONSTRUITE)
  *  ------------------------------------------------------------
- *  Module centralisé de gestion de l’annuaire clients :
- *    - Lecture des clients (liste ou dictionnaire)
- *    - Ajout d’un client (nom, prénom, téléphone)
- *    - Création automatique de la feuille si absente
+ *  Gestion complète de l’annuaire clients :
+ *    - Lecture (liste ou dictionnaire)
+ *    - Ajout sécurisé (anti-doublons)
+ *    - Création automatique de la feuille
  *
- *  Utilisé par l’interface caisse pour :
- *    - remplir la liste déroulante des clients
- *    - auto-remplir le téléphone
- *    - enregistrer un nouveau client
+ *  Feuille : SHEET_ANNUAIRE
+ *  Colonnes :
+ *    1 = Nom
+ *    2 = Prénom
+ *    3 = Téléphone
  *
- *  Auteur      : Stephen
- *  Version     : 1.4.0 (reconstruite)
- *  Mis à jour  : 2026-02-11
+ *  Auteur : Stephen
+ *  Version : 2.0
+ *  Mis à jour : 2026-02-11
  * ============================================================
  */
 
-console.log("📘 [Annuaire.gs] Module Annuaire chargé.");
+console.log("📘 [Annuaire.gs] Module chargé.");
 
 
 
 /* ============================================================
- *  🧩 getSheet(name)
+ *  🔧 getSheet(name)
  *  ------------------------------------------------------------
  *  Récupère une feuille par son nom.
- *  - Log complet
- *  - Erreur explicite si la feuille n'existe pas
  * ============================================================ */
-function getSheet(name) {
-  console.log(`📄 [ANNUAIRE] getSheet() → Recherche de la feuille : "${name}"`);
-
+function Annuaire_getSheet() {
   const ss = SpreadsheetApp.getActive();
-  const sh = ss.getSheetByName(name);
+  let sh = ss.getSheetByName(SHEET_ANNUAIRE);
 
   if (!sh) {
-    console.error(`❌ [ANNUAIRE] Feuille introuvable : ${name}`);
-    throw new Error("Feuille introuvable : " + name);
+    console.warn(`⚠ [ANNUAIRE] Feuille '${SHEET_ANNUAIRE}' absente → création.`);
+    sh = Annuaire_createSheet();
   }
 
-  console.log(`🟩 [ANNUAIRE] Feuille trouvée : "${name}"`);
   return sh;
 }
 
 
 
 /* ============================================================
- *  📞 getAnnuaireClients(sheet)
+ *  📄 Annuaire_createSheet()
  *  ------------------------------------------------------------
- *  Renvoie la liste des clients sous forme :
+ *  Crée la feuille Annuaire avec les bonnes colonnes.
+ * ============================================================ */
+function Annuaire_createSheet() {
+  const ss = SpreadsheetApp.getActive();
+  const sh = ss.insertSheet(SHEET_ANNUAIRE);
+
+  sh.appendRow(["Nom", "Prénom", "Téléphone"]);
+
+  console.log("🟩 [ANNUAIRE] Feuille créée.");
+  return sh;
+}
+
+
+
+/* ============================================================
+ *  📚 Annuaire_getList()
+ *  ------------------------------------------------------------
+ *  Renvoie la liste des clients :
  *    [
  *      { full: "Nom Prénom", tel: "0600000000" },
  *      ...
  *    ]
- *
- *  - Lecture robuste
- *  - Logs détaillés
  * ============================================================ */
-function getAnnuaireClients(sheet) {
-  console.log("===== 📞 [ANNUAIRE] DÉBUT getAnnuaireClients() =====");
+function Annuaire_getList() {
+  const sh = Annuaire_getSheet();
+  const last = sh.getLastRow();
 
-  try {
-    if (!sheet) {
-      console.warn("⚠ [ANNUAIRE] Feuille NULL → retour []");
-      return [];
-    }
+  if (last < 2) return [];
 
-    const lastRow = sheet.getLastRow();
-    console.log(`📏 [ANNUAIRE] Nombre total de lignes : ${lastRow}`);
+  const rows = sh.getRange(2, 1, last - 1, 3).getValues();
 
-    if (lastRow < 2) {
-      console.log("📭 [ANNUAIRE] Aucun client trouvé.");
-      return [];
-    }
-
-    // Lecture des colonnes A → C (Nom, Prénom, Téléphone)
-    const rows = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
-    console.log("📥 [ANNUAIRE] Lignes brutes lues :", rows.length);
-
-    const clients = rows
-      .filter(r => r[0] && String(r[0]).trim() !== "")
-      .map(r => ({
-        full: `${String(r[0]).trim()} ${String(r[1] || "").trim()}`.trim(),
-        tel: String(r[2] || "").trim()
-      }));
-
-    console.log("📌 [ANNUAIRE] Clients extraits :", clients.length);
-    console.log("===== 🟩 [ANNUAIRE] FIN getAnnuaireClients() =====");
-
-    return clients;
-
-  } catch (err) {
-    console.error("💥 [ANNUAIRE] ERREUR getAnnuaireClients()", err);
-    return [];
-  }
+  return rows
+    .filter(r => r[0])
+    .map(r => ({
+      full: `${r[0]} ${r[1]}`.trim(),
+      tel: String(r[2] || "").trim()
+    }));
 }
 
 
 
 /* ============================================================
- *  📚 getAnnuaireClientsMap()
+ *  📚 Annuaire_getMap()
  *  ------------------------------------------------------------
- *  Renvoie un dictionnaire optimisé pour le frontend :
+ *  Renvoie un dictionnaire :
  *    {
  *      "Nom Prénom": "Téléphone",
  *      ...
  *    }
- *
- *  - Idéal pour auto-remplir le téléphone
- *  - Logs détaillés
  * ============================================================ */
-function getAnnuaireClientsMap() {
-  console.log("===== 📚 [ANNUAIRE] DÉBUT getAnnuaireClientsMap() =====");
+function Annuaire_getMap() {
+  const sh = Annuaire_getSheet();
+  const last = sh.getLastRow();
 
-  try {
-    const sheet = getSheet(SHEET_ANNUAIRE);
+  if (last < 2) return {};
 
-    const lastRow = sheet.getLastRow();
-    console.log(`📏 [ANNUAIRE] Nombre total de lignes : ${lastRow}`);
+  const rows = sh.getRange(2, 1, last - 1, 3).getValues();
+  const map = {};
 
-    if (lastRow < 2) {
-      console.log("📭 [ANNUAIRE] Aucun client → {}");
-      return {};
-    }
+  rows.forEach(r => {
+    if (!r[0]) return;
+    const full = `${r[0]} ${r[1]}`.trim();
+    map[full] = String(r[2] || "").trim();
+  });
 
-    const rows = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
-    console.log("📥 [ANNUAIRE] Lignes brutes lues :", rows.length);
-
-    const map = {};
-
-    rows.forEach(r => {
-      const nom = String(r[0] || "").trim();
-      const prenom = String(r[1] || "").trim();
-      const tel = String(r[2] || "").trim();
-
-      if (!nom) return;
-
-      const full = `${nom} ${prenom}`.trim();
-      map[full] = tel;
-    });
-
-    console.log("📌 [ANNUAIRE] Dictionnaire généré :", map);
-    console.log("===== 🟩 [ANNUAIRE] FIN getAnnuaireClientsMap() =====");
-
-    return map;
-
-  } catch (err) {
-    console.error("💥 [ANNUAIRE] ERREUR getAnnuaireClientsMap()", err);
-    return {};
-  }
+  return map;
 }
 
 
 
 /* ============================================================
- *  📝 saveClientToAnnuaire(fullName, tel)
+ *  📝 Annuaire_save(fullName, tel)
  *  ------------------------------------------------------------
  *  Ajoute un client si :
  *    - nom/prénom n’existe pas déjà
  *    - téléphone n’existe pas déjà
- *
- *  - Logs complets
- *  - Normalisation du nom
- *  - Vérification des doublons
  * ============================================================ */
-function saveClientToAnnuaire(fullName, tel) {
-  console.log("===== 📝 [ANNUAIRE] DÉBUT saveClientToAnnuaire() =====");
-  console.log("📥 [ANNUAIRE] Données reçues :", { fullName, tel });
+function Annuaire_save(fullName, tel) {
+  const sh = Annuaire_getSheet();
 
-  try {
-    const sheet = getSheet(SHEET_ANNUAIRE) || createAnnuaireSheet();
+  const parts = String(fullName || "").trim().split(/\s+/);
+  const nom = parts[0] || "";
+  const prenom = parts.slice(1).join(" ");
 
-    // Découpage du nom complet
-    const parts = String(fullName || "").trim().split(/\s+/);
-    const nom = parts[0] || "";
-    const prenom = parts.slice(1).join(" ") || "";
+  if (!nom) return { success: false, message: "Nom vide" };
 
-    console.log(`🧩 [ANNUAIRE] Nom détecté : "${nom}", Prénom : "${prenom}"`);
+  const telNorm = String(tel || "").trim();
+  const fullNorm = `${nom} ${prenom}`.trim().toLowerCase();
 
-    if (!nom) {
-      console.warn("⚠ [ANNUAIRE] Nom vide → insertion annulée.");
-      return { success: false, message: "Nom vide" };
+  const last = sh.getLastRow();
+  if (last >= 2) {
+    const rows = sh.getRange(2, 1, last - 1, 3).getValues();
+
+    const exists = rows.some(r => {
+      const existingFull = `${String(r[0]).trim()} ${String(r[1]).trim()}`.toLowerCase();
+      const existingTel = String(r[2]).trim();
+      return existingFull === fullNorm || existingTel === telNorm;
+    });
+
+    if (exists) {
+      return { success: false, message: "Client déjà existant" };
     }
-
-    const lastRow = sheet.getLastRow();
-    const newFull = `${nom} ${prenom}`.trim().toLowerCase();
-    const telNorm = String(tel || "").trim();
-
-    console.log(`🔍 [ANNUAIRE] Vérification doublons pour : "${newFull}" / Tel : "${telNorm}"`);
-
-    // Vérification des doublons
-    if (lastRow >= 2) {
-      const data = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
-
-      const exists = data.some(row => {
-        const existingFull = `${String(row[0]).trim()} ${String(row[1]).trim()}`.toLowerCase();
-        const existingTel = String(row[2]).trim();
-        return existingFull === newFull || existingTel === telNorm;
-      });
-
-      if (exists) {
-        console.warn("⚠ [ANNUAIRE] Client déjà existant → aucune insertion.");
-        return { success: false, message: "Client déjà existant" };
-      }
-    }
-
-    // Insertion
-    sheet.appendRow([nom, prenom, telNorm]);
-    console.log("🟩 [ANNUAIRE] Nouveau client ajouté :", newFull);
-
-    console.log("===== 🟩 [ANNUAIRE] FIN saveClientToAnnuaire() =====");
-    return { success: true };
-
-  } catch (err) {
-    console.error("💥 [ANNUAIRE] ERREUR saveClientToAnnuaire()", err);
-    return { success: false, message: "Erreur interne" };
   }
-}
 
-
-
-/* ============================================================
- *  📄 createAnnuaireSheet()
- *  ------------------------------------------------------------
- *  Crée la feuille Annuaire si elle n’existe pas.
- *  - Ajoute les titres
- *  - Log complet
- * ============================================================ */
-function createAnnuaireSheet() {
-  console.log("📄 [ANNUAIRE] Création de la feuille Annuaire…");
-
-  try {
-    const ss = SpreadsheetApp.getActive();
-    const sheet = ss.insertSheet(SHEET_ANNUAIRE);
-
-    sheet.appendRow(["Nom", "Prénom", "Téléphone"]);
-
-    console.log("🟩 [ANNUAIRE] Feuille Annuaire créée.");
-    return sheet;
-
-  } catch (err) {
-    console.error("💥 [ANNUAIRE] ERREUR création Annuaire :", err);
-    return null;
-  }
+  sh.appendRow([nom, prenom, telNorm]);
+  return { success: true };
 }
