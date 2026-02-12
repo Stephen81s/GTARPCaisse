@@ -1,20 +1,37 @@
 // ============================================================
-//  ROUTER.JS — CHARGEUR DE PAGES DYNAMIQUE
+//  ROUTER.JS — CHARGEUR DE PAGES DYNAMIQUE (GITHUB PAGES SAFE)
 //  Auteur : Stephen
-//  Version : CORE v1.0
-//  Description :
-//    - Charge les pages HTML depuis /interfaces/*.html
-//    - Empêche le rechargement des scripts
-//    - Gère un cache local pour éviter les fetch inutiles
-//    - Initialise automatiquement les modules JS associés
+//  Version : CORE v2.0 (GitHub Pages Compatible)
 // ============================================================
+
+
+// ============================================================
+//  🧠 Détection automatique du chemin de base
+//  - Local : "" (racine)
+//  - GitHub Pages : "/NomDuRepo"
+// ============================================================
+
+function getBasePath() {
+    const path = window.location.pathname.split("/").filter(Boolean);
+
+    // Exemple GitHub Pages :
+    // https://stephen81s.github.io/GTARPCaisse/
+    // pathname = "/GTARPCaisse/"
+    if (path.length > 0) {
+        return "/" + path[0];
+    }
+
+    return "";
+}
+
+const BASE = getBasePath();
 
 
 // ============================================================
 //  🧠 CACHE DES PAGES DÉJÀ CHARGÉES
 // ============================================================
 
-const pageCache = {};   // { "caisse": "<html>", "ticket": "<html>" }
+const pageCache = {};
 
 
 // ============================================================
@@ -30,9 +47,7 @@ async function loadPage(pageName) {
         return;
     }
 
-    // ------------------------------------------------------------
-    // 1. Si la page est en cache → affichage immédiat
-    // ------------------------------------------------------------
+    // 1. Cache
     if (pageCache[pageName]) {
         log("router", `Page ${pageName} chargée depuis le cache`);
         container.innerHTML = pageCache[pageName];
@@ -40,40 +55,33 @@ async function loadPage(pageName) {
         return;
     }
 
-    // ------------------------------------------------------------
-    // 2. Sinon → fetch du fichier HTML
-    // ------------------------------------------------------------
+    // 2. Fetch du fichier HTML
     try {
-        const response = await fetch(`interfaces/${pageName}.html?cache=${Date.now()}`);
+        const url = `${BASE}/interfaces/${pageName}.html?cache=${Date.now()}`;
+        log("router", `Chargement depuis : ${url}`);
+
+        const response = await fetch(url);
 
         if (!response.ok) {
-            logError("router", `Fichier introuvable : interfaces/${pageName}.html`);
+            logError("router", `Fichier introuvable : ${url}`);
             container.innerHTML = `<h2>Erreur</h2><p>Page introuvable.</p>`;
             return;
         }
 
         const html = await response.text();
 
-        // ------------------------------------------------------------
-        // 3. Nettoyage : suppression des <script> internes
-        // ------------------------------------------------------------
+        // 3. Nettoyage des scripts internes
         const sanitized = removeScripts(html);
 
-        // ------------------------------------------------------------
         // 4. Mise en cache
-        // ------------------------------------------------------------
         pageCache[pageName] = sanitized;
 
-        // ------------------------------------------------------------
-        // 5. Injection dans le DOM
-        // ------------------------------------------------------------
+        // 5. Injection
         container.innerHTML = sanitized;
 
         logSuccess("router", `Page ${pageName} chargée avec succès`);
 
-        // ------------------------------------------------------------
-        // 6. Initialisation du module JS associé
-        // ------------------------------------------------------------
+        // 6. Initialisation du module JS
         initPageModule(pageName);
 
     } catch (err) {
@@ -84,7 +92,7 @@ async function loadPage(pageName) {
 
 
 // ============================================================
-//  🧹 Suppression des <script> internes (sécurité + éviter doublons)
+//  🧹 Suppression des <script> internes
 // ============================================================
 
 function removeScripts(html) {
@@ -94,9 +102,6 @@ function removeScripts(html) {
 
 // ============================================================
 //  ⚙️ Initialisation automatique des modules
-// ============================================================
-//  Chaque page peut avoir une fonction initXxx()
-//  Exemple : caisse.html → initCaisse()
 // ============================================================
 
 function initPageModule(pageName) {
@@ -130,7 +135,7 @@ function initPageModule(pageName) {
 
 
 // ============================================================
-//  🏁 Confirmation de chargement
+//  🏁 Confirmation
 // ============================================================
 
-logSuccess("ROUTER.JS chargé et opérationnel");
+logSuccess("ROUTER.JS (GitHub Pages Edition) chargé et opérationnel");
