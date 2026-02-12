@@ -1,68 +1,54 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!-- ============================================================
+     🏠 PAGE : ACCUEIL — Confrérie du Néant
+     Version SANS router — Compatible iframe
+============================================================ -->
 
-<head>
-    <meta charset="UTF-8">
-    <title>GTARP — Interface Stephen</title>
-
-    <!-- ============================
-         🎨 STYLE GLOBAL
-    ============================= -->
-    <link rel="stylesheet" href="css/style.css">
+<div id="interface_accueil" class="interface home-wrapper">
 
     <!-- ============================
-         🗄️ SUPABASE (OBLIGATOIRE)
-         Chargé UNE SEULE FOIS ici.
+         🖼️ LOGO / IMAGE PRINCIPALE
     ============================= -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-        // Connexion Supabase globale
-        const supabase = window.supabase.createClient(
-            "https://oxqgytbquvopynfretpu.supabase.co",
-            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"
-        );
-        console.log("%c[INDEX] Supabase initialisé", "color:#4CAF50;font-weight:bold;");
-    </script>
+    <div class="home-image-box">
+        <img
+            src="https://i.imgur.com/aFbuv5q.png"
+            alt="Logo Confrérie du Néant"
+            class="home-image"
+        >
+    </div>
 
     <!-- ============================
-         📜 SCRIPTS CORE
-         (chargés une seule fois)
+         📄 CONTENU PRINCIPAL
     ============================= -->
-    <script src="js/logger.js" defer></script>
-    <script src="js/api.js" defer></script>
-    <script src="js/router.js" defer></script>
-</head>
+    <section class="home-content">
 
-<body>
+        <h1 class="home-title">La Confrérie du Néant</h1>
 
-    <!-- ============================
-         🔝 HEADER GLOBAL
-    ============================= -->
-    <header class="header">
-        <div class="header-title">GTARP — Interface Stephen V1</div>
+        <p class="home-subtext">
+            Bienvenue dans l’interface de gestion RP.<br>
+            Choisissez une section ou visitez nos réseaux.
+        </p>
 
-        <nav class="header-right">
-            <button onclick="loadPage('accueil')">Accueil</button>
-            <button onclick="loadPage('caisse')">Caisse</button>
-            <button onclick="loadPage('ticket')">Ticket</button>
-            <button onclick="loadPage('ressource')">Ressource</button>
-            <button onclick="loadPage('service')">Service</button>
-            <button onclick="loadPage('admin')">Admin</button>
-        </nav>
-    </header>
+        <!-- ============================
+             🔘 BOUTONS DE NAVIGATION
+        ============================= -->
+        <div class="home-buttons">
+            <a href="caisse.html"><button class="home-btn">📦 Ouvrir la Caisse</button></a>
+            <a href="ticket.html"><button class="home-btn">🎟️ Ticket Loterie</button></a>
+            <a href="ressource.html"><button class="home-btn">🟨 Ressource</button></a>
+            <a href="service.html"><button class="home-btn">🟪 Service</button></a>
+        </div>
 
-    <!-- ============================
-         🧩 CONTENEUR DES PAGES
-    ============================= -->
-    <main id="page-container">
-        <h2>Bienvenue</h2>
-        <p>Sélectionne une page dans le menu.</p>
-    </main>
+        <!-- ============================
+             🔗 LIENS EXTERNES
+        ============================= -->
+        <div class="home-links">
+            <a href="https://www.youtube.com/@lcdstef" target="_blank" class="home-link yt">▶️ YouTube</a>
+            <a href="https://www.twitch.tv/lcdstef" target="_blank" class="home-link twitch">🎮 Twitch</a>
+            <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238" target="_blank" class="home-link tiktok">🎵 TikTok</a>
+            <a href="https://discord.gg/8fJFMs5eXK" target="_blank" class="home-link discord">💬 Discord</a>
+            <a href="https://streamlabs.com/lcdstef" target="_blank" class="home-link streamlabs">💸 Streamlabs</a>
+        </div>
 
-    <script>
-        console.log("%c[INDEX] Structure chargée, en attente du router…", "color:#2196F3;font-weight:bold;");
-    </script>
+    </section>
 
-</body>
-</html>
+</div>

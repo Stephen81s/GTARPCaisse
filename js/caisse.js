@@ -1,145 +1,270 @@
-<!-- ============================================================
-     PAGE : CAISSE — SUPABASE EDITION
-     MODULE : Gestion des opérations de caisse
-     AUTEUR : Stephen
-     DESCRIPTION :
-       - Interface de saisie des opérations de caisse
-       - Aucun script ici (géré par router.js + api.js)
-       - Contenu statique uniquement
-============================================================ -->
+/**
+ * ============================================================
+ *  CAISSE.JS — MODULE DE GESTION DE LA CAISSE
+ *  Auteur      : Stephen
+ *  Description : Gestion complète de la caisse :
+ *                - Chargement des données Supabase
+ *                - Gestion des lignes d’articles
+ *                - Calculs automatiques
+ *                - Validation et enregistrement
+ *
+ *  Architecture :
+ *    - Fonctionne dans un <iframe> (interfaces/caisse.html)
+ *    - Utilise window.API (api.js)
+ *    - Aucun accès direct à Supabase ici
+ *
+ *  Objectifs :
+ *    - Code clair, modulaire, robuste
+ *    - Logs cohérents et filtrables
+ * ============================================================
+ */
 
-<div id="interface_caisse" class="interface page-wrapper">
+(function () {
+    "use strict";
 
-    <!-- ============================
-         🏷️ TITRE PRINCIPAL
-    ============================= -->
-    <h1 class="page-title">📦 Gestion de la Caisse</h1>
+    // ============================================================
+    //  OUTILS DE LOG
+    // ============================================================
 
+    function log(scope, msg, extra) {
+        console.log(`%c[CAISSE][${scope}]`, "color:#9C27B0;font-weight:bold;", msg, extra || "");
+    }
 
-    <!-- ============================================================
-         SECTION : INFORMATIONS GÉNÉRALES
-         - Type d’opération
-         - Employé
-         - Client
-         - Paiement
-    ============================================================ -->
-    <section class="section-bloc">
+    function logError(scope, msg, err) {
+        console.error(`%c[CAISSE][${scope}]`, "color:#E53935;font-weight:bold;", msg, err || "");
+    }
 
-        <h2 class="section-title">Informations générales</h2>
+    // ============================================================
+    //  INITIALISATION AUTOMATIQUE LORSQUE L’IFRAME CHARGE LA PAGE
+    // ============================================================
 
-        <div class="ligne-full">
-            <label for="typeOperation">Type d’opération :</label>
-            <select id="typeOperation"></select>
-        </div>
+    window.addEventListener("load", () => {
+        const frame = document.getElementById("page-frame");
+        if (!frame) return;
 
-        <div class="ligne-triple">
+        frame.addEventListener("load", () => {
+            const url = frame.contentWindow.location.href;
+            if (url.includes("caisse.html")) {
+                initCaisse(frame.contentDocument);
+            }
+        });
+    });
 
-            <div>
-                <label for="employe">Employé :</label>
-                <select id="employe"></select>
-            </div>
+    // ============================================================
+    //  INITIALISATION DE LA PAGE CAISSE
+    // ============================================================
 
-            <div>
-                <label for="client">Client :</label>
-                <select id="client"></select>
-            </div>
+    async function initCaisse(doc) {
+        log("INIT", "Initialisation de la page caisse…");
 
-            <div>
-                <label for="paiement">Paiement :</label>
-                <select id="paiement"></select>
-            </div>
+        try {
+            await chargerListes(doc);
+            initialiserBoutons(doc);
+            ajouterLigne(doc); // première ligne par défaut
 
-        </div>
+            log("INIT", "Page caisse prête.");
+        } catch (err) {
+            logError("INIT", "Erreur lors de l'initialisation", err);
+        }
+    }
 
-    </section>
+    // ============================================================
+    //  CHARGEMENT DES DONNÉES SUPABASE
+    // ============================================================
 
+    async function chargerListes(doc) {
+        log("DATA", "Chargement des listes…");
 
-    <!-- ============================================================
-         SECTION : ARTICLES
-         - Ajout de lignes
-         - Calculs automatiques (via JS)
-    ============================================================ -->
-    <section class="section-bloc">
+        const [articles, employes, clients, types, paiements] = await Promise.all([
+            API.getArticles(),
+            API.getEmployes(),
+            API.getClients(),
+            API.getTypesOperations(),
+            API.getMoyensPaiement()
+        ]);
 
-        <h2 class="section-title">🧾 Articles</h2>
+        remplirSelect(doc.getElementById("typeOperation"), types, "Nom");
+        remplirSelect(doc.getElementById("employe"), employes, "Nom");
+        remplirSelect(doc.getElementById("client"), clients, "Nom");
+        remplirSelect(doc.getElementById("paiement"), paiements, "Nom");
 
-        <!-- Liste dynamique des articles -->
-        <datalist id="articlesList"></datalist>
+        // datalist des articles
+        const datalist = doc.getElementById("articlesList");
+        datalist.innerHTML = "";
+        articles.forEach(a => {
+            const opt = doc.createElement("option");
+            opt.value = a.Nom;
+            datalist.appendChild(opt);
+        });
 
-        <!-- Template invisible pour duplication -->
-        <div class="template-ligne" style="display:none; gap:10px;">
+        log("DATA", "Listes chargées.");
+    }
 
-            <!-- Article -->
-            <input class="articleInput" list="articlesList" placeholder="Article">
+    function remplirSelect(select, data, label) {
+        select.innerHTML = "";
+        data.forEach(item => {
+            const opt = document.createElement("option");
+            opt.value = item.id;
+            opt.textContent = item[label];
+            select.appendChild(opt);
+        });
+    }
 
-            <!-- Prix unitaire -->
-            <input class="prixUnitaire" type="number" placeholder="PU" readonly>
+    // ============================================================
+    //  GESTION DES LIGNES D’ARTICLES
+    // ============================================================
 
-            <!-- Quantité -->
-            <input class="quantite" type="number" min="1" value="1">
+    function initialiserBoutons(doc) {
+        doc.getElementById("ajouterLigne").onclick = () => ajouterLigne(doc);
+        doc.getElementById("validerCaisse").onclick = () => validerCaisse(doc);
+    }
 
-            <!-- Remise -->
-            <div style="display:flex; gap:5px;">
-                <input class="remiseMontant" type="number" placeholder="Remise">
-                <select class="remiseType">
-                    <option value="€">€</option>
-                    <option value="%">%</option>
-                </select>
-            </div>
+    function ajouterLigne(doc) {
+        const template = doc.querySelector(".template-ligne");
+        const clone = template.cloneNode(true);
+        clone.style.display = "flex";
 
-            <!-- Total ligne -->
-            <input class="totalLigne" type="number" placeholder="Total" readonly>
+        // boutons
+        clone.querySelector(".dupliquerLigne").onclick = () => dupliquerLigne(doc, clone);
+        clone.querySelector(".supprimerLigne").onclick = () => supprimerLigne(doc, clone);
 
-            <!-- Actions -->
-            <button class="dupliquerLigne">⧉</button>
-            <button class="supprimerLigne">✖</button>
+        // recalcul automatique
+        clone.querySelectorAll("input, select").forEach(el => {
+            el.oninput = () => recalculer(doc);
+        });
 
-        </div>
+        doc.getElementById("lignesReelles").appendChild(clone);
+        recalculer(doc);
+    }
 
-        <!-- Conteneur des lignes réelles -->
-        <div id="lignesReelles"></div>
+    function dupliquerLigne(doc, ligne) {
+        const clone = ligne.cloneNode(true);
 
-        <!-- Boutons d’action -->
-        <div class="ligne-boutons">
-            <button id="ajouterLigne">➕ Ajouter une ligne</button>
-        </div>
+        clone.querySelector(".dupliquerLigne").onclick = () => dupliquerLigne(doc, clone);
+        clone.querySelector(".supprimerLigne").onclick = () => supprimerLigne(doc, clone);
 
-    </section>
+        clone.querySelectorAll("input, select").forEach(el => {
+            el.oninput = () => recalculer(doc);
+        });
 
+        doc.getElementById("lignesReelles").appendChild(clone);
+        recalculer(doc);
+    }
 
-    <!-- ============================================================
-         SECTION : LIVRAISON
-    ============================================================ -->
-    <section class="section-bloc">
+    function supprimerLigne(doc, ligne) {
+        ligne.remove();
+        recalculer(doc);
+    }
 
-        <h2 class="section-title">🚚 Livraison</h2>
+    // ============================================================
+    //  CALCULS AUTOMATIQUES
+    // ============================================================
 
-        <div class="ligne-double">
-            <input id="livraisonMontant" type="number" placeholder="Montant">
-            <select id="livraisonType">
-                <option value="€">€</option>
-                <option value="%">%</option>
-            </select>
-        </div>
+    function recalculer(doc) {
+        let total = 0;
 
-    </section>
+        const lignes = doc.querySelectorAll("#lignesReelles .template-ligne");
+        lignes.forEach(ligne => {
+            const pu = parseFloat(ligne.querySelector(".prixUnitaire").value) || 0;
+            const qte = parseInt(ligne.querySelector(".quantite").value) || 1;
+            const remise = parseFloat(ligne.querySelector(".remiseMontant").value) || 0;
+            const typeRemise = ligne.querySelector(".remiseType").value;
 
+            let totalLigne = pu * qte;
 
-    <!-- ============================================================
-         SECTION : TOTAL
-    ============================================================ -->
-    <section class="section-bloc">
+            if (typeRemise === "%") {
+                totalLigne -= totalLigne * (remise / 100);
+            } else {
+                totalLigne -= remise;
+            }
 
-        <h2 class="section-title">🧮 Total</h2>
+            totalLigne = Math.max(0, totalLigne);
+            ligne.querySelector(".totalLigne").value = totalLigne.toFixed(2);
 
-        <div id="totalGlobalBox">
-            Total final : <span id="totalArticle">0.00</span> €
-        </div>
+            total += totalLigne;
+        });
 
-        <div class="ligne-boutons">
-            <button id="validerCaisse">✔ Valider la caisse</button>
-        </div>
+        // livraison
+        const livMontant = parseFloat(doc.getElementById("livraisonMontant").value) || 0;
+        const livType = doc.getElementById("livraisonType").value;
 
-    </section>
+        if (livType === "%") {
+            total += total * (livMontant / 100);
+        } else {
+            total += livMontant;
+        }
 
-</div>
+        doc.getElementById("totalArticle").textContent = total.toFixed(2);
+    }
+
+    // ============================================================
+    //  VALIDATION DE LA CAISSE
+    // ============================================================
+
+    async function validerCaisse(doc) {
+        log("VALIDATION", "Validation de la caisse…");
+
+        const operation = {
+            typeOperation: doc.getElementById("typeOperation").value,
+            employe: doc.getElementById("employe").value,
+            client: doc.getElementById("client").value,
+            paiement: doc.getElementById("paiement").value,
+            total: parseFloat(doc.getElementById("totalArticle").textContent),
+            date: new Date().toISOString()
+        };
+
+        const lignes = extraireLignes(doc);
+
+        const payload = {
+            operation,
+            lignes
+        };
+
+        log("VALIDATION", "Payload généré :", payload);
+
+        const result = await API.enregistrerOperationCaisse(payload);
+
+        if (!result) {
+            logError("VALIDATION", "Échec de l’enregistrement.");
+            return;
+        }
+
+        log("VALIDATION", "Opération enregistrée avec succès.");
+
+        // Mise à jour des stocks
+        await mettreAJourStocks(lignes);
+
+        log("VALIDATION", "Stocks mis à jour.");
+    }
+
+    function extraireLignes(doc) {
+        const lignes = [];
+
+        doc.querySelectorAll("#lignesReelles .template-ligne").forEach(ligne => {
+            lignes.push({
+                article: ligne.querySelector(".articleInput").value,
+                prixUnitaire: parseFloat(ligne.querySelector(".prixUnitaire").value) || 0,
+                quantite: parseInt(ligne.querySelector(".quantite").value) || 1,
+                total: parseFloat(ligne.querySelector(".totalLigne").value) || 0
+            });
+        });
+
+        return lignes;
+    }
+
+    async function mettreAJourStocks(lignes) {
+        for (const l of lignes) {
+            const articles = await API.select("articles", {
+                filters: [{ col: "Nom", value: l.article }]
+            });
+
+            if (articles.length === 0) continue;
+
+            const article = articles[0];
+            const nouveauStock = Math.max(0, article.Stock - l.quantite);
+
+            await API.updateArticleStock(article.id, nouveauStock);
+        }
+    }
+
+})();

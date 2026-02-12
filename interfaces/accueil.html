@@ -1,9 +1,6 @@
 <!-- ============================================================
      🏠 PAGE : ACCUEIL — Confrérie du Néant
-     Description :
-       - Page d’accueil de l’interface RP
-       - Aucun script ici (géré par router.js)
-       - Contenu statique uniquement
+     Version SANS router — Compatible iframe
 ============================================================ -->
 
 <div id="interface_accueil" class="interface home-wrapper">
@@ -35,10 +32,10 @@
              🔘 BOUTONS DE NAVIGATION
         ============================= -->
         <div class="home-buttons">
-            <button class="home-btn" onclick="loadPage('caisse')">📦 Ouvrir la Caisse</button>
-            <button class="home-btn" onclick="loadPage('ticket')">🎟️ Ticket Loterie</button>
-            <button class="home-btn" onclick="loadPage('ressource')">🟨 Ressource</button>
-            <button class="home-btn" onclick="loadPage('service')">🟪 Service</button>
+            <a href="caisse.html"><button class="home-btn">📦 Ouvrir la Caisse</button></a>
+            <a href="ticket.html"><button class="home-btn">🎟️ Ticket Loterie</button></a>
+            <a href="ressource.html"><button class="home-btn">🟨 Ressource</button></a>
+            <a href="service.html"><button class="home-btn">🟪 Service</button></a>
         </div>
 
         <!-- ============================
