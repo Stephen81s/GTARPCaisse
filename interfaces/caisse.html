@@ -2,17 +2,11 @@
 
     <h1 class="page-title">📦 Gestion de la Caisse</h1>
 
-    <!-- ============================================================
-         1️⃣ TYPE D’OPÉRATION (SEUL SUR UNE LIGNE)
-         ============================================================ -->
     <div class="ligne-full">
         <label>Type d’opération :</label>
         <select id="typeOperation"></select>
     </div>
 
-    <!-- ============================================================
-         2️⃣ EMPLOYÉ — CLIENT — PAIEMENT (SUR LA MÊME LIGNE)
-         ============================================================ -->
     <div class="ligne-triple">
         <div>
             <label>Employé :</label>
@@ -30,23 +24,14 @@
         </div>
     </div>
 
-    <!-- Datalist des articles -->
     <datalist id="articlesList"></datalist>
 
-    <!-- ============================================================
-         3️⃣ LIGNES D’ARTICLES
-         ============================================================ -->
-    <h2 class="page-title">🧾 Articles</h2>
+    <h2>🧾 Articles</h2>
 
-    <!-- Template invisible -->
     <div class="template-ligne" style="display:none; gap:10px;">
-
         <input class="articleInput" list="articlesList" placeholder="Article">
-
         <input class="prixUnitaire" type="number" placeholder="PU" readonly>
-
         <input class="quantite" type="number" min="1" value="1">
-
         <div style="display:flex; gap:5px;">
             <input class="remiseMontant" type="number" placeholder="Remise">
             <select class="remiseType">
@@ -54,21 +39,14 @@
                 <option value="%">%</option>
             </select>
         </div>
-
         <input class="totalLigne" type="number" placeholder="Total" readonly>
-
-        <button class="dupliquerLigne btn-caisse btn-bleu">⧉</button>
-        <button class="supprimerLigne btn-caisse btn-rouge">✖</button>
-
+        <button class="dupliquerLigne">⧉</button>
+        <button class="supprimerLigne">✖</button>
     </div>
 
-    <!-- Lignes réelles -->
     <div id="lignesReelles"></div>
 
-    <!-- ============================================================
-         4️⃣ LIVRAISON (PLACÉE AU‑DESSUS DES BOUTONS)
-         ============================================================ -->
-    <h2 class="page-title" style="margin-top:30px;">🚚 Livraison</h2>
+    <h2>🚚 Livraison</h2>
 
     <div class="ligne-double">
         <input id="livraisonMontant" type="number" placeholder="Montant">
@@ -78,18 +56,12 @@
         </select>
     </div>
 
-    <!-- ============================================================
-         5️⃣ BOUTONS : AJOUTER + VALIDER
-         ============================================================ -->
-    <div class="ligne-boutons" style="margin-top:20px;">
-        <button id="ajouterLigne" class="btn-caisse btn-bleu">➕ Ajouter une ligne</button>
-        <button id="validerCaisse" class="btn-caisse btn-vert">✔ Valider la caisse</button>
+    <div class="ligne-boutons">
+        <button id="ajouterLigne">➕ Ajouter une ligne</button>
+        <button id="validerCaisse">✔ Valider la caisse</button>
     </div>
 
-    <!-- ============================================================
-         6️⃣ TOTAL FINAL
-         ============================================================ -->
-    <h2 class="page-title" style="margin-top:30px;">🧮 Total</h2>
+    <h2>🧮 Total</h2>
 
     <div id="totalGlobalBox">
         Total final : <span id="totalArticle">0.00</span> €

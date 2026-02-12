@@ -1,179 +1,155 @@
 // ============================================================
-//  MODULE CAISSE — LOGIQUE JS
-//  Version GitHub Pages — compatible chargement dynamique
+//  CONFIG
 // ============================================================
 
+const API_URL = "https://script.google.com/macros/s/AKfycbxtRL13AwKz-GCICw1mkFtdRPlQEGEPAetdeQrlMA3o-57V6IL-Xy3JfU7_56-h6hp0/exec";
+
 // ============================================================
-//  FONCTION API GÉNÉRIQUE
+//  API
 // ============================================================
 
 async function api(action, payload = {}) {
-  const body = { action, ...payload };
-
-  console.log("[API] Appel :", action, body);
-
   const res = await fetch(API_URL, {
     method: "POST",
-    mode: "cors",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
+    body: JSON.stringify({ action, ...payload })
   });
-
-  if (!res.ok) {
-    console.error("[API] Erreur HTTP :", res.status, res.statusText);
-    throw new Error("Erreur API");
-  }
-
-  const data = await res.json();
-  console.log("[API] Réponse :", data);
-  return data;
+  return res.json();
 }
 
 // ============================================================
-//  INITIALISATION DU MODULE CAISSE
+//  CHARGEMENT DES DONNÉES
 // ============================================================
 
-function initCaisse() {
-  console.log("[CAISSE] Initialisation…");
+async function chargerDonneesCaisse() {
+  const [
+    typesOperation,
+    employes,
+    clients,
+    paiements,
+    articles
+  ] = await Promise.all([
+    api("getTypeOperations"),
+    api("getEmployes"),
+    api("getClients"),
+    api("getPaiements"),
+    api("getArticles")
+  ]);
 
-  const typeOperation = document.getElementById("typeOperation");
-  const employeSelect = document.getElementById("employeSelect");
-  const listeArticles = document.getElementById("listeArticles");
-
-  if (!typeOperation || !employeSelect || !listeArticles) {
-    console.error("[CAISSE] ERREUR : éléments HTML manquants");
-    return;
-  }
-
-  // Chargements initiaux
-  chargerTypeOperations();
-  chargerEmployes();
-  chargerArticles();
-  chargerClients();
-  chargerPaiements();
+  initCaisse({
+    typesOperation,
+    employes,
+    clients,
+    paiements,
+    articles
+  });
 }
+
+chargerDonneesCaisse();
 
 // ============================================================
-//  CHARGEMENTS INITIAUX (APPELS API)
+//  INITIALISATION
 // ============================================================
 
-async function chargerTypeOperations() {
-  console.log("[CAISSE] Chargement types d'opération…");
-  try {
-    await api("getTypeOperations");
-  } catch (e) {
-    console.error("[CAISSE] Erreur types d'opération :", e);
-  }
-}
-
-async function chargerEmployes() {
-  console.log("[CAISSE] Chargement employés…");
-  try {
-    const data = await api("getEmployes");
-    const select = document.getElementById("employeSelect");
-    if (!select) return;
-
-    select.innerHTML = "";
-    data.forEach(emp => {
-      const opt = document.createElement("option");
-      opt.value = emp.id || emp.nom;
-      opt.textContent = emp.nom;
-      select.appendChild(opt);
-    });
-
-  } catch (e) {
-    console.error("[CAISSE] Erreur employés :", e);
-  }
-}
-
-async function chargerArticles() {
-  console.log("[CAISSE] Chargement articles…");
-  try {
-    await api("getArticles");
-  } catch (e) {
-    console.error("[CAISSE] Erreur articles :", e);
-  }
-}
-
-async function chargerClients() {
-  console.log("[CAISSE] Chargement clients…");
-  try {
-    await api("getClients");
-  } catch (e) {
-    console.error("[CAISSE] Erreur clients :", e);
-  }
-}
-
-async function chargerPaiements() {
-  console.log("[CAISSE] Chargement paiements…");
-  try {
-    await api("getPaiements");
-  } catch (e) {
-    console.error("[CAISSE] Erreur paiements :", e);
-  }
+function initCaisse(data) {
+  remplirTypesOperation(data.typesOperation);
+  remplirEmployes(data.employes);
+  remplirClients(data.clients);
+  remplirPaiements(data.paiements);
+  remplirArticles(data.articles);
+  ajouterLigneArticle();
 }
 
 // ============================================================
-//  GESTION DES LIGNES D’ARTICLE
+//  REMPLISSAGE DES LISTES
+// ============================================================
+
+function remplirTypesOperation(list) {
+  const sel = document.getElementById("typeOperation");
+  sel.innerHTML = "";
+  list.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t.nom;
+    opt.textContent = t.nom;
+    sel.appendChild(opt);
+  });
+}
+
+function remplirEmployes(list) {
+  const sel = document.getElementById("employe");
+  sel.innerHTML = "";
+  list.forEach(e => {
+    const opt = document.createElement("option");
+    opt.value = e.nom;
+    opt.textContent = e.nom;
+    sel.appendChild(opt);
+  });
+}
+
+function remplirClients(list) {
+  const sel = document.getElementById("client");
+  sel.innerHTML = "";
+  list.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c.nom;
+    opt.textContent = c.nom;
+    sel.appendChild(opt);
+  });
+}
+
+function remplirPaiements(list) {
+  const sel = document.getElementById("paiement");
+  sel.innerHTML = "";
+  list.forEach(p => {
+    const opt = document.createElement("option");
+    opt.value = p.nom;
+    opt.textContent = p.nom;
+    sel.appendChild(opt);
+  });
+}
+
+function remplirArticles(list) {
+  const dl = document.getElementById("articlesList");
+  dl.innerHTML = "";
+  list.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a.nom;
+    dl.appendChild(opt);
+  });
+}
+
+// ============================================================
+//  LIGNES D’ARTICLES
 // ============================================================
 
 function ajouterLigneArticle() {
-  console.log("[CAISSE] Ajout ligne article");
+  const template = document.querySelector(".template-ligne");
+  const clone = template.cloneNode(true);
+  clone.classList.remove("template-ligne");
+  clone.classList.add("ligne-article");
+  clone.style.display = "flex";
 
-  const liste = document.getElementById("listeArticles");
-  if (!liste) return;
-
-  const ligne = document.createElement("div");
-  ligne.className = "ligne-article";
-
-  ligne.innerHTML = `
-    <input class="articleInput" placeholder="Article">
-    <input type="number" class="qteInput" value="1" min="1">
-    <input type="number" class="prixInput" value="0" min="0">
-    <span class="totalLigne">0 €</span>
-    <button class="supprimerLigne" onclick="supprimerLigne(this)">✖</button>
-  `;
-
-  liste.appendChild(ligne);
+  document.getElementById("lignesReelles").appendChild(clone);
 }
 
-function supprimerLigne(btn) {
-  const ligne = btn.closest(".ligne-article");
-  if (ligne) {
-    console.log("[CAISSE] Suppression ligne article");
-    ligne.remove();
-    recalculerTotal();
-  }
-}
+// ============================================================
+//  TOTAL
+// ============================================================
 
-function recalculerTotal() {
-  console.log("[CAISSE] Recalcul total…");
-
-  const lignes = document.querySelectorAll(".ligne-article");
+function updateTotals() {
   let total = 0;
-
-  lignes.forEach(ligne => {
-    const qte = Number(ligne.querySelector(".qteInput")?.value || 0);
-    const prix = Number(ligne.querySelector(".prixInput")?.value || 0);
-    total += qte * prix;
+  document.querySelectorAll(".ligne-article").forEach(l => {
+    const val = Number(l.querySelector(".totalLigne").value) || 0;
+    total += val;
   });
 
-  const totalBox = document.getElementById("totalGlobalBox");
-  if (totalBox) totalBox.textContent = `Total : ${total.toFixed(2)} €`;
-}
+  const livVal = Number(document.getElementById("livraisonMontant").value) || 0;
+  const livType = document.getElementById("livraisonType").value;
 
-// ============================================================
-//  VALIDATION / RESET
-// ============================================================
+  if (livVal > 0) {
+    if (livType === "€") total += livVal;
+    else total += total * (livVal / 100);
+  }
 
-function validerCaisse() {
-  console.log("[CAISSE] Validation (à implémenter)");
-}
-
-function resetCaisse() {
-  console.log("[CAISSE] Reset caisse");
-  const liste = document.getElementById("listeArticles");
-  if (liste) liste.innerHTML = "";
-  const totalBox = document.getElementById("totalGlobalBox");
-  if (totalBox) totalBox.textContent = "Total : 0 €";
+  document.getElementById("totalArticle").textContent = total.toFixed(2);
 }
