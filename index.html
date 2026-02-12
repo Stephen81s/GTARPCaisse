@@ -1,24 +1,39 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <title>Confrérie du Néant – Interface</title>
 
-  <!-- CSS GLOBAL -->
-  <link rel="stylesheet" href="css/style.css">
+  <!-- ============================================================
+       CSS GLOBAL
+       ============================================================ -->
+  <link rel="stylesheet" href="css/style.css?v=4.0">
 </head>
 
 <body>
 
-  <!-- INTERFACES -->
+  <!-- ============================================================
+       CONTENEURS DES INTERFACES
+       Chaque interface sera chargée dynamiquement via fetch()
+       ============================================================ -->
+
+  <!-- Interface d'accueil (affichée par défaut) -->
   <div id="interface_home" class="interface" style="display:block;"></div>
+
+  <!-- Modules -->
   <div id="interface_caisse" class="interface"></div>
   <div id="interface_ticket" class="interface"></div>
   <div id="interface_ressource" class="interface"></div>
   <div id="interface_service" class="interface"></div>
 
-  <!-- CHARGEMENT DES INTERFACES -->
+  <!-- ============================================================
+       CHARGEMENT DES INTERFACES HTML
+       ============================================================ -->
+
   <script>
+    console.log("[INDEX] Chargement des interfaces…");
+
     const interfaces = [
       { id: "interface_home", file: "interfaces/home.html" },
       { id: "interface_caisse", file: "interfaces/caisse.html" },
@@ -29,18 +44,34 @@
 
     interfaces.forEach(intf => {
       fetch(intf.file)
-        .then(r => r.text())
+        .then(r => {
+          if (!r.ok) {
+            console.error(`[INDEX] ERREUR 404 : ${intf.file} introuvable`);
+            return "<p style='color:red;'>Erreur : fichier introuvable.</p>";
+          }
+          return r.text();
+        })
         .then(html => {
           document.getElementById(intf.id).innerHTML = html;
+          console.log(`[INDEX] Interface chargée : ${intf.file}`);
+        })
+        .catch(err => {
+          console.error(`[INDEX] ERREUR chargement ${intf.file}`, err);
         });
     });
   </script>
 
-  <!-- JS GLOBAL -->
+  <!-- ============================================================
+       SCRIPTS GLOBAUX
+       ============================================================ -->
+
   <script src="js/api.js?v=1.0"></script>
   <script src="js/navigation.js?v=1.0"></script>
 
-  <!-- MODULES -->
+  <!-- ============================================================
+       MODULES JS
+       ============================================================ -->
+
   <script src="js/caisse.js?v=1.0"></script>
   <script src="js/ticket.js?v=1.0"></script>
   <script src="js/ressource.js?v=1.0"></script>
