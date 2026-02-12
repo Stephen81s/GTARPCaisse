@@ -1,51 +1,37 @@
 <!-- ============================================================
-     🏠 INTERFACE : ACCUEIL — Confrérie du Néant
+     🏠 PAGE : ACCUEIL — Confrérie du Néant
      ============================================================ -->
 
-<div id="interface_accueil" class="interface">
+<div class="home-wrapper">
 
-  <div class="home-wrapper">
-
-    <!-- IMAGE À GAUCHE -->
     <div class="home-image-box">
-      <img
-        src="https://i.imgur.com/aFbuv5q.png"
-        alt="Logo Confrérie du Néant"
-        class="home-image"
-      >
+        <img src="https://i.imgur.com/aFbuv5q.png" class="home-image">
     </div>
 
-    <!-- CONTENU À DROITE -->
     <div class="home-content">
 
-      <h1 class="home-title">La Confrérie du Néant</h1>
+        <h1 class="home-title">La Confrérie du Néant</h1>
 
-      <p class="home-subtext">
-        Bienvenue dans l’interface de gestion RP.<br>
-        Choisissez une section ou visitez nos réseaux.
-      </p>
+        <p class="home-subtext">
+            Bienvenue dans l’interface de gestion.<br>
+            Choisissez une section ou visitez nos réseaux.
+        </p>
 
-      <!-- NAVIGATION INTERNE -->
-      <div class="home-buttons">
-        <button class="home-btn" onclick="showInterface('interface_caisse')">📦 Ouvrir la Caisse</button>
-        <button class="home-btn" onclick="showInterface('interface_ticket')">🎟️ Ticket Loterie</button>
-        <button class="home-btn" onclick="showInterface('interface_ressource')">🟨 Ressource</button>
-        <button class="home-btn" onclick="showInterface('interface_service')">🟪 Service</button>
-      </div>
+        <div class="home-buttons">
+            <button class="home-btn" onclick="loadPage('caisse')">📦 Ouvrir la Caisse</button>
+            <button class="home-btn" onclick="loadPage('ticket')">🎟️ Ticket Loterie</button>
+            <button class="home-btn" onclick="loadPage('ressource')">🟨 Ressource</button>
+            <button class="home-btn" onclick="loadPage('service')">🟪 Service</button>
+        </div>
 
-      <!-- LIENS RÉSEAUX -->
-      <div class="home-links">
-
-        <a href="https://www.youtube.com/@lcdstef" target="_blank" class="home-link yt">▶️ YouTube</a>
-        <a href="https://www.twitch.tv/lcdstef" target="_blank" class="home-link twitch">🎮 Twitch</a>
-        <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238" target="_blank" class="home-link tiktok">🎵 TikTok</a>
-        <a href="https://discord.gg/8fJFMs5eXK" target="_blank" class="home-link discord">💬 Discord</a>
-        <a href="https://streamlabs.com/lcdstef" target="_blank" class="home-link streamlabs">💸 Streamlabs</a>
-
-      </div>
+        <div class="home-links">
+            <a href="https://www.youtube.com/@lcdstef" target="_blank" class="home-link yt">▶️ YouTube</a>
+            <a href="https://www.twitch.tv/lcdstef" target="_blank" class="home-link twitch">🎮 Twitch</a>
+            <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238" target="_blank" class="home-link tiktok">🎵 TikTok</a>
+            <a href="https://discord.gg/8fJFMs5eXK" target="_blank" class="home-link discord">💬 Discord</a>
+            <a href="https://streamlabs.com/lcdstef" target="_blank" class="home-link streamlabs">💸 Streamlabs</a>
+        </div>
 
     </div>
-
-  </div>
 
 </div>

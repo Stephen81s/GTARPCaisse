@@ -3,35 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>GTARP — Interface Stephen</title>
+
+    <!-- CSS global -->
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/navigation.js" defer></script>
-    <script src="js/caisse.js" defer></script>
-    <script src="js/ticket.js" defer></script>
-    <script src="js/ressource.js" defer></script>
-    <script src="js/service.js" defer></script>
+
+    <!-- JS global -->
+    <script src="js/logger.js" defer></script>
+    <script src="js/router.js" defer></script>
 </head>
 
 <body>
 
     <!-- ============================================================
-         HEADER GLOBAL
+         🔝 HEADER GLOBAL — commun à toutes les pages
          ============================================================ -->
     <div class="header">
         <div class="header-title">GTARP — Interface Stephen</div>
 
         <div class="header-right">
-            <button class="header-btn" onclick="showInterface('interface_accueil')">Accueil</button>
-            <button class="header-btn" onclick="showInterface('interface_caisse')">Caisse</button>
-            <button class="header-btn" onclick="showInterface('interface_ticket')">Ticket</button>
-            <button class="header-btn" onclick="showInterface('interface_ressource')">Ressource</button>
-            <button class="header-btn" onclick="showInterface('interface_service')">Service</button>
+            <button class="header-btn" onclick="loadPage('accueil')">Accueil</button>
+            <button class="header-btn" onclick="loadPage('caisse')">Caisse</button>
+            <button class="header-btn" onclick="loadPage('ticket')">Ticket</button>
+            <button class="header-btn" onclick="loadPage('ressource')">Ressource</button>
+            <button class="header-btn" onclick="loadPage('service')">Service</button>
         </div>
     </div>
 
     <!-- ============================================================
-         CHARGEMENT DES INTERFACES
+         🧩 CONTENEUR DES PAGES INCLUSES
          ============================================================ -->
-    <div id="interfaces-container"></div>
+    <div id="page-container"></div>
 
 </body>
 </html>
