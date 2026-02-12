@@ -1,20 +1,105 @@
 <!-- ============================================================
      📦 PAGE : CAISSE
-     Interface de gestion des ventes / articles / totaux
+     Interface complète compatible avec caisse.js
      ============================================================ -->
 
 <div class="page-wrapper">
 
     <h1 class="page-title">📦 Gestion de la Caisse</h1>
-
     <p class="page-description">
-        Interface permettant d’enregistrer des ventes, appliquer des remises,
-        gérer les articles et calculer les totaux automatiquement.
+        Enregistrement des ventes, remises, livraison et calcul automatique.
     </p>
 
-    <!-- Zone de contenu (à remplir selon ton système RP) -->
+    <!-- ============================================================
+         🔧 PARAMÈTRES GÉNÉRAUX
+         ============================================================ -->
     <div class="caisse-container">
-        <p>Contenu de la caisse à intégrer ici…</p>
-    </div>
 
+        <!-- Type d'opération -->
+        <div class="ligne-type">
+            <label>Type d’opération :</label>
+            <select id="typeOperation"></select>
+        </div>
+
+        <!-- Employé -->
+        <div class="ligne-type">
+            <label>Employé :</label>
+            <select id="employe"></select>
+        </div>
+
+        <!-- Client -->
+        <div class="ligne-type">
+            <label>Client :</label>
+            <select id="client"></select>
+        </div>
+
+        <!-- Paiement -->
+        <div class="ligne-type">
+            <label>Paiement :</label>
+            <select id="paiement"></select>
+        </div>
+
+        <!-- Liste des articles (datalist) -->
+        <datalist id="articlesList"></datalist>
+
+        <!-- ============================================================
+             🧾 LIGNES D’ARTICLES
+             ============================================================ -->
+        <h2 class="page-title" style="margin-top:25px;">🧾 Articles</h2>
+
+        <!-- Template invisible -->
+        <div class="template-ligne" style="display:none; gap:10px;">
+
+            <input class="articleInput" list="articlesList" placeholder="Article">
+
+            <input class="prixUnitaire" type="number" placeholder="PU" readonly>
+
+            <input class="quantite" type="number" min="1" value="1">
+
+            <div style="display:flex; gap:5px;">
+                <input class="remiseMontant" type="number" placeholder="Remise">
+                <select class="remiseType">
+                    <option value="€">€</option>
+                    <option value="%">%</option>
+                </select>
+            </div>
+
+            <input class="totalLigne" type="number" placeholder="Total" readonly>
+
+            <button class="dupliquerLigne btn-caisse btn-bleu">⧉</button>
+            <button class="supprimerLigne btn-caisse btn-rouge">✖</button>
+
+        </div>
+
+        <!-- Lignes réelles -->
+        <div id="lignesReelles"></div>
+
+        <!-- Bouton ajouter -->
+        <button id="ajouterLigne" class="btn-caisse btn-bleu" style="margin-top:15px;">
+            ➕ Ajouter une ligne
+        </button>
+
+        <!-- ============================================================
+             🚚 LIVRAISON
+             ============================================================ -->
+        <h2 class="page-title" style="margin-top:30px;">🚚 Livraison</h2>
+
+        <div class="ligne-quadruple">
+            <input id="livraisonMontant" type="number" placeholder="Montant">
+            <select id="livraisonType">
+                <option value="€">€</option>
+                <option value="%">%</option>
+            </select>
+        </div>
+
+        <!-- ============================================================
+             🧮 TOTAL GLOBAL
+             ============================================================ -->
+        <h2 class="page-title" style="margin-top:30px;">🧮 Total</h2>
+
+        <div id="totalGlobalBox">
+            Total final : <span id="totalArticle">0.00</span> €
+        </div>
+
+    </div>
 </div>
