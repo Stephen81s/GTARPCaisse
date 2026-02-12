@@ -1,7 +1,7 @@
 // ============================================================
-//  ROUTER.JS — CHARGEUR DE PAGES DYNAMIQUE (GITHUB PAGES SAFE)
+//  ROUTER.JS — CHARGEUR DE PAGES (VERSION RACINE + GITHUB PAGES)
 //  Auteur : Stephen
-//  Version : CORE v2.0 (GitHub Pages Compatible)
+//  Version : CORE v3.0
 // ============================================================
 
 
@@ -12,13 +12,13 @@
 // ============================================================
 
 function getBasePath() {
-    const path = window.location.pathname.split("/").filter(Boolean);
+    const parts = window.location.pathname.split("/").filter(Boolean);
 
     // Exemple GitHub Pages :
     // https://stephen81s.github.io/GTARPCaisse/
     // pathname = "/GTARPCaisse/"
-    if (path.length > 0) {
-        return "/" + path[0];
+    if (parts.length > 0) {
+        return "/" + parts[0];
     }
 
     return "";
@@ -28,7 +28,7 @@ const BASE = getBasePath();
 
 
 // ============================================================
-//  🧠 CACHE DES PAGES DÉJÀ CHARGÉES
+//  🧠 Cache des pages déjà chargées
 // ============================================================
 
 const pageCache = {};
@@ -55,9 +55,9 @@ async function loadPage(pageName) {
         return;
     }
 
-    // 2. Fetch du fichier HTML
+    // 2. Fetch du fichier HTML à la racine
     try {
-        const url = `${BASE}/interfaces/${pageName}.html?cache=${Date.now()}`;
+        const url = `${BASE}/${pageName}.html?cache=${Date.now()}`;
         log("router", `Chargement depuis : ${url}`);
 
         const response = await fetch(url);
@@ -70,7 +70,7 @@ async function loadPage(pageName) {
 
         const html = await response.text();
 
-        // 3. Nettoyage des scripts internes
+        // 3. Suppression des scripts internes
         const sanitized = removeScripts(html);
 
         // 4. Mise en cache
@@ -138,4 +138,4 @@ function initPageModule(pageName) {
 //  🏁 Confirmation
 // ============================================================
 
-logSuccess("ROUTER.JS (GitHub Pages Edition) chargé et opérationnel");
+logSuccess("ROUTER.JS (RACINE + GITHUB PAGES) chargé et opérationnel");
