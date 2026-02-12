@@ -2,7 +2,7 @@
      🏠 PAGE : ACCUEIL — Confrérie du Néant
      ============================================================ -->
 
-<div class="home-wrapper">
+<div id="interface_accueil" class="interface home-wrapper">
 
     <div class="home-image-box">
         <img src="https://i.imgur.com/aFbuv5q.png"
@@ -20,10 +20,10 @@
         </p>
 
         <div class="home-buttons">
-            <button class="home-btn" onclick="loadPage('caisse')">📦 Ouvrir la Caisse</button>
-            <button class="home-btn" onclick="loadPage('ticket')">🎟️ Ticket Loterie</button>
-            <button class="home-btn" onclick="loadPage('ressource')">🟨 Ressource</button>
-            <button class="home-btn" onclick="loadPage('service')">🟪 Service</button>
+            <button class="home-btn" onclick="showInterface('interface_caisse')">📦 Ouvrir la Caisse</button>
+            <button class="home-btn" onclick="showInterface('interface_ticket')">🎟️ Ticket Loterie</button>
+            <button class="home-btn" onclick="showInterface('interface_ressource')">🟨 Ressource</button>
+            <button class="home-btn" onclick="showInterface('interface_service')">🟪 Service</button>
         </div>
 
         <div class="home-links">

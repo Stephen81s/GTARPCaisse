@@ -1,31 +1,6 @@
 // ============================================================
-//  MODULE RESSOURCE — LOGIQUE JS
+//  MODULE RESSOURCE — LOGIQUE JS (SUPABASE)
 // ============================================================
-// ============================================================
-//  FONCTION API GÉNÉRIQUE
-// ============================================================
-
-async function apiRessource(action, payload = {}) {
-  const body = { action, ...payload };
-
-  console.log("[API-RESSOURCE] Appel :", action, body);
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    console.error("[API-RESSOURCE] Erreur HTTP :", res.status, res.statusText);
-    throw new Error("Erreur API Ressource");
-  }
-
-  const data = await res.json();
-  console.log("[API-RESSOURCE] Réponse :", data);
-  return data;
-}
 
 // ============================================================
 //  INITIALISATION DU MODULE RESSOURCE
@@ -64,14 +39,22 @@ async function validerRessource() {
   }
 
   try {
-    const data = await apiRessource("saveRessource", {
-      nom,
-      quantite,
-      type
-    });
+    const { data, error } = await supabase
+      .from("ressources")
+      .insert({
+        nom,
+        quantite,
+        type,
+        date_creation: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
 
     console.log("[RESSOURCE] Ressource enregistrée :", data);
     alert("Ressource enregistrée avec succès !");
+
   } catch (e) {
     console.error("[RESSOURCE] Erreur enregistrement :", e);
     alert("Erreur lors de l'enregistrement de la ressource.");

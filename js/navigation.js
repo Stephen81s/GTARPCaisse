@@ -2,7 +2,10 @@
 //  NAVIGATION — Gestion des interfaces
 // ============================================================
 
-// Charge toutes les interfaces HTML dans la page
+// ============================================================
+//  Chargement dynamique des interfaces HTML
+// ============================================================
+
 document.addEventListener("DOMContentLoaded", async () => {
     console.log("[NAVIGATION] Chargement des interfaces…");
 
@@ -14,14 +17,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         "service"
     ];
 
+    const container = document.getElementById("interfaces-container");
+    if (!container) {
+        console.error("[NAVIGATION] ❌ Conteneur 'interfaces-container' introuvable");
+        return;
+    }
+
     for (const name of interfaces) {
         try {
             const response = await fetch(`interfaces/${name}.html`);
+
+            if (!response.ok) {
+                console.error(`[NAVIGATION] ❌ Fichier introuvable : interfaces/${name}.html`);
+                continue;
+            }
+
             const html = await response.text();
-            document.getElementById("interfaces-container").innerHTML += html;
-            console.log(`[NAVIGATION] Interface chargée : ${name}`);
+            container.insertAdjacentHTML("beforeend", html);
+
+            console.log(`[NAVIGATION] ✔ Interface chargée : ${name}`);
+
         } catch (err) {
-            console.error(`[NAVIGATION] ERREUR : interfaces/${name}.html introuvable`);
+            console.error(`[NAVIGATION] ❌ Erreur lors du chargement de ${name}.html`, err);
         }
     }
 
@@ -37,7 +54,9 @@ function showInterface(id) {
     console.log(`[NAVIGATION] → Affichage demandé : ${id}`);
 
     const all = document.querySelectorAll(".interface");
-    all.forEach(div => div.style.display = "none");
+    all.forEach(div => {
+        div.style.display = "none";
+    });
 
     const target = document.getElementById(id);
     if (!target) {

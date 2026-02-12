@@ -1,31 +1,6 @@
 // ============================================================
-//  MODULE SERVICE — LOGIQUE JS
+//  MODULE SERVICE — LOGIQUE JS (SUPABASE)
 // ============================================================
-// ============================================================
-//  FONCTION API GÉNÉRIQUE
-// ============================================================
-
-async function apiService(action, payload = {}) {
-  const body = { action, ...payload };
-
-  console.log("[API-SERVICE] Appel :", action, body);
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    console.error("[API-SERVICE] Erreur HTTP :", res.status, res.statusText);
-    throw new Error("Erreur API Service");
-  }
-
-  const data = await res.json();
-  console.log("[API-SERVICE] Réponse :", data);
-  return data;
-}
 
 // ============================================================
 //  INITIALISATION DU MODULE SERVICE
@@ -64,30 +39,24 @@ async function validerService() {
   }
 
   try {
-    const data = await apiService("saveService", {
-      nom,
-      description,
-      prix
-    });
+    const { data, error } = await supabase
+      .from("services")
+      .insert({
+        nom,
+        description,
+        prix,
+        date_creation: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
 
     console.log("[SERVICE] Service enregistré :", data);
     alert("Service enregistré avec succès !");
+
   } catch (e) {
     console.error("[SERVICE] Erreur enregistrement :", e);
     alert("Erreur lors de l'enregistrement du service.");
   }
-}
-
-
-function saveService(data) {
-  const sheet = SpreadsheetApp.getActive().getSheetByName("Services");
-  if (!sheet) throw "Feuille 'Services' introuvable";
-
-  const nom = data.nom;
-  const description = data.description;
-  const prix = Number(data.prix);
-
-  sheet.appendRow([new Date(), nom, description, prix]);
-
-  return { status: "ok", message: "Service enregistré" };
 }

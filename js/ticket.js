@@ -1,31 +1,41 @@
 // ============================================================
-//  MODULE TICKET — LOGIQUE JS
+//  MODULE TICKET — LOGIQUE JS (SUPABASE)
 // ============================================================
 
 // ============================================================
-//  FONCTION API GÉNÉRIQUE
+//  CHARGEMENT DES EMPLOYÉS
 // ============================================================
 
-async function apiTicket(action, payload = {}) {
-  const body = { action, ...payload };
+async function chargerEmployesTicket() {
+  console.log("[TICKET] Chargement employés…");
 
-  console.log("[API-TICKET] Appel :", action, body);
-
-  const res = await fetch(API_URL, {
-    method: "POST",
-    mode: "cors",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-
-  if (!res.ok) {
-    console.error("[API-TICKET] Erreur HTTP :", res.status, res.statusText);
-    throw new Error("Erreur API Ticket");
+  const select = document.getElementById("ticketEmploye");
+  if (!select) {
+    console.error("[TICKET] ERREUR : select employé introuvable");
+    return;
   }
 
-  const data = await res.json();
-  console.log("[API-TICKET] Réponse :", data);
-  return data;
+  try {
+    const { data, error } = await supabase
+      .from("employes")
+      .select("id, nom")
+      .order("nom", { ascending: true });
+
+    if (error) throw error;
+
+    select.innerHTML = "";
+    data.forEach(emp => {
+      const opt = document.createElement("option");
+      opt.value = emp.id;
+      opt.textContent = emp.nom;
+      select.appendChild(opt);
+    });
+
+    console.log("[TICKET] Employés chargés :", data);
+
+  } catch (e) {
+    console.error("[TICKET] Erreur employés :", e);
+  }
 }
 
 // ============================================================
@@ -49,31 +59,6 @@ function initTicket() {
 }
 
 // ============================================================
-//  CHARGEMENT DES EMPLOYÉS
-// ============================================================
-
-async function chargerEmployesTicket() {
-  console.log("[TICKET] Chargement employés…");
-
-  try {
-    const data = await apiTicket("getEmployes");
-    const select = document.getElementById("ticketEmploye");
-    if (!select) return;
-
-    select.innerHTML = "";
-    data.forEach(emp => {
-      const opt = document.createElement("option");
-      opt.value = emp.id || emp.nom;
-      opt.textContent = emp.nom;
-      select.appendChild(opt);
-    });
-
-  } catch (e) {
-    console.error("[TICKET] Erreur employés :", e);
-  }
-}
-
-// ============================================================
 //  VALIDATION DU TICKET
 // ============================================================
 
@@ -92,15 +77,23 @@ async function validerTicket() {
   }
 
   try {
-    const data = await apiTicket("createTicket", {
-      client,
-      employe,
-      description,
-      montant
-    });
+    const { data, error } = await supabase
+      .from("tickets")
+      .insert({
+        client,
+        employe,
+        description,
+        montant,
+        date: new Date().toISOString()
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
 
     console.log("[TICKET] Ticket créé :", data);
     alert("Ticket créé avec succès !");
+
   } catch (e) {
     console.error("[TICKET] Erreur création ticket :", e);
     alert("Erreur lors de la création du ticket.");

@@ -1,15 +1,11 @@
-// ============================================================
-//  LOGGER.JS — Logger simple et propre
-// ============================================================
-
 function logInfo(msg) {
-    console.log(`%c[INFO] ${msg}`, "color:#58a6ff;");
+    console.log("%c[INFO] " + msg, "color:#2196F3;");
 }
 
 function logSuccess(msg) {
-    console.log(`%c[SUCCESS] ${msg}`, "color:#2ea043;");
+    console.log("%c[OK] " + msg, "color:#4CAF50;font-weight:bold;");
 }
 
 function logError(msg) {
-    console.log(`%c[ERROR] ${msg}`, "color:#da3633;");
+    console.log("%c[ERREUR] " + msg, "color:#F44336;font-weight:bold;");
 }

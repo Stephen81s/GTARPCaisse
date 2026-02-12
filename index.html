@@ -1,9 +1,9 @@
 <!-- ============================================================
      INDEX.HTML — POINT D’ENTRÉE PRINCIPAL DU SITE
      Auteur : Stephen
-     Version : PocketBase Edition
+     Version : SUPABASE Edition
      Description :
-       - Charge PocketBase globalement (indispensable pour éviter les erreurs)
+       - Charge Supabase globalement (remplace PocketBase)
        - Initialise le router
        - Affiche le header global
        - Contient le conteneur où les pages seront injectées
@@ -22,17 +22,24 @@
     <link rel="stylesheet" href="css/style.css">
 
     <!-- ============================================================
-         🗄️ Librairie PocketBase (OBLIGATOIRE)
+         🗄️ Librairie SUPABASE (OBLIGATOIRE)
          Chargée ici pour être disponible dans TOUTES les pages.
          IMPORTANT :
          - Le router charge uniquement le <body>
-         - Donc PocketBase doit être chargé dans index.html
-         - Sinon : "PocketBase is not defined"
+         - Donc Supabase doit être chargé dans index.html
          ============================================================ -->
-    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        console.log("%c[INDEX] PocketBase chargé globalement", "color:#4CAF50;font-weight:bold;");
+        // ============================================================
+        // 🔌 Connexion SUPABASE (remplace PocketBase)
+        // ============================================================
+        const supabase = window.supabase.createClient(
+            "https://oxqgytbquvopynfretpu.supabase.co",   // 🔥 URL Supabase
+            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"                       // 🔥 Clé publique (anon)
+        );
+
+        console.log("%c[INDEX] Supabase chargé globalement", "color:#4CAF50;font-weight:bold;");
     </script>
 
     <!-- ============================================================
