@@ -5,32 +5,22 @@
     <meta charset="UTF-8">
     <title>GTARP — Interface Stephen</title>
 
-    <!-- ============================================================
-         🎨 STYLE GLOBAL
-         Chargé une seule fois ici
-    ============================================================ -->
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- ============================================================
-         🗄️ SUPABASE — Initialisation globale
-         (NE JAMAIS recharger ailleurs)
-    ============================================================ -->
+    <!-- 1) Charger la librairie Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- 2) Initialiser Supabase AVANT api.js -->
     <script>
-        // Client Supabase global
-        const supabase = window.supabase.createClient(
+        window.supabase = supabase.createClient(
             "https://oxqgytbquvopynfretpu.supabase.co",
-            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"
+            "sb-pub-xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
         );
 
         console.log("%c[INDEX] Supabase initialisé", "color:#4CAF50;font-weight:bold;");
     </script>
 
-    <!-- ============================================================
-         📜 MODULES JS GLOBAUX
-         (chargés une seule fois)
-    ============================================================ -->
+    <!-- 3) Charger les modules JS qui utilisent Supabase -->
     <script src="js/logger.js" defer></script>
     <script src="js/api.js" defer></script>
     <script src="js/caisse.js" defer></script>
@@ -39,27 +29,19 @@
     <script src="js/service.js" defer></script>
     <script src="js/admin.js" defer></script>
 
-    <!-- ============================================================
-         🧩 STYLE IFRAME
-    ============================================================ -->
     <style>
         #page-frame {
             width: 100%;
             height: calc(100vh - 80px);
             border: none;
-            background: transparent;
         }
     </style>
 </head>
 
 <body>
 
-    <!-- ============================================================
-         🔝 HEADER GLOBAL
-    ============================================================ -->
     <header class="header">
         <div class="header-title">GTARP — Interface Stephen V1</div>
-
         <nav class="header-right">
             <button onclick="openPage('interfaces/accueil.html')">Accueil</button>
             <button onclick="openPage('interfaces/caisse.html')">Caisse</button>
@@ -70,17 +52,10 @@
         </nav>
     </header>
 
-    <!-- ============================================================
-         🧩 CONTENEUR DES PAGES (IFRAME)
-    ============================================================ -->
     <main>
         <iframe id="page-frame" src="interfaces/accueil.html"></iframe>
     </main>
 
-    <!-- ============================================================
-         🔄 NAVIGATION
-         Fonction simple et robuste
-    ============================================================ -->
     <script>
         function openPage(page) {
             console.log("%c[NAV] Ouverture de la page : " + page, "color:#2196F3;font-weight:bold;");
