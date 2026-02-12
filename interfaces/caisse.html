@@ -1,70 +1,136 @@
-<div class="page-wrapper">
+<!-- ============================================================
+     PAGE : CAISSE
+     MODULE : Gestion des opérations de caisse
+     VERSION : PocketBase Edition
+     AUTEUR : Stephen
+     DESCRIPTION :
+       Interface complète pour la saisie d'opérations :
+       - Types d'opérations
+       - Employés
+       - Clients
+       - Moyens de paiement
+       - Articles
+       - Calculs automatiques
+       - Gestion des lignes dynamiques
+============================================================ -->
 
-    <h1 class="page-title">📦 Gestion de la Caisse</h1>
+<!DOCTYPE html>
+<html lang="fr">
 
-    <div class="ligne-full">
-        <label>Type d’opération :</label>
-        <select id="typeOperation"></select>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion de la Caisse</title>
 
-    <div class="ligne-triple">
-        <div>
-            <label>Employé :</label>
-            <select id="employe"></select>
+    <!-- ============================================================
+         FEUILLE DE STYLE
+    ============================================================ -->
+    <link rel="stylesheet" href="caisse.css">
+</head>
+
+<body>
+
+    <div class="page-wrapper">
+
+        <h1 class="page-title">📦 Gestion de la Caisse</h1>
+
+        <!-- ============================================================
+             SECTION : INFORMATIONS GÉNÉRALES
+        ============================================================ -->
+        <div class="ligne-full">
+            <label>Type d’opération :</label>
+            <select id="typeOperation"></select>
         </div>
 
-        <div>
-            <label>Client :</label>
-            <select id="client"></select>
+        <div class="ligne-triple">
+            <div>
+                <label>Employé :</label>
+                <select id="employe"></select>
+            </div>
+
+            <div>
+                <label>Client :</label>
+                <select id="client"></select>
+            </div>
+
+            <div>
+                <label>Paiement :</label>
+                <select id="paiement"></select>
+            </div>
         </div>
 
-        <div>
-            <label>Paiement :</label>
-            <select id="paiement"></select>
+        <!-- Liste des articles -->
+        <datalist id="articlesList"></datalist>
+
+        <!-- ============================================================
+             SECTION : ARTICLES
+        ============================================================ -->
+        <h2>🧾 Articles</h2>
+
+        <!-- Template invisible pour les lignes -->
+        <div class="template-ligne" style="display:none; gap:10px;">
+            <input class="articleInput" list="articlesList" placeholder="Article">
+            <input class="prixUnitaire" type="number" placeholder="PU" readonly>
+            <input class="quantite" type="number" min="1" value="1">
+
+            <div style="display:flex; gap:5px;">
+                <input class="remiseMontant" type="number" placeholder="Remise">
+                <select class="remiseType">
+                    <option value="€">€</option>
+                    <option value="%">%</option>
+                </select>
+            </div>
+
+            <input class="totalLigne" type="number" placeholder="Total" readonly>
+
+            <button class="dupliquerLigne">⧉</button>
+            <button class="supprimerLigne">✖</button>
         </div>
-    </div>
 
-    <datalist id="articlesList"></datalist>
+        <div id="lignesReelles"></div>
 
-    <h2>🧾 Articles</h2>
+        <!-- ============================================================
+             SECTION : LIVRAISON
+        ============================================================ -->
+        <h2>🚚 Livraison</h2>
 
-    <div class="template-ligne" style="display:none; gap:10px;">
-        <input class="articleInput" list="articlesList" placeholder="Article">
-        <input class="prixUnitaire" type="number" placeholder="PU" readonly>
-        <input class="quantite" type="number" min="1" value="1">
-        <div style="display:flex; gap:5px;">
-            <input class="remiseMontant" type="number" placeholder="Remise">
-            <select class="remiseType">
+        <div class="ligne-double">
+            <input id="livraisonMontant" type="number" placeholder="Montant">
+            <select id="livraisonType">
                 <option value="€">€</option>
                 <option value="%">%</option>
             </select>
         </div>
-        <input class="totalLigne" type="number" placeholder="Total" readonly>
-        <button class="dupliquerLigne">⧉</button>
-        <button class="supprimerLigne">✖</button>
+
+        <!-- ============================================================
+             SECTION : ACTIONS
+        ============================================================ -->
+        <div class="ligne-boutons">
+            <button id="ajouterLigne">➕ Ajouter une ligne</button>
+            <button id="validerCaisse">✔ Valider la caisse</button>
+        </div>
+
+        <!-- ============================================================
+             SECTION : TOTAL
+        ============================================================ -->
+        <h2>🧮 Total</h2>
+
+        <div id="totalGlobalBox">
+            Total final : <span id="totalArticle">0.00</span> €
+        </div>
+
     </div>
 
-    <div id="lignesReelles"></div>
+    <!-- ============================================================
+         LIBRAIRIE POCKETBASE (OBLIGATOIRE)
+         Doit être chargée AVANT caisse.js
+    ============================================================ -->
+    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
 
-    <h2>🚚 Livraison</h2>
+    <!-- ============================================================
+         SCRIPT PRINCIPAL DE LA PAGE CAISSE
+         Version PocketBase
+    ============================================================ -->
+    <script src="caisse.js"></script>
 
-    <div class="ligne-double">
-        <input id="livraisonMontant" type="number" placeholder="Montant">
-        <select id="livraisonType">
-            <option value="€">€</option>
-            <option value="%">%</option>
-        </select>
-    </div>
-
-    <div class="ligne-boutons">
-        <button id="ajouterLigne">➕ Ajouter une ligne</button>
-        <button id="validerCaisse">✔ Valider la caisse</button>
-    </div>
-
-    <h2>🧮 Total</h2>
-
-    <div id="totalGlobalBox">
-        Total final : <span id="totalArticle">0.00</span> €
-    </div>
-
-</div>
+</body>
+</html>
