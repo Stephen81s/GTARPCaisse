@@ -17,13 +17,7 @@
         async function testConnexion() {
             const zone = document.getElementById("result");
 
-            try {
-                // On teste une table simple (ex: employes)
-                const { data, error } = await supabase
-                    .from("employes")
-                    .select("id")
-                    .limit(1);
-
+          
                 if (error) {
                     zone.innerHTML = "❌ Erreur Supabase : " + error.message;
                     zone.style.color = "red";
