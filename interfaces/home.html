@@ -1,35 +1,75 @@
 <!-- ============================================================
+     HEADER GLOBAL
+     Affiché sur toutes les interfaces
+     Navigation instantanée entre modules
+     ============================================================ -->
+
+<header class="header">
+
+  <!-- LOG : Titre principal du header -->
+  <div class="header-left">
+    <span class="header-title">Confrérie du Néant</span>
+  </div>
+
+  <!-- LOG : Boutons de navigation -->
+  <div class="header-right">
+
+    <!-- Retour à l'accueil -->
+    <button class="header-btn" onclick="showInterface('interface_home')">
+      Accueil
+    </button>
+
+    <!-- Accès rapide aux modules -->
+    <button class="header-btn" onclick="showInterface('interface_caisse')">
+      Caisse
+    </button>
+
+    <button class="header-btn" onclick="showInterface('interface_ticket')">
+      Ticket
+    </button>
+
+    <button class="header-btn" onclick="showInterface('interface_ressource')">
+      Ressource
+    </button>
+
+    <button class="header-btn" onclick="showInterface('interface_service')">
+      Service
+    </button>
+
+  </div>
+
+</header>
+
+
+
+<!-- ============================================================
      HOME — Interface d'accueil
      Chargée automatiquement au lancement
      ============================================================ -->
 
 <div class="home-container">
 
-  <!-- Titre principal -->
+  <!-- LOG : Titre principal de la page -->
   <h1 class="home-title">Confrérie du Néant</h1>
 
-  <!-- Sous-titre -->
+  <!-- LOG : Sous-titre -->
   <p class="home-subtitle">Interface de gestion — Modules RP</p>
 
-  <!-- Boutons de navigation -->
+  <!-- LOG : Boutons d'accès aux modules -->
   <div class="home-buttons">
 
-    <!-- Log : bouton vers module caisse -->
     <button class="home-btn" onclick="showInterface('interface_caisse')">
       💰 Module Caisse
     </button>
 
-    <!-- Log : bouton vers module ticket -->
     <button class="home-btn" onclick="showInterface('interface_ticket')">
       🎫 Module Ticket
     </button>
 
-    <!-- Log : bouton vers module ressource -->
     <button class="home-btn" onclick="showInterface('interface_ressource')">
       📦 Module Ressource
     </button>
 
-    <!-- Log : bouton vers module service -->
     <button class="home-btn" onclick="showInterface('interface_service')">
       🛠 Module Service
     </button>
