@@ -1,182 +1,145 @@
-// ============================================================
-//  CAISSE.JS — MODULE CAISSE (SUPABASE)
-//  Auteur : Stephen
-//  Version : 1.0
-//  Description :
-//    - Gestion de la caisse RP
-//    - Chargement des articles
-//    - Panier local
-//    - Calcul total
-//    - Enregistrement en base (table compta)
-// ============================================================
+<!-- ============================================================
+     PAGE : CAISSE — SUPABASE EDITION
+     MODULE : Gestion des opérations de caisse
+     AUTEUR : Stephen
+     DESCRIPTION :
+       - Interface de saisie des opérations de caisse
+       - Aucun script ici (géré par router.js + api.js)
+       - Contenu statique uniquement
+============================================================ -->
+
+<div id="interface_caisse" class="interface page-wrapper">
+
+    <!-- ============================
+         🏷️ TITRE PRINCIPAL
+    ============================= -->
+    <h1 class="page-title">📦 Gestion de la Caisse</h1>
 
 
-// ============================================================
-//  🛒 PANIER LOCAL
-// ============================================================
+    <!-- ============================================================
+         SECTION : INFORMATIONS GÉNÉRALES
+         - Type d’opération
+         - Employé
+         - Client
+         - Paiement
+    ============================================================ -->
+    <section class="section-bloc">
 
-let panier = [];
+        <h2 class="section-title">Informations générales</h2>
 
+        <div class="ligne-full">
+            <label for="typeOperation">Type d’opération :</label>
+            <select id="typeOperation"></select>
+        </div>
 
-// ============================================================
-//  🔧 INITIALISATION DE L’INTERFACE CAISSE
-// ============================================================
+        <div class="ligne-triple">
 
-function initCaisse() {
-    log("caisse", "Initialisation de l’interface…");
+            <div>
+                <label for="employe">Employé :</label>
+                <select id="employe"></select>
+            </div>
 
-    const liste = document.getElementById("caisseArticles");
-    const total = document.getElementById("caisseTotal");
-    const btnValider = document.getElementById("caisseValider");
+            <div>
+                <label for="client">Client :</label>
+                <select id="client"></select>
+            </div>
 
-    if (!liste || !total || !btnValider) {
-        logError("caisse", "Éléments HTML manquants");
-        return;
-    }
+            <div>
+                <label for="paiement">Paiement :</label>
+                <select id="paiement"></select>
+            </div>
 
-    panier = [];
-    majTotal();
+        </div>
 
-    chargerArticles();
-}
-
-
-// ============================================================
-//  📦 CHARGEMENT DES ARTICLES DEPUIS SUPABASE
-// ============================================================
-
-async function chargerArticles() {
-    log("caisse", "Chargement des articles…");
-
-    const select = document.getElementById("caisseArticles");
-    if (!select) return;
-
-    try {
-        const articles = await api("articles", "list");
-
-        select.innerHTML = "";
-
-        articles.forEach(a => {
-            const opt = document.createElement("option");
-            opt.value = a.id;
-            opt.textContent = `${a.nom} — ${a.prix} $`;
-            opt.dataset.prix = a.prix;
-            select.appendChild(opt);
-        });
-
-        logSuccess("caisse", "Articles chargés");
-
-    } catch (err) {
-        logError("caisse", "Erreur chargement articles", err);
-    }
-}
+    </section>
 
 
-// ============================================================
-//  ➕ AJOUTER UN ARTICLE AU PANIER
-// ============================================================
+    <!-- ============================================================
+         SECTION : ARTICLES
+         - Ajout de lignes
+         - Calculs automatiques (via JS)
+    ============================================================ -->
+    <section class="section-bloc">
 
-function ajouterArticle() {
-    const select = document.getElementById("caisseArticles");
-    if (!select) return;
+        <h2 class="section-title">🧾 Articles</h2>
 
-    const id = select.value;
-    const nom = select.options[select.selectedIndex].textContent.split(" — ")[0];
-    const prix = Number(select.options[select.selectedIndex].dataset.prix);
+        <!-- Liste dynamique des articles -->
+        <datalist id="articlesList"></datalist>
 
-    panier.push({ id, nom, prix });
+        <!-- Template invisible pour duplication -->
+        <div class="template-ligne" style="display:none; gap:10px;">
 
-    log("caisse", "Article ajouté :", nom, prix);
+            <!-- Article -->
+            <input class="articleInput" list="articlesList" placeholder="Article">
 
-    afficherPanier();
-    majTotal();
-}
+            <!-- Prix unitaire -->
+            <input class="prixUnitaire" type="number" placeholder="PU" readonly>
 
+            <!-- Quantité -->
+            <input class="quantite" type="number" min="1" value="1">
 
-// ============================================================
-//  🧾 AFFICHAGE DU PANIER
-// ============================================================
+            <!-- Remise -->
+            <div style="display:flex; gap:5px;">
+                <input class="remiseMontant" type="number" placeholder="Remise">
+                <select class="remiseType">
+                    <option value="€">€</option>
+                    <option value="%">%</option>
+                </select>
+            </div>
 
-function afficherPanier() {
-    const zone = document.getElementById("caissePanier");
-    if (!zone) return;
+            <!-- Total ligne -->
+            <input class="totalLigne" type="number" placeholder="Total" readonly>
 
-    zone.innerHTML = "";
+            <!-- Actions -->
+            <button class="dupliquerLigne">⧉</button>
+            <button class="supprimerLigne">✖</button>
 
-    panier.forEach((item, index) => {
-        const div = document.createElement("div");
-        div.className = "panier-item";
-        div.innerHTML = `
-            <span>${item.nom} — ${item.prix} $</span>
-            <button onclick="supprimerArticle(${index})">❌</button>
-        `;
-        zone.appendChild(div);
-    });
-}
+        </div>
 
+        <!-- Conteneur des lignes réelles -->
+        <div id="lignesReelles"></div>
 
-// ============================================================
-//  ❌ SUPPRIMER UN ARTICLE DU PANIER
-// ============================================================
+        <!-- Boutons d’action -->
+        <div class="ligne-boutons">
+            <button id="ajouterLigne">➕ Ajouter une ligne</button>
+        </div>
 
-function supprimerArticle(index) {
-    panier.splice(index, 1);
-    afficherPanier();
-    majTotal();
-}
-
-
-// ============================================================
-//  💰 CALCUL DU TOTAL
-// ============================================================
-
-function majTotal() {
-    const total = panier.reduce((sum, item) => sum + item.prix, 0);
-    const zone = document.getElementById("caisseTotal");
-
-    if (zone) zone.textContent = total + " $";
-
-    return total;
-}
+    </section>
 
 
-// ============================================================
-//  🧾 VALIDATION / ENREGISTREMENT EN BASE
-// ============================================================
+    <!-- ============================================================
+         SECTION : LIVRAISON
+    ============================================================ -->
+    <section class="section-bloc">
 
-async function validerCaisse() {
-    log("caisse", "Validation de la caisse…");
+        <h2 class="section-title">🚚 Livraison</h2>
 
-    if (panier.length === 0) {
-        alert("Le panier est vide.");
-        return;
-    }
+        <div class="ligne-double">
+            <input id="livraisonMontant" type="number" placeholder="Montant">
+            <select id="livraisonType">
+                <option value="€">€</option>
+                <option value="%">%</option>
+            </select>
+        </div>
 
-    const total = majTotal();
-
-    try {
-        const data = await api("caisse", "create", {
-            date: new Date().toISOString(),
-            montant: total,
-            details: JSON.stringify(panier)
-        });
-
-        logSuccess("caisse", "Caisse enregistrée :", data);
-
-        alert("Caisse validée !");
-        panier = [];
-        afficherPanier();
-        majTotal();
-
-    } catch (err) {
-        logError("caisse", "Erreur validation caisse", err);
-        alert("Erreur lors de la validation.");
-    }
-}
+    </section>
 
 
-// ============================================================
-//  🏁 Confirmation de chargement
-// ============================================================
+    <!-- ============================================================
+         SECTION : TOTAL
+    ============================================================ -->
+    <section class="section-bloc">
 
-logSuccess("CAISSE.JS chargé et opérationnel");
+        <h2 class="section-title">🧮 Total</h2>
+
+        <div id="totalGlobalBox">
+            Total final : <span id="totalArticle">0.00</span> €
+        </div>
+
+        <div class="ligne-boutons">
+            <button id="validerCaisse">✔ Valider la caisse</button>
+        </div>
+
+    </section>
+
+</div>
