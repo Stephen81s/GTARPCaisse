@@ -1,111 +1,27 @@
 <!-- ============================================================
-     PANEL ADMIN — Gestion BDD PocketBase
-     CRUD : Articles + Employés
+     PAGE : ADMIN — Gestion des tables Supabase
+     Auteur : Stephen
 ============================================================ -->
 
-<!DOCTYPE html>
-<html lang="fr">
+<div id="interface_admin" class="interface admin-wrapper">
 
-<head>
-    <meta charset="UTF-8">
-    <title>Admin BDD</title>
+    <h1 class="page-title">🛠️ Mode Admin — Gestion des Tables</h1>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background: #f4f4f4;
-        }
-
-        h1 {
-            margin-bottom: 20px;
-        }
-
-        .section {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-add { background: #4CAF50; color: white; }
-        .btn-edit { background: #2196F3; color: white; }
-        .btn-del { background: #f44336; color: white; }
-    </style>
-</head>
-
-<body>
-
-    <h1>🛠️ Administration de la Base de Données</h1>
-
-    <!-- ============================================================
-         ARTICLES
-    ============================================================= -->
-    <div class="section">
-        <h2>📦 Articles</h2>
-
-        <button class="btn-add" onclick="ouvrirFormArticle()">➕ Ajouter un article</button>
-
-        <table id="tableArticles">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Prix</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <!-- Sélection de la table -->
+    <div class="admin-select-box">
+        <label>Choisir une table :</label>
+        <select id="adminTableSelect">
+            <option value="">-- Sélectionner --</option>
+            <option value="compta">Compta</option>
+            <option value="tickets">Tickets</option>
+            <option value="ressources">Ressources</option>
+            <option value="services">Services</option>
+        </select>
     </div>
 
-    <!-- ============================================================
-         EMPLOYÉS
-    ============================================================= -->
-    <div class="section">
-        <h2>👥 Employés</h2>
-
-        <button class="btn-add" onclick="ouvrirFormEmploye()">➕ Ajouter un employé</button>
-
-        <table id="tableEmployes">
-            <thead>
-                <tr>
-                    <th>Nom</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
+    <!-- Contenu dynamique -->
+    <div id="adminTableContent" class="admin-table-content">
+        <p>Sélectionne une table pour afficher son contenu.</p>
     </div>
 
-    <!-- ============================================================
-         LIBRAIRIE POCKETBASE
-    ============================================================= -->
-    <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
-
-    <!-- ============================================================
-         SCRIPT ADMIN
-    ============================================================= -->
-    <script src="admin.js"></script>
-
-</body>
-</html>
+</div>
