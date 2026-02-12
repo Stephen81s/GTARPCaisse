@@ -1,126 +1,60 @@
-<!-- ********************************************************************
-     @file interface_caisse.html — VERSION PRO RECONSTRUITE
-     @description Interface utilisateur du module CAISSE.
-                  - Template invisible pour clonage
-                  - Ligne visible générée dynamiquement
-                  - Compatible avec scripts caisse fractionnés
+<!-- ============================================================
+     MODULE CAISSE
+     Gestion des ventes multi-articles
+     ============================================================ -->
 
-     Auteur : Stephen
-     Version : 3.5.1 (corrigée)
-     Mis à jour : 2026-02-11
-********************************************************************* -->
+<div class="caisse-container">
 
-<!--
-  IMPORTANT :
-  - Cette interface doit être masquée par défaut
-  - La classe .interface est OBLIGATOIRE pour showInterface()
--->
-<div id="interface_caisse" class="interface" style="display:none;">
+  <h2 class="titre-interface">Module Caisse</h2>
 
-  <h2 class="titre-interface">💰 Caisse</h2>
-
-  <!-- ============================================================
-       TYPE D’OPÉRATION
-  ============================================================ -->
+  <!-- Log : Sélection du type d’opération -->
   <div class="ligne-type">
-    <label for="typeOperation">Type d’opération</label>
-    <select id="typeOperation"></select>
+    <label for="typeOperation">Type d’opération :</label>
+    <select id="typeOperation">
+      <option value="legal">Légal</option>
+      <option value="illegal">Illégal</option>
+      <option value="violet">Violet</option>
+    </select>
   </div>
 
-  <!-- ============================================================
-       EMPLOYÉ / CLIENT / TÉLÉPHONE / PAIEMENT
-  ============================================================ -->
+  <!-- Log : Informations générales -->
   <div class="ligne-quadruple">
 
     <div>
-      <label for="employe">Employé</label>
-      <select id="employe"></select>
+      <label>Client</label>
+      <input type="text" id="clientInput">
     </div>
 
     <div>
-      <label for="client">Client</label>
-      <div class="client-wrapper">
-        <input id="client" list="clientsList" placeholder="Nom Prénom" autocomplete="off">
-        <datalist id="clientsList"></datalist>
-      </div>
+      <label>Employé</label>
+      <select id="employeSelect"></select>
     </div>
 
     <div>
-      <label for="clientTel">Téléphone</label>
-      <input id="clientTel" type="text" placeholder="Téléphone">
+      <label>Remise (%)</label>
+      <input type="number" id="remiseInput" value="0">
     </div>
 
     <div>
-      <label for="paiement">Paiement</label>
-      <select id="paiement"></select>
+      <label>Livraison (€)</label>
+      <input type="number" id="livraisonInput" value="0">
     </div>
 
   </div>
 
-  <!-- ============================================================
-       TEMPLATE INVISIBLE (modèle de ligne)
-  ============================================================ -->
-  <div class="ligne-article template-ligne" style="display:none;">
+  <!-- Log : Liste dynamique des articles -->
+  <div id="listeArticles"></div>
 
-    <input type="text" class="articleInput" list="articlesList" placeholder="Article…">
-    <input type="number" class="prixUnitaire" placeholder="PU" readonly>
-    <input type="number" class="quantite" min="1" value="1" placeholder="Qté">
+  <!-- Log : Bouton pour ajouter une ligne article -->
+  <button class="btn-caisse btn-bleu" onclick="ajouterLigneArticle()">Ajouter un article</button>
 
-    <input type="number" class="remiseMontant" min="0" placeholder="Remise…">
-    <select class="remiseType">
-      <option value="€">€</option>
-      <option value="%">%</option>
-    </select>
+  <!-- Log : Total global -->
+  <div id="totalGlobalBox">Total : 0 €</div>
 
-    <input type="text" class="totalLigne" placeholder="Total" readonly>
-
-    <button class="dupliquerLigne">📄</button>
-    <button class="supprimerLigne">🗑</button>
-
-  </div>
-
-  <!-- ============================================================
-       CONTENEUR DES LIGNES VISIBLES
-  ============================================================ -->
-  <div id="lignesReelles"></div>
-
-  <!-- ============================================================
-       DATALIST DES ARTICLES
-  ============================================================ -->
-  <datalist id="articlesList"></datalist>
-
-  <!-- ============================================================
-       LIVRAISON
-  ============================================================ -->
-  <div id="livraisonBox" style="margin-top:20px;">
-    Livraison :
-    <input type="number" id="livraisonMontant" min="0" placeholder="0">
-    <select id="livraisonType">
-      <option value="€">€</option>
-      <option value="%">%</option>
-    </select>
-  </div>
-
-  <!-- ============================================================
-       BOUTONS
-  ============================================================ -->
-  <div style="display:flex; gap:15px; margin-top:20px;">
-
-    <button id="ajouterLigne" class="btn-caisse btn-bleu">
-      ➕ Ajouter une ligne
-    </button>
-
-    <button id="btn-valider" class="btn-caisse btn-rouge">
-      ✔ Valider la caisse
-    </button>
-
-  </div>
-
-  <!-- ============================================================
-       TOTAL GLOBAL
-  ============================================================ -->
-  <div id="totalGlobalBox">
-    Total article : <span id="totalArticle">0.00</span> $
+  <!-- Log : Boutons finaux -->
+  <div style="margin-top:20px; display:flex; gap:10px;">
+    <button class="btn-caisse btn-bleu" onclick="validerCaisse()">Valider</button>
+    <button class="btn-caisse btn-rouge" onclick="resetCaisse()">Réinitialiser</button>
   </div>
 
 </div>
