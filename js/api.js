@@ -9,7 +9,7 @@
 //  ⚠️ Remplace TON_WEBAPP_ID par ton vrai ID Apps Script
 // ============================================================
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxtRL13AwKz-GCICw1mkFtdRPlQEGEPAetdeQrlMA3o-57V6IL-Xy3JfU7_56-h6hp0/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyHX2Ct3Y06gSByAitBxbJCKHM5UGeMGiSpG8hY9pMEFf_ZaaHjKRQnTcVpnuBGp98rvA/exec";
 
 console.log("[API] Initialisation de l'API — URL :", API_URL);
 
