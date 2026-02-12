@@ -1,83 +1,80 @@
 // ============================================================
-//  API.JS — POINT CENTRAL DE COMMUNICATION AVEC APPS SCRIPT
-//  Utilisé par tous les modules : Caisse, Ticket, Ressource, Service
-//  Version GitHub Pages — compatible CORS + WebApp Google
+//  API.JS — VERSION POCKETBASE
+//  Point central de communication avec ton backend PocketBase
 // ============================================================
 
-// ============================================================
-//  URL UNIQUE DE TON WEBAPP APPS SCRIPT
-//  ⚠️ Remplace TON_WEBAPP_ID par ton vrai ID Apps Script
-// ============================================================
+// 1. Connexion à PocketBase
+const pb = new PocketBase("https://TON-DOMAINE.fly.dev");
 
-const API_URL = "https://script.google.com/macros/s/AKfycbyHX2Ct3Y06gSByAitBxbJCKHM5UGeMGiSpG8hY9pMEFf_ZaaHjKRQnTcVpnuBGp98rvA/exec";
-
-console.log("[API] Initialisation de l'API — URL :", API_URL);
+console.log("[PB] Initialisation PocketBase :", pb.baseUrl);
 
 // ============================================================
-//  FONCTION API GÉNÉRIQUE
-//  Tous les modules utilisent cette fonction pour communiquer
+//  2. Fonctions génériques
 // ============================================================
 
-async function callAPI(action, payload = {}) {
-  const body = { action, ...payload };
+// Lire toute une collection
+async function pbList(collection, expand = "") {
+  return await pb.collection(collection).getFullList({ expand });
+}
 
-  console.log("%c[API] → Envoi", "color:#4ea1ff", body);
+// Lire un élément
+async function pbGet(collection, id, expand = "") {
+  return await pb.collection(collection).getOne(id, { expand });
+}
 
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      mode: "cors",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
+// Créer un élément
+async function pbCreate(collection, data) {
+  return await pb.collection(collection).create(data);
+}
 
-    if (!response.ok) {
-      console.error("[API] ❌ Erreur HTTP :", response.status, response.statusText);
-      throw new Error("Erreur HTTP " + response.status);
-    }
+// Mettre à jour un élément
+async function pbUpdate(collection, id, data) {
+  return await pb.collection(collection).update(id, data);
+}
 
-    const data = await response.json();
-    console.log("%c[API] ← Réponse", "color:#7dff7d", data);
+// Supprimer un élément
+async function pbDelete(collection, id) {
+  return await pb.collection(collection).delete(id);
+}
 
-    return data;
+// ============================================================
+//  3. WRAPPERS PAR MODULE (comme ton ancien système)
+// ============================================================
 
-  } catch (err) {
-    console.error("[API] ❌ Erreur réseau / CORS :", err);
-    throw err;
+// --- ENTREPRISE ---
+function apiEntreprise(action, payload = {}) {
+  console.log("[PB-ENTREPRISE] Action :", action);
+
+  switch (action) {
+    case "list":
+      return pbList("Entreprise");
+    case "create":
+      return pbCreate("Entreprise", payload);
+    case "update":
+      return pbUpdate("Entreprise", payload.id, payload.data);
+    case "delete":
+      return pbDelete("Entreprise", payload.id);
+  }
+}
+
+// --- EMPLOYES ---
+function apiEmployes(action, payload = {}) {
+  console.log("[PB-EMPLOYES] Action :", action);
+
+  switch (action) {
+    case "list":
+      return pbList("Employes", "Entreprise");
+    case "create":
+      return pbCreate("Employes", payload);
+    case "update":
+      return pbUpdate("Employes", payload.id, payload.data);
+    case "delete":
+      return pbDelete("Employes", payload.id);
   }
 }
 
 // ============================================================
-//  WRAPPERS PAR MODULE (facultatif mais propre)
-//  Permet d'avoir des logs clairs et séparés
+//  FIN DU FICHIER
 // ============================================================
 
-// --- CAISSE ---
-function apiCaisse(action, payload = {}) {
-  console.log("[API-CAISSE] Action :", action);
-  return callAPI(action, payload);
-}
-
-// --- TICKET ---
-function apiTicket(action, payload = {}) {
-  console.log("[API-TICKET] Action :", action);
-  return callAPI(action, payload);
-}
-
-// --- RESSOURCE ---
-function apiRessource(action, payload = {}) {
-  console.log("[API-RESSOURCE] Action :", action);
-  return callAPI(action, payload);
-}
-
-// --- SERVICE ---
-function apiService(action, payload = {}) {
-  console.log("[API-SERVICE] Action :", action);
-  return callAPI(action, payload);
-}
-
-// ============================================================
-//  FIN DU FICHIER API.JS
-// ============================================================
-
-console.log("[API] API.js chargé avec succès.");
+console.log("[PB] API PocketBase chargée avec succès.");
