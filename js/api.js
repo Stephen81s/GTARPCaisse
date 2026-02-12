@@ -11,7 +11,7 @@
 
 const API_URL = "https://script.google.com/macros/s/TON_WEBAPP_ID/exec";
 
-console.log("[API] Initialisation de l'API — URL :", API_URL);
+console.log("https://script.google.com/macros/s/AKfycbxtRL13AwKz-GCICw1mkFtdRPlQEGEPAetdeQrlMA3o-57V6IL-Xy3JfU7_56-h6hp0/exec", API_URL);
 
 // ============================================================
 //  FONCTION API GÉNÉRIQUE
