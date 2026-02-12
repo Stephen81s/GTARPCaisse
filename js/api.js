@@ -1,157 +1,203 @@
 // ============================================================
-//  API.JS — VERSION POCKETBASE (OPTIMISÉE)
-//  Point central de communication avec PocketBase
+//  API.JS — SUPABASE EDITION (CORE)
+//  Auteur : Stephen
+//  Version : 1.0
+//  Description :
+//    - Point central de communication avec Supabase
+//    - Fonctions génériques CRUD
+//    - Wrappers par module (caisse, ticket, ressource, service…)
+//    - Compatible avec api(module, action, payload)
 // ============================================================
 
-// ============================================================
-//  1. Connexion à PocketBase
-// ============================================================
-
-const pb = new PocketBase("https://pocketbase-server-t8sv.onrender.com");
-console.log("[PB] Initialisation PocketBase :", pb.baseUrl);
 
 // ============================================================
-//  2. Fonctions génériques sécurisées
+//  1. Fonctions génériques SUPABASE
 // ============================================================
 
-async function pbList(collection, options = {}) {
-  console.log("[PB] LIST :", collection, options);
-  try {
-    return await pb.collection(collection).getFullList(options);
-  } catch (err) {
-    console.error(`[PB] ❌ LIST ERROR (${collection}) :`, err);
-    throw err;
-  }
+// LIST / SELECT
+async function sbList(table, options = {}) {
+    log("api", `LIST → ${table}`, options);
+
+    const { data, error } = await supabase
+        .from(table)
+        .select(options.select || "*")
+        .order(options.orderBy || "id", { ascending: true });
+
+    if (error) {
+        logError("api", `Erreur LIST ${table}`, error);
+        throw error;
+    }
+
+    return data;
 }
 
-async function pbGet(collection, id, options = {}) {
-  console.log("[PB] GET :", collection, id, options);
-  try {
-    return await pb.collection(collection).getOne(id, options);
-  } catch (err) {
-    console.error(`[PB] ❌ GET ERROR (${collection}/${id}) :`, err);
-    throw err;
-  }
+// GET ONE
+async function sbGet(table, id, options = {}) {
+    log("api", `GET → ${table}/${id}`);
+
+    const { data, error } = await supabase
+        .from(table)
+        .select(options.select || "*")
+        .eq("id", id)
+        .single();
+
+    if (error) {
+        logError("api", `Erreur GET ${table}/${id}`, error);
+        throw error;
+    }
+
+    return data;
 }
 
-async function pbCreate(collection, data) {
-  console.log("[PB] CREATE :", collection, data);
-  try {
-    return await pb.collection(collection).create(data);
-  } catch (err) {
-    console.error(`[PB] ❌ CREATE ERROR (${collection}) :`, err);
-    throw err;
-  }
+// CREATE
+async function sbCreate(table, payload) {
+    log("api", `CREATE → ${table}`, payload);
+
+    const { data, error } = await supabase
+        .from(table)
+        .insert(payload)
+        .select()
+        .single();
+
+    if (error) {
+        logError("api", `Erreur CREATE ${table}`, error);
+        throw error;
+    }
+
+    return data;
 }
 
-async function pbUpdate(collection, id, data) {
-  console.log("[PB] UPDATE :", collection, id, data);
-  try {
-    return await pb.collection(collection).update(id, data);
-  } catch (err) {
-    console.error(`[PB] ❌ UPDATE ERROR (${collection}/${id}) :`, err);
-    throw err;
-  }
+// UPDATE
+async function sbUpdate(table, id, payload) {
+    log("api", `UPDATE → ${table}/${id}`, payload);
+
+    const { data, error } = await supabase
+        .from(table)
+        .update(payload)
+        .eq("id", id)
+        .select()
+        .single();
+
+    if (error) {
+        logError("api", `Erreur UPDATE ${table}/${id}`, error);
+        throw error;
+    }
+
+    return data;
 }
 
-async function pbDelete(collection, id) {
-  console.log("[PB] DELETE :", collection, id);
-  try {
-    return await pb.collection(collection).delete(id);
-  } catch (err) {
-    console.error(`[PB] ❌ DELETE ERROR (${collection}/${id}) :`, err);
-    throw err;
-  }
+// DELETE
+async function sbDelete(table, id) {
+    log("api", `DELETE → ${table}/${id}`);
+
+    const { error } = await supabase
+        .from(table)
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+        logError("api", `Erreur DELETE ${table}/${id}`, error);
+        throw error;
+    }
+
+    return { status: "ok" };
 }
+
+
 
 // ============================================================
-//  3. WRAPPERS PAR MODULE
+//  2. WRAPPERS PAR MODULE
 // ============================================================
 
-// --- ENTREPRISE ---
-function apiEntreprise(action, payload = {}) {
-  switch (action) {
-    case "list":   return pbList("Entreprise");
-    case "get":    return pbGet("Entreprise", payload.id);
-    case "create": return pbCreate("Entreprise", payload);
-    case "update": return pbUpdate("Entreprise", payload.id, payload.data);
-    case "delete": return pbDelete("Entreprise", payload.id);
-  }
+// --- CAISSE / COMPTA ---
+function apiCaisse(action, payload = {}) {
+    switch (action) {
+        case "list":
+            return sbList("compta");
+        case "get":
+            return sbGet("compta", payload.id);
+        case "create":
+            return sbCreate("compta", payload);
+        case "update":
+            return sbUpdate("compta", payload.id, payload.data);
+        case "delete":
+            return sbDelete("compta", payload.id);
+    }
 }
 
-// --- EMPLOYES ---
-function apiEmployes(action, payload = {}) {
-  switch (action) {
-    case "list":
-      return pbList("Employes", { expand: "Entreprise" });
-    case "get":
-      return pbGet("Employes", payload.id, { expand: "Entreprise" });
-    case "create":
-      return pbCreate("Employes", payload);
-    case "update":
-      return pbUpdate("Employes", payload.id, payload.data);
-    case "delete":
-      return pbDelete("Employes", payload.id);
-  }
+// --- TICKET ---
+function apiTicket(action, payload = {}) {
+    switch (action) {
+        case "list":
+            return sbList("tickets");
+        case "get":
+            return sbGet("tickets", payload.id);
+        case "create":
+            return sbCreate("tickets", payload);
+        case "update":
+            return sbUpdate("tickets", payload.id, payload.data);
+        case "delete":
+            return sbDelete("tickets", payload.id);
+    }
 }
 
-// --- ARTICLES ---
-function apiArticles(action, payload = {}) {
-  switch (action) {
-    case "list":   return pbList("Articles");
-    case "get":    return pbGet("Articles", payload.id);
-    case "create": return pbCreate("Articles", payload);
-    case "update": return pbUpdate("Articles", payload.id, payload.data);
-    case "delete": return pbDelete("Articles", payload.id);
-  }
+// --- RESSOURCE ---
+function apiRessource(action, payload = {}) {
+    switch (action) {
+        case "list":
+            return sbList("ressources");
+        case "get":
+            return sbGet("ressources", payload.id);
+        case "create":
+            return sbCreate("ressources", payload);
+        case "update":
+            return sbUpdate("ressources", payload.id, payload.data);
+        case "delete":
+            return sbDelete("ressources", payload.id);
+    }
 }
 
-// --- COMPTA ---
-function apiCompta(action, payload = {}) {
-  switch (action) {
-    case "list":   return pbList("Compta");
-    case "get":    return pbGet("Compta", payload.id);
-    case "create": return pbCreate("Compta", payload);
-    case "update": return pbUpdate("Compta", payload.id, payload.data);
-    case "delete": return pbDelete("Compta", payload.id);
-  }
+// --- SERVICE ---
+function apiService(action, payload = {}) {
+    switch (action) {
+        case "list":
+            return sbList("services");
+        case "get":
+            return sbGet("services", payload.id);
+        case "create":
+            return sbCreate("services", payload);
+        case "update":
+            return sbUpdate("services", payload.id, payload.data);
+        case "delete":
+            return sbDelete("services", payload.id);
+    }
 }
 
-// --- RESUME ---
-function apiResume(action, payload = {}) {
-  const expandFields = "Employes,Client,Mode_de_paiment,type_de_mouvement,type_operation";
 
-  switch (action) {
-    case "list":
-      return pbList("Resume", { expand: expandFields });
-    case "get":
-      return pbGet("Resume", payload.id, { expand: expandFields });
-    case "create":
-      return pbCreate("Resume", payload);
-    case "update":
-      return pbUpdate("Resume", payload.id, payload.data);
-    case "delete":
-      return pbDelete("Resume", payload.id);
-  }
-}
 
 // ============================================================
-//  4. Point d’entrée générique (compatibilité ancienne API)
+//  3. API GÉNÉRIQUE (compatibilité ancienne version)
 // ============================================================
 
 function api(module, action, payload = {}) {
-  console.log("[API] Module:", module, "Action:", action, "Payload:", payload);
+    log("api", `Appel générique → ${module}.${action}`, payload);
 
-  switch (module) {
-    case "Entreprise": return apiEntreprise(action, payload);
-    case "Employes":   return apiEmployes(action, payload);
-    case "Articles":   return apiArticles(action, payload);
-    case "Compta":     return apiCompta(action, payload);
-    case "Resume":     return apiResume(action, payload);
-    default:
-      console.error("[API] ❌ Module inconnu :", module);
-      return Promise.reject("Module inconnu : " + module);
-  }
+    switch (module) {
+        case "caisse":     return apiCaisse(action, payload);
+        case "ticket":     return apiTicket(action, payload);
+        case "ressource":  return apiRessource(action, payload);
+        case "service":    return apiService(action, payload);
+
+        default:
+            logError("api", `Module inconnu : ${module}`);
+            return Promise.reject("Module inconnu : " + module);
+    }
 }
 
-console.log("[PB] api.js PocketBase chargé.");
+
+
+// ============================================================
+//  4. Confirmation de chargement
+// ============================================================
+
+logSuccess("API.JS (SUPABASE) chargé et opérationnel");

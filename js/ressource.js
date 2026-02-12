@@ -1,62 +1,86 @@
 // ============================================================
-//  MODULE RESSOURCE — LOGIQUE JS (SUPABASE)
+//  RESSOURCE.JS — MODULE RESSOURCE (SUPABASE)
+//  Auteur : Stephen
+//  Version : 1.0
+//  Description :
+//    - Gestion des ressources RP
+//    - Création de ressources (nom, quantité, type)
+//    - Enregistrement en base (table ressources)
 // ============================================================
 
+
 // ============================================================
-//  INITIALISATION DU MODULE RESSOURCE
+//  🔧 INITIALISATION DE L’INTERFACE RESSOURCE
 // ============================================================
 
 function initRessource() {
-  console.log("[RESSOURCE] Initialisation…");
+    log("ressource", "Initialisation de l’interface…");
 
-  const nom = document.getElementById("ressourceNom");
-  const quantite = document.getElementById("ressourceQuantite");
-  const type = document.getElementById("ressourceType");
+    const nom = document.getElementById("ressourceNom");
+    const quantite = document.getElementById("ressourceQuantite");
+    const type = document.getElementById("ressourceType");
+    const btn = document.getElementById("ressourceValider");
 
-  if (!nom || !quantite || !type) {
-    console.error("[RESSOURCE] ERREUR : éléments HTML manquants");
-    return;
-  }
+    if (!nom || !quantite || !type || !btn) {
+        logError("ressource", "Éléments HTML manquants");
+        return;
+    }
 
-  console.log("[RESSOURCE] Interface prête.");
+    // Reset interface
+    nom.value = "";
+    quantite.value = "";
+    type.value = "legal";
+
+    logSuccess("ressource", "Interface prête");
 }
 
+
 // ============================================================
-//  VALIDATION / ENREGISTREMENT DE LA RESSOURCE
+//  📝 VALIDATION / ENREGISTREMENT DE LA RESSOURCE
 // ============================================================
 
 async function validerRessource() {
-  console.log("[RESSOURCE] Validation…");
+    log("ressource", "Validation…");
 
-  const nom = document.getElementById("ressourceNom")?.value || "";
-  const quantite = Number(document.getElementById("ressourceQuantite")?.value || 0);
-  const type = document.getElementById("ressourceType")?.value || "legal";
+    const nom = document.getElementById("ressourceNom")?.value.trim() || "";
+    const quantite = Number(document.getElementById("ressourceQuantite")?.value || 0);
+    const type = document.getElementById("ressourceType")?.value || "legal";
 
-  if (!nom || quantite <= 0) {
-    console.warn("[RESSOURCE] Champs invalides");
-    alert("Merci de remplir tous les champs correctement.");
-    return;
-  }
+    // ------------------------------------------------------------
+    // 1. Vérification des champs
+    // ------------------------------------------------------------
+    if (!nom || quantite <= 0) {
+        logWarn("ressource", "Champs invalides");
+        alert("Merci de remplir tous les champs correctement.");
+        return;
+    }
 
-  try {
-    const { data, error } = await supabase
-      .from("ressources")
-      .insert({
-        nom,
-        quantite,
-        type,
-        date_creation: new Date().toISOString()
-      })
-      .select()
-      .single();
+    // ------------------------------------------------------------
+    // 2. Enregistrement dans Supabase
+    // ------------------------------------------------------------
+    try {
+        const data = await api("ressource", "create", {
+            nom,
+            quantite,
+            type,
+            date_creation: new Date().toISOString()
+        });
 
-    if (error) throw error;
+        logSuccess("ressource", "Ressource enregistrée :", data);
+        alert("Ressource enregistrée avec succès !");
 
-    console.log("[RESSOURCE] Ressource enregistrée :", data);
-    alert("Ressource enregistrée avec succès !");
+        // Reset interface
+        initRessource();
 
-  } catch (e) {
-    console.error("[RESSOURCE] Erreur enregistrement :", e);
-    alert("Erreur lors de l'enregistrement de la ressource.");
-  }
+    } catch (err) {
+        logError("ressource", "Erreur enregistrement", err);
+        alert("Erreur lors de l'enregistrement de la ressource.");
+    }
 }
+
+
+// ============================================================
+//  🏁 Confirmation de chargement
+// ============================================================
+
+logSuccess("RESSOURCE.JS chargé et opérationnel");

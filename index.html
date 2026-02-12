@@ -1,9 +1,10 @@
 <!-- ============================================================
      INDEX.HTML — POINT D’ENTRÉE PRINCIPAL DU SITE
      Auteur : Stephen
-     Version : SUPABASE Edition
+     Version : SUPABASE Edition (CORE)
      Description :
-       - Charge Supabase globalement (remplace PocketBase)
+       - Charge Supabase globalement
+       - Charge tous les scripts core et modules
        - Initialise le router
        - Affiche le header global
        - Contient le conteneur où les pages seront injectées
@@ -24,29 +25,37 @@
     <!-- ============================================================
          🗄️ Librairie SUPABASE (OBLIGATOIRE)
          Chargée ici pour être disponible dans TOUTES les pages.
-         IMPORTANT :
-         - Le router charge uniquement le <body>
-         - Donc Supabase doit être chargé dans index.html
          ============================================================ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         // ============================================================
-        // 🔌 Connexion SUPABASE (remplace PocketBase)
+        // 🔌 Connexion SUPABASE (globale)
         // ============================================================
         const supabase = window.supabase.createClient(
-            "https://oxqgytbquvopynfretpu.supabase.co",   // 🔥 URL Supabase
-            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"                       // 🔥 Clé publique (anon)
+            "https://oxqgytbquvopynfretpu.supabase.co",   // URL Supabase
+            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB" // Clé publique (anon)
         );
 
         console.log("%c[INDEX] Supabase chargé globalement", "color:#4CAF50;font-weight:bold;");
     </script>
 
     <!-- ============================================================
-         📜 Scripts globaux
+         📜 Scripts CORE (chargés une seule fois)
          ============================================================ -->
     <script src="js/logger.js" defer></script>
+    <script src="js/api.js" defer></script>
     <script src="js/router.js" defer></script>
+
+    <!-- ============================================================
+         📦 Modules métiers (chargés une seule fois)
+         ============================================================ -->
+    <script src="js/modules/caisse.js" defer></script>
+    <script src="js/modules/ticket.js" defer></script>
+    <script src="js/modules/ressource.js" defer></script>
+    <script src="js/modules/service.js" defer></script>
+    <script src="js/modules/admin.js" defer></script>
+
 </head>
 
 <body>
@@ -58,14 +67,12 @@
         <div class="header-title">GTARP — Interface Stephen</div>
 
         <nav class="header-right">
-            <button id="btn-accueil" class="header-btn" onclick="loadPage('accueil')">Accueil</button>
-            <button id="btn-caisse" class="header-btn" onclick="loadPage('caisse')">Caisse</button>
-            <button id="btn-ticket" class="header-btn" onclick="loadPage('ticket')">Ticket</button>
-            <button id="btn-ressource" class="header-btn" onclick="loadPage('ressource')">Ressource</button>
-            <button id="btn-service" class="header-btn" onclick="loadPage('service')">Service</button>
-
-            <!-- 🔧 Nouveau bouton Admin -->
-            <button id="btn-admin" class="header-btn" onclick="loadPage('admin')">Admin</button>
+            <button class="header-btn" onclick="loadPage('accueil')">Accueil</button>
+            <button class="header-btn" onclick="loadPage('caisse')">Caisse</button>
+            <button class="header-btn" onclick="loadPage('ticket')">Ticket</button>
+            <button class="header-btn" onclick="loadPage('ressource')">Ressource</button>
+            <button class="header-btn" onclick="loadPage('service')">Service</button>
+            <button class="header-btn" onclick="loadPage('admin')">Admin</button>
         </nav>
     </header>
 

@@ -1,72 +1,182 @@
-console.log("%c[CAISSE] Initialisation…", "color:#FF9800;font-weight:bold;");
+// ============================================================
+//  CAISSE.JS — MODULE CAISSE (SUPABASE)
+//  Auteur : Stephen
+//  Version : 1.0
+//  Description :
+//    - Gestion de la caisse RP
+//    - Chargement des articles
+//    - Panier local
+//    - Calcul total
+//    - Enregistrement en base (table compta)
+// ============================================================
 
-async function chargerCaisse() {
-    logInfo("Chargement des données Supabase…");
 
-    const { data: articles } = await supabase.from("articles").select("*");
-    const { data: employes } = await supabase.from("employes").select("*");
-    const { data: moyens } = await supabase.from("moyens_paiement").select("*");
-    const { data: types } = await supabase.from("type_operations").select("*");
+// ============================================================
+//  🛒 PANIER LOCAL
+// ============================================================
 
-    afficherArticles(articles);
-    afficherEmployes(employes);
-    afficherPaiements(moyens);
-    afficherTypes(types);
+let panier = [];
 
-    logSuccess("Caisse prête !");
+
+// ============================================================
+//  🔧 INITIALISATION DE L’INTERFACE CAISSE
+// ============================================================
+
+function initCaisse() {
+    log("caisse", "Initialisation de l’interface…");
+
+    const liste = document.getElementById("caisseArticles");
+    const total = document.getElementById("caisseTotal");
+    const btnValider = document.getElementById("caisseValider");
+
+    if (!liste || !total || !btnValider) {
+        logError("caisse", "Éléments HTML manquants");
+        return;
+    }
+
+    panier = [];
+    majTotal();
+
+    chargerArticles();
 }
 
-function afficherArticles(list) {
-    const zone = document.getElementById("liste-articles");
-    zone.innerHTML = "";
 
-    list.forEach(a => {
-        const btn = document.createElement("button");
-        btn.className = "article-btn";
-        btn.textContent = `${a.nom} (${a.prix}€)`;
-        btn.onclick = () => ajouterArticle(a);
-        zone.appendChild(btn);
-    });
-}
+// ============================================================
+//  📦 CHARGEMENT DES ARTICLES DEPUIS SUPABASE
+// ============================================================
 
-function ajouterArticle(article) {
-    const zone = document.getElementById("ticket");
-    const li = document.createElement("li");
-    li.textContent = `${article.nom} — ${article.prix}€`;
-    zone.appendChild(li);
-}
+async function chargerArticles() {
+    log("caisse", "Chargement des articles…");
 
-async function validerTicket() {
-    const employe = document.getElementById("select-employe").value;
-    const client = document.getElementById("input-client").value;
-    const type = document.getElementById("select-type").value;
-    const paiement = document.getElementById("select-paiement").value;
-    const total = calculerTotal();
+    const select = document.getElementById("caisseArticles");
+    if (!select) return;
 
-    const { error } = await supabase.from("compta").insert({
-        employe,
-        client,
-        type_operation: type,
-        paiement,
-        total
-    });
+    try {
+        const articles = await api("articles", "list");
 
-    if (error) {
-        logError("Erreur enregistrement : " + error.message);
-    } else {
-        logSuccess("Ticket enregistré !");
-        document.getElementById("ticket").innerHTML = "";
+        select.innerHTML = "";
+
+        articles.forEach(a => {
+            const opt = document.createElement("option");
+            opt.value = a.id;
+            opt.textContent = `${a.nom} — ${a.prix} $`;
+            opt.dataset.prix = a.prix;
+            select.appendChild(opt);
+        });
+
+        logSuccess("caisse", "Articles chargés");
+
+    } catch (err) {
+        logError("caisse", "Erreur chargement articles", err);
     }
 }
 
-function calculerTotal() {
-    const items = document.querySelectorAll("#ticket li");
-    let total = 0;
 
-    items.forEach(li => {
-        const prix = parseFloat(li.textContent.split("—")[1]);
-        total += prix;
+// ============================================================
+//  ➕ AJOUTER UN ARTICLE AU PANIER
+// ============================================================
+
+function ajouterArticle() {
+    const select = document.getElementById("caisseArticles");
+    if (!select) return;
+
+    const id = select.value;
+    const nom = select.options[select.selectedIndex].textContent.split(" — ")[0];
+    const prix = Number(select.options[select.selectedIndex].dataset.prix);
+
+    panier.push({ id, nom, prix });
+
+    log("caisse", "Article ajouté :", nom, prix);
+
+    afficherPanier();
+    majTotal();
+}
+
+
+// ============================================================
+//  🧾 AFFICHAGE DU PANIER
+// ============================================================
+
+function afficherPanier() {
+    const zone = document.getElementById("caissePanier");
+    if (!zone) return;
+
+    zone.innerHTML = "";
+
+    panier.forEach((item, index) => {
+        const div = document.createElement("div");
+        div.className = "panier-item";
+        div.innerHTML = `
+            <span>${item.nom} — ${item.prix} $</span>
+            <button onclick="supprimerArticle(${index})">❌</button>
+        `;
+        zone.appendChild(div);
     });
+}
+
+
+// ============================================================
+//  ❌ SUPPRIMER UN ARTICLE DU PANIER
+// ============================================================
+
+function supprimerArticle(index) {
+    panier.splice(index, 1);
+    afficherPanier();
+    majTotal();
+}
+
+
+// ============================================================
+//  💰 CALCUL DU TOTAL
+// ============================================================
+
+function majTotal() {
+    const total = panier.reduce((sum, item) => sum + item.prix, 0);
+    const zone = document.getElementById("caisseTotal");
+
+    if (zone) zone.textContent = total + " $";
 
     return total;
 }
+
+
+// ============================================================
+//  🧾 VALIDATION / ENREGISTREMENT EN BASE
+// ============================================================
+
+async function validerCaisse() {
+    log("caisse", "Validation de la caisse…");
+
+    if (panier.length === 0) {
+        alert("Le panier est vide.");
+        return;
+    }
+
+    const total = majTotal();
+
+    try {
+        const data = await api("caisse", "create", {
+            date: new Date().toISOString(),
+            montant: total,
+            details: JSON.stringify(panier)
+        });
+
+        logSuccess("caisse", "Caisse enregistrée :", data);
+
+        alert("Caisse validée !");
+        panier = [];
+        afficherPanier();
+        majTotal();
+
+    } catch (err) {
+        logError("caisse", "Erreur validation caisse", err);
+        alert("Erreur lors de la validation.");
+    }
+}
+
+
+// ============================================================
+//  🏁 Confirmation de chargement
+// ============================================================
+
+logSuccess("CAISSE.JS chargé et opérationnel");

@@ -1,62 +1,86 @@
 // ============================================================
-//  MODULE SERVICE — LOGIQUE JS (SUPABASE)
+//  SERVICE.JS — MODULE SERVICE (SUPABASE)
+//  Auteur : Stephen
+//  Version : 1.0
+//  Description :
+//    - Gestion des services RP
+//    - Création de services (nom, description, prix)
+//    - Enregistrement en base (table services)
 // ============================================================
 
+
 // ============================================================
-//  INITIALISATION DU MODULE SERVICE
+//  🔧 INITIALISATION DE L’INTERFACE SERVICE
 // ============================================================
 
 function initService() {
-  console.log("[SERVICE] Initialisation…");
+    log("service", "Initialisation de l’interface…");
 
-  const nom = document.getElementById("serviceNom");
-  const desc = document.getElementById("serviceDescription");
-  const prix = document.getElementById("servicePrix");
+    const nom = document.getElementById("serviceNom");
+    const desc = document.getElementById("serviceDescription");
+    const prix = document.getElementById("servicePrix");
+    const btn = document.getElementById("serviceValider");
 
-  if (!nom || !desc || !prix) {
-    console.error("[SERVICE] ERREUR : éléments HTML manquants");
-    return;
-  }
+    if (!nom || !desc || !prix || !btn) {
+        logError("service", "Éléments HTML manquants");
+        return;
+    }
 
-  console.log("[SERVICE] Interface prête.");
+    // Reset interface
+    nom.value = "";
+    desc.value = "";
+    prix.value = "";
+
+    logSuccess("service", "Interface prête");
 }
 
+
 // ============================================================
-//  VALIDATION / ENREGISTREMENT DU SERVICE
+//  📝 VALIDATION / ENREGISTREMENT DU SERVICE
 // ============================================================
 
 async function validerService() {
-  console.log("[SERVICE] Validation…");
+    log("service", "Validation…");
 
-  const nom = document.getElementById("serviceNom")?.value || "";
-  const description = document.getElementById("serviceDescription")?.value || "";
-  const prix = Number(document.getElementById("servicePrix")?.value || 0);
+    const nom = document.getElementById("serviceNom")?.value.trim() || "";
+    const description = document.getElementById("serviceDescription")?.value.trim() || "";
+    const prix = Number(document.getElementById("servicePrix")?.value || 0);
 
-  if (!nom || !description || prix <= 0) {
-    console.warn("[SERVICE] Champs invalides");
-    alert("Merci de remplir tous les champs correctement.");
-    return;
-  }
+    // ------------------------------------------------------------
+    // 1. Vérification des champs
+    // ------------------------------------------------------------
+    if (!nom || !description || prix <= 0) {
+        logWarn("service", "Champs invalides");
+        alert("Merci de remplir tous les champs correctement.");
+        return;
+    }
 
-  try {
-    const { data, error } = await supabase
-      .from("services")
-      .insert({
-        nom,
-        description,
-        prix,
-        date_creation: new Date().toISOString()
-      })
-      .select()
-      .single();
+    // ------------------------------------------------------------
+    // 2. Enregistrement dans Supabase
+    // ------------------------------------------------------------
+    try {
+        const data = await api("service", "create", {
+            nom,
+            description,
+            prix,
+            date_creation: new Date().toISOString()
+        });
 
-    if (error) throw error;
+        logSuccess("service", "Service enregistré :", data);
+        alert("Service enregistré avec succès !");
 
-    console.log("[SERVICE] Service enregistré :", data);
-    alert("Service enregistré avec succès !");
+        // Reset interface
+        initService();
 
-  } catch (e) {
-    console.error("[SERVICE] Erreur enregistrement :", e);
-    alert("Erreur lors de l'enregistrement du service.");
-  }
+    } catch (err) {
+        logError("service", "Erreur enregistrement", err);
+        alert("Erreur lors de l'enregistrement du service.");
+    }
 }
+
+
+// ============================================================
+//  🏁 Confirmation de chargement
+// ============================================================
+
+logSuccess("SERVICE.JS chargé et opérationnel");
