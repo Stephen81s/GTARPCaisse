@@ -1,79 +1,84 @@
 <!-- ============================================================
      HEADER GLOBAL
-     Affiché sur toutes les interfaces
-     Navigation instantanée entre modules
      ============================================================ -->
 
 <header class="header">
-
-  <!-- LOG : Titre principal du header -->
   <div class="header-left">
     <span class="header-title">Confrérie du Néant</span>
   </div>
 
-  <!-- LOG : Boutons de navigation -->
   <div class="header-right">
-
-    <!-- Retour à l'accueil -->
-    <button class="header-btn" onclick="showInterface('interface_home')">
-      Accueil
-    </button>
-
-    <!-- Accès rapide aux modules -->
-    <button class="header-btn" onclick="showInterface('interface_caisse')">
-      Caisse
-    </button>
-
-    <button class="header-btn" onclick="showInterface('interface_ticket')">
-      Ticket
-    </button>
-
-    <button class="header-btn" onclick="showInterface('interface_ressource')">
-      Ressource
-    </button>
-
-    <button class="header-btn" onclick="showInterface('interface_service')">
-      Service
-    </button>
-
+    <button class="header-btn" onclick="showInterface('interface_home')">Accueil</button>
+    <button class="header-btn" onclick="showInterface('interface_caisse')">Caisse</button>
+    <button class="header-btn" onclick="showInterface('interface_ticket')">Ticket</button>
+    <button class="header-btn" onclick="showInterface('interface_ressource')">Ressource</button>
+    <button class="header-btn" onclick="showInterface('interface_service')">Service</button>
   </div>
-
 </header>
 
-
-
 <!-- ============================================================
-     HOME — Interface d'accueil
-     Chargée automatiquement au lancement
+     MODULE CAISSE
      ============================================================ -->
 
-<div class="home-container">
+<div class="caisse-container">
 
-  <!-- LOG : Titre principal de la page -->
-  <h1 class="home-title">Confrérie du Néant</h1>
+  <h2 class="titre-interface">Module Caisse</h2>
 
-  <!-- LOG : Sous-titre -->
-  <p class="home-subtitle">Interface de gestion — Modules RP</p>
+  <!-- Type d’opération -->
+  <div class="ligne-type">
+    <label for="typeOperation">Type d’opération :</label>
+    <select id="typeOperation">
+      <option value="legal">Légal</option>
+      <option value="illegal">Illégal</option>
+      <option value="violet">Violet</option>
+    </select>
+  </div>
 
-  <!-- LOG : Boutons d'accès aux modules -->
-  <div class="home-buttons">
+  <!-- Infos générales -->
+  <div class="ligne-quadruple">
+    <div>
+      <label>Client</label>
+      <input type="text" id="clientInput">
+    </div>
 
-    <button class="home-btn" onclick="showInterface('interface_caisse')">
-      💰 Module Caisse
-    </button>
+    <div>
+      <label>Employé</label>
+      <select id="employeSelect"></select>
+    </div>
 
-    <button class="home-btn" onclick="showInterface('interface_ticket')">
-      🎫 Module Ticket
-    </button>
+    <div>
+      <label>Remise (%)</label>
+      <input type="number" id="remiseInput" value="0">
+    </div>
 
-    <button class="home-btn" onclick="showInterface('interface_ressource')">
-      📦 Module Ressource
-    </button>
+    <div>
+      <label>Livraison (€)</label>
+      <input type="number" id="livraisonInput" value="0">
+    </div>
+  </div>
 
-    <button class="home-btn" onclick="showInterface('interface_service')">
-      🛠 Module Service
-    </button>
+  <!-- Liste des articles -->
+  <div id="listeArticles"></div>
 
+  <button class="btn-caisse btn-bleu" onclick="ajouterLigneArticle()">Ajouter un article</button>
+
+  <!-- Total -->
+  <div id="totalGlobalBox">Total : 0 €</div>
+
+  <!-- Boutons finaux -->
+  <div style="margin-top:20px; display:flex; gap:10px;">
+    <button class="btn-caisse btn-bleu" onclick="validerCaisse()">Valider</button>
+    <button class="btn-caisse btn-rouge" onclick="resetCaisse()">Réinitialiser</button>
   </div>
 
 </div>
+
+<!-- Init JS spécifique à cette interface -->
+<script>
+  // Log : initialisation du module caisse après chargement du HTML
+  if (typeof initCaisse === "function") {
+    initCaisse();
+  } else {
+    console.warn("initCaisse() n'est pas définie (caisse.js non chargé ?)");
+  }
+</script>
