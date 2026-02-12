@@ -17,51 +17,45 @@
 </header>
 
 <!-- ============================================================
-     MODULE TICKET — Interface principale
+     MODULE SERVICE — Interface principale
      ============================================================ -->
 
-<div class="ticket-container">
+<div class="service-container">
 
-  <h2 class="titre-interface">Module Ticket</h2>
+  <h2 class="titre-interface">Module Service</h2>
 
-  <!-- LOG : Nom du client -->
-  <div class="ticket-field">
-    <label>Client</label>
-    <input type="text" id="ticketClient">
-  </div>
-
-  <!-- LOG : Employé -->
-  <div class="ticket-field">
-    <label>Employé</label>
-    <select id="ticketEmploye"></select>
+  <!-- LOG : Nom du service -->
+  <div class="service-field">
+    <label>Nom du service</label>
+    <input type="text" id="serviceNom">
   </div>
 
   <!-- LOG : Description -->
-  <div class="ticket-field">
+  <div class="service-field">
     <label>Description</label>
-    <textarea id="ticketDescription" rows="4"></textarea>
+    <textarea id="serviceDescription" rows="3"></textarea>
   </div>
 
-  <!-- LOG : Montant -->
-  <div class="ticket-field">
-    <label>Montant (€)</label>
-    <input type="number" id="ticketMontant" value="0">
+  <!-- LOG : Prix -->
+  <div class="service-field">
+    <label>Prix (€)</label>
+    <input type="number" id="servicePrix" value="0">
   </div>
 
   <!-- LOG : Bouton de validation -->
-  <button class="ticket-btn" onclick="validerTicket()">Créer le ticket</button>
+  <button class="service-btn" onclick="validerService()">Enregistrer le service</button>
 
 </div>
 
 <!-- ============================================================
-     INITIALISATION DU MODULE TICKET
+     INITIALISATION DU MODULE SERVICE
      ============================================================ -->
 
 <script>
-  console.log("[TICKET] HTML chargé — lancement initTicket()");
-  if (typeof initTicket === "function") {
-    initTicket();
+  console.log("[SERVICE] HTML chargé — lancement initService()");
+  if (typeof initService === "function") {
+    initService();
   } else {
-    console.error("[TICKET] ERREUR : initTicket() introuvable — ticket.js non chargé ?");
+    console.error("[SERVICE] ERREUR : initService() introuvable — service.js non chargé ?");
   }
 </script>

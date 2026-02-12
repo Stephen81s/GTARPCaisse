@@ -1,16 +1,19 @@
 // ============================================================
 //  MODULE CAISSE — LOGIQUE JS
-//  Utilisé par interfaces/caisse.html
+//  Version GitHub Pages — compatible chargement dynamique
 // ============================================================
 
-// ⚠ À adapter avec ton vrai endpoint Apps Script
+// ⚠️ Mets ici ton vrai WebApp Apps Script
 const API_URL = "https://script.google.com/macros/s/TON_WEBAPP_ID/exec";
 
-// Appel générique API
+// ============================================================
+//  FONCTION API GÉNÉRIQUE
+// ============================================================
+
 async function api(action, payload = {}) {
   const body = { action, ...payload };
 
-  console.log("[API] Appel", action, body);
+  console.log("[API] Appel :", action, body);
 
   const res = await fetch(API_URL, {
     method: "POST",
@@ -20,30 +23,28 @@ async function api(action, payload = {}) {
   });
 
   if (!res.ok) {
-    console.error("[API] Erreur HTTP", res.status, res.statusText);
+    console.error("[API] Erreur HTTP :", res.status, res.statusText);
     throw new Error("Erreur API");
   }
 
   const data = await res.json();
-  console.log("[API] Réponse", data);
+  console.log("[API] Réponse :", data);
   return data;
 }
 
 // ============================================================
-//  INIT DU MODULE CAISSE
-//  Appelée depuis caisse.html une fois le HTML chargé
+//  INITIALISATION DU MODULE CAISSE
 // ============================================================
 
 function initCaisse() {
-  console.log("[CAISSE] Initialisation du module");
+  console.log("[CAISSE] Initialisation…");
 
-  // Sélecteurs
   const typeOperation = document.getElementById("typeOperation");
   const employeSelect = document.getElementById("employeSelect");
   const listeArticles = document.getElementById("listeArticles");
 
   if (!typeOperation || !employeSelect || !listeArticles) {
-    console.error("[CAISSE] Éléments HTML manquants, init annulée");
+    console.error("[CAISSE] ERREUR : éléments HTML manquants");
     return;
   }
 
@@ -56,80 +57,74 @@ function initCaisse() {
 }
 
 // ============================================================
-//  FONCTIONS DE CHARGEMENT (exemples)
-//  À adapter selon ton Apps Script
+//  CHARGEMENTS INITIAUX (APPELS API)
 // ============================================================
 
 async function chargerTypeOperations() {
-  console.log("[CAISSE] Chargement des types d'opération");
+  console.log("[CAISSE] Chargement types d'opération…");
   try {
-    const data = await api("getTypeOperations");
-    console.log("[CAISSE] Types d'opération reçus", data);
-    // TODO : remplir le select si besoin
+    await api("getTypeOperations");
   } catch (e) {
-    console.error("[CAISSE] Erreur chargement types d'opération", e);
+    console.error("[CAISSE] Erreur types d'opération :", e);
   }
 }
 
 async function chargerEmployes() {
-  console.log("[CAISSE] Chargement des employés");
+  console.log("[CAISSE] Chargement employés…");
   try {
     const data = await api("getEmployes");
-    const employeSelect = document.getElementById("employeSelect");
-    if (!employeSelect) return;
+    const select = document.getElementById("employeSelect");
+    if (!select) return;
 
-    employeSelect.innerHTML = "";
+    select.innerHTML = "";
     data.forEach(emp => {
       const opt = document.createElement("option");
       opt.value = emp.id || emp.nom;
       opt.textContent = emp.nom;
-      employeSelect.appendChild(opt);
+      select.appendChild(opt);
     });
+
   } catch (e) {
-    console.error("[CAISSE] Erreur chargement employés", e);
+    console.error("[CAISSE] Erreur employés :", e);
   }
 }
 
 async function chargerArticles() {
-  console.log("[CAISSE] Chargement des articles");
+  console.log("[CAISSE] Chargement articles…");
   try {
-    const data = await api("getArticles");
-    console.log("[CAISSE] Articles reçus", data);
-    // TODO : stocker en mémoire si besoin
+    await api("getArticles");
   } catch (e) {
-    console.error("[CAISSE] Erreur chargement articles", e);
+    console.error("[CAISSE] Erreur articles :", e);
   }
 }
 
 async function chargerClients() {
-  console.log("[CAISSE] Chargement des clients");
+  console.log("[CAISSE] Chargement clients…");
   try {
-    const data = await api("getClients");
-    console.log("[CAISSE] Clients reçus", data);
+    await api("getClients");
   } catch (e) {
-    console.error("[CAISSE] Erreur chargement clients", e);
+    console.error("[CAISSE] Erreur clients :", e);
   }
 }
 
 async function chargerPaiements() {
-  console.log("[CAISSE] Chargement des moyens de paiement");
+  console.log("[CAISSE] Chargement paiements…");
   try {
-    const data = await api("getPaiements");
-    console.log("[CAISSE] Paiements reçus", data);
+    await api("getPaiements");
   } catch (e) {
-    console.error("[CAISSE] Erreur chargement paiements", e);
+    console.error("[CAISSE] Erreur paiements :", e);
   }
 }
 
 // ============================================================
-//  GESTION DES LIGNES D'ARTICLE (squelette)
+//  GESTION DES LIGNES D’ARTICLE
 // ============================================================
 
 function ajouterLigneArticle() {
-  console.log("[CAISSE] Ajout d'une ligne article");
+  console.log("[CAISSE] Ajout ligne article");
 
-  const listeArticles = document.getElementById("listeArticles");
-  if (!listeArticles) return;
+  const liste = document.getElementById("listeArticles");
+  if (!liste) return;
 
   const ligne = document.createElement("div");
   ligne.className = "ligne-article";
@@ -142,20 +137,21 @@ function ajouterLigneArticle() {
     <button class="supprimerLigne" onclick="supprimerLigne(this)">✖</button>
   `;
 
-  listeArticles.appendChild(ligne);
+  liste.appendChild(ligne);
 }
 
 function supprimerLigne(btn) {
   const ligne = btn.closest(".ligne-article");
   if (ligne) {
-    console.log("[CAISSE] Suppression d'une ligne article");
+    console.log("[CAISSE] Suppression ligne article");
     ligne.remove();
     recalculerTotal();
   }
 }
 
 function recalculerTotal() {
-  console.log("[CAISSE] Recalcul du total");
+  console.log("[CAISSE] Recalcul total…");
+
   const lignes = document.querySelectorAll(".ligne-article");
   let total = 0;
 
@@ -166,24 +162,21 @@ function recalculerTotal() {
   });
 
   const totalBox = document.getElementById("totalGlobalBox");
-  if (totalBox) {
-    totalBox.textContent = `Total : ${total.toFixed(2)} €`;
-  }
+  if (totalBox) totalBox.textContent = `Total : ${total.toFixed(2)} €`;
 }
 
 // ============================================================
-//  VALIDATION / RESET (squelette)
+//  VALIDATION / RESET
 // ============================================================
 
 function validerCaisse() {
-  console.log("[CAISSE] Validation de la caisse (à implémenter)");
-  // TODO : construire payload + appel API
+  console.log("[CAISSE] Validation (à implémenter)");
 }
 
 function resetCaisse() {
-  console.log("[CAISSE] Reset de la caisse");
-  const listeArticles = document.getElementById("listeArticles");
-  if (listeArticles) listeArticles.innerHTML = "";
+  console.log("[CAISSE] Reset caisse");
+  const liste = document.getElementById("listeArticles");
+  if (liste) liste.innerHTML = "";
   const totalBox = document.getElementById("totalGlobalBox");
   if (totalBox) totalBox.textContent = "Total : 0 €";
 }
