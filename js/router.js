@@ -1,15 +1,25 @@
 // ============================================================
-//  ROUTER.JS — Gestion des pages incluses
+//  ROUTER.JS — Gestion centralisée des pages du front-end
+//  Auteur : Stephen
+//  Description : Charge dynamiquement les pages HTML situées
+//  dans /interfaces/, met à jour le header, et injecte les
+//  scripts JS spécifiques à chaque module.
 // ============================================================
 
+
+// ------------------------------------------------------------
+//  Initialisation du routeur
+// ------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
     logInfo("Initialisation du routeur…");
-    loadPage("accueil"); // page par défaut
+    loadPage("accueil"); // Page par défaut
 });
+
 
 // ------------------------------------------------------------
 //  Fonction : loadPage(name)
-//  Charge un fichier HTML depuis /interfaces/name.html
+//  Charge /interfaces/<name>.html dans #page-container
+//  et injecte le JS correspondant si nécessaire.
 // ------------------------------------------------------------
 function loadPage(name) {
 
@@ -21,8 +31,22 @@ function loadPage(name) {
             return response.text();
         })
         .then(html => {
-            document.getElementById("page-container").innerHTML = html;
+
+            // Injection du HTML dans le container principal
+            const container = document.getElementById("page-container");
+            if (!container) {
+                logError("Erreur critique : #page-container introuvable dans index.html");
+                return;
+            }
+
+            container.innerHTML = html;
+
+            // Mise à jour des boutons du header
             updateHeaderButtons(name);
+
+            // Chargement du script JS associé à la page
+            loadPageScript(name);
+
             logSuccess(`Page chargée : ${name}`);
         })
         .catch(err => {
@@ -32,9 +56,35 @@ function loadPage(name) {
         });
 }
 
+
+// ------------------------------------------------------------
+//  Fonction : loadPageScript(name)
+//  Charge automatiquement le JS correspondant à la page
+//  Exemple : caisse → js/caisse.js
+// ------------------------------------------------------------
+function loadPageScript(name) {
+
+    const scripts = {
+        "caisse": "js/caisse.js",
+        "ticket": "js/ticket.js",
+        "ressource": "js/ressource.js",
+        "service": "js/service.js"
+    };
+
+    if (scripts[name]) {
+        const script = document.createElement("script");
+        script.src = scripts[name];
+        script.defer = true;
+        document.body.appendChild(script);
+
+        logInfo(`Script chargé : ${scripts[name]}`);
+    }
+}
+
+
 // ------------------------------------------------------------
 //  Fonction : updateHeaderButtons(page)
-//  Cache le bouton de la page actuelle
+//  Cache le bouton de la page active et affiche les autres
 // ------------------------------------------------------------
 function updateHeaderButtons(page) {
 
@@ -46,9 +96,9 @@ function updateHeaderButtons(page) {
         if (!btn) return;
 
         if (p === page) {
-            btn.style.display = "none";   // on cache le bouton actif
+            btn.style.display = "none"; // On cache le bouton actif
         } else {
-            btn.style.display = "inline-block"; // on montre les autres
+            btn.style.display = "inline-block"; // On montre les autres
         }
     });
 }
