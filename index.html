@@ -1,81 +1,37 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
-  <meta charset="UTF-8">
-  <title>Confrérie du Néant – Interface</title>
-
-  <!-- ============================================================
-       CSS GLOBAL
-       ============================================================ -->
-  <link rel="stylesheet" href="css/style.css?v=4.0">
+    <meta charset="UTF-8">
+    <title>GTARP — Interface Stephen</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/navigation.js" defer></script>
+    <script src="js/caisse.js" defer></script>
+    <script src="js/ticket.js" defer></script>
+    <script src="js/ressource.js" defer></script>
+    <script src="js/service.js" defer></script>
 </head>
 
 <body>
 
-  <!-- ============================================================
-       CONTENEURS DES INTERFACES
-       Chaque interface sera chargée dynamiquement via fetch()
-       ============================================================ -->
+    <!-- ============================================================
+         HEADER GLOBAL
+         ============================================================ -->
+    <div class="header">
+        <div class="header-title">GTARP — Interface Stephen</div>
 
-  <!-- Interface d'accueil (affichée par défaut) -->
-  <div id="interface_home" class="interface" style="display:block;"></div>
+        <div class="header-right">
+            <button class="header-btn" onclick="showInterface('interface_accueil')">Accueil</button>
+            <button class="header-btn" onclick="showInterface('interface_caisse')">Caisse</button>
+            <button class="header-btn" onclick="showInterface('interface_ticket')">Ticket</button>
+            <button class="header-btn" onclick="showInterface('interface_ressource')">Ressource</button>
+            <button class="header-btn" onclick="showInterface('interface_service')">Service</button>
+        </div>
+    </div>
 
-  <!-- Modules -->
-  <div id="interface_caisse" class="interface"></div>
-  <div id="interface_ticket" class="interface"></div>
-  <div id="interface_ressource" class="interface"></div>
-  <div id="interface_service" class="interface"></div>
-
-  <!-- ============================================================
-       CHARGEMENT DES INTERFACES HTML
-       ============================================================ -->
-
-  <script>
-    console.log("[INDEX] Chargement des interfaces…");
-
-    const interfaces = [
-      { id: "interface_home", file: "interfaces/home.html" },
-      { id: "interface_caisse", file: "interfaces/caisse.html" },
-      { id: "interface_ticket", file: "interfaces/ticket.html" },
-      { id: "interface_ressource", file: "interfaces/ressource.html" },
-      { id: "interface_service", file: "interfaces/service.html" }
-    ];
-
-    interfaces.forEach(intf => {
-      fetch(intf.file)
-        .then(r => {
-          if (!r.ok) {
-            console.error(`[INDEX] ERREUR 404 : ${intf.file} introuvable`);
-            return "<p style='color:red;'>Erreur : fichier introuvable.</p>";
-          }
-          return r.text();
-        })
-        .then(html => {
-          document.getElementById(intf.id).innerHTML = html;
-          console.log(`[INDEX] Interface chargée : ${intf.file}`);
-        })
-        .catch(err => {
-          console.error(`[INDEX] ERREUR chargement ${intf.file}`, err);
-        });
-    });
-  </script>
-
-  <!-- ============================================================
-       SCRIPTS GLOBAUX
-       ============================================================ -->
-
-  <script src="js/api.js?v=1.0"></script>
-  <script src="js/navigation.js?v=1.0"></script>
-
-  <!-- ============================================================
-       MODULES JS
-       ============================================================ -->
-
-  <script src="js/caisse.js?v=1.0"></script>
-  <script src="js/ticket.js?v=1.0"></script>
-  <script src="js/ressource.js?v=1.0"></script>
-  <script src="js/service.js?v=1.0"></script>
+    <!-- ============================================================
+         CHARGEMENT DES INTERFACES
+         ============================================================ -->
+    <div id="interfaces-container"></div>
 
 </body>
 </html>
