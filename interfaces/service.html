@@ -1,61 +1,19 @@
 <!-- ============================================================
-     HEADER GLOBAL — présent sur toutes les interfaces
+     🟪 PAGE : SERVICE
+     Interface de gestion des services / prestations / actions RP
      ============================================================ -->
 
-<header class="header">
-  <div class="header-left">
-    <span class="header-title">Confrérie du Néant</span>
-  </div>
+<div class="page-wrapper">
 
-  <div class="header-right">
-    <button class="header-btn" onclick="showInterface('interface_home')">Accueil</button>
-    <button class="header-btn" onclick="showInterface('interface_caisse')">Caisse</button>
-    <button class="header-btn" onclick="showInterface('interface_ticket')">Ticket</button>
-    <button class="header-btn" onclick="showInterface('interface_ressource')">Ressource</button>
-    <button class="header-btn" onclick="showInterface('interface_service')">Service</button>
-  </div>
-</header>
+    <h1 class="page-title">🟪 Gestion des Services</h1>
 
-<!-- ============================================================
-     MODULE SERVICE — Interface principale
-     ============================================================ -->
+    <p class="page-description">
+        Interface permettant de gérer les prestations, services RP,
+        actions facturables et opérations spéciales.
+    </p>
 
-<div class="service-container">
-
-  <h2 class="titre-interface">Module Service</h2>
-
-  <!-- LOG : Nom du service -->
-  <div class="service-field">
-    <label>Nom du service</label>
-    <input type="text" id="serviceNom">
-  </div>
-
-  <!-- LOG : Description -->
-  <div class="service-field">
-    <label>Description</label>
-    <textarea id="serviceDescription" rows="3"></textarea>
-  </div>
-
-  <!-- LOG : Prix -->
-  <div class="service-field">
-    <label>Prix (€)</label>
-    <input type="number" id="servicePrix" value="0">
-  </div>
-
-  <!-- LOG : Bouton de validation -->
-  <button class="service-btn" onclick="validerService()">Enregistrer le service</button>
+    <div class="service-container">
+        <p>Contenu service à intégrer ici…</p>
+    </div>
 
 </div>
-
-<!-- ============================================================
-     INITIALISATION DU MODULE SERVICE
-     ============================================================ -->
-
-<script>
-  console.log("[SERVICE] HTML chargé — lancement initService()");
-  if (typeof initService === "function") {
-    initService();
-  } else {
-    console.error("[SERVICE] ERREUR : initService() introuvable — service.js non chargé ?");
-  }
-</script>

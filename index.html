@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <title>GTARP — Interface Stephen</title>
 
-    <!-- CSS global -->
+    <!-- ============================================================
+         🔗 Feuille de style globale
+         ============================================================ -->
     <link rel="stylesheet" href="css/style.css">
 
-    <!-- JS global -->
+    <!-- ============================================================
+         📜 Scripts globaux
+         ============================================================ -->
     <script src="js/logger.js" defer></script>
     <script src="js/router.js" defer></script>
 </head>
@@ -17,22 +21,23 @@
     <!-- ============================================================
          🔝 HEADER GLOBAL — commun à toutes les pages
          ============================================================ -->
-    <div class="header">
+    <header class="header">
         <div class="header-title">GTARP — Interface Stephen</div>
 
-        <div class="header-right">
-            <button class="header-btn" onclick="loadPage('accueil')">Accueil</button>
-            <button class="header-btn" onclick="loadPage('caisse')">Caisse</button>
-            <button class="header-btn" onclick="loadPage('ticket')">Ticket</button>
-            <button class="header-btn" onclick="loadPage('ressource')">Ressource</button>
-            <button class="header-btn" onclick="loadPage('service')">Service</button>
-        </div>
-    </div>
+        <nav class="header-right">
+            <button id="btn-accueil" class="header-btn" onclick="loadPage('accueil')">Accueil</button>
+            <button id="btn-caisse" class="header-btn" onclick="loadPage('caisse')">Caisse</button>
+            <button id="btn-ticket" class="header-btn" onclick="loadPage('ticket')">Ticket</button>
+            <button id="btn-ressource" class="header-btn" onclick="loadPage('ressource')">Ressource</button>
+            <button id="btn-service" class="header-btn" onclick="loadPage('service')">Service</button>
+        </nav>
+    </header>
 
     <!-- ============================================================
          🧩 CONTENEUR DES PAGES INCLUSES
+         Le router.js va injecter ici le contenu de /interfaces/*.html
          ============================================================ -->
-    <div id="page-container"></div>
+    <main id="page-container"></main>
 
 </body>
 </html>

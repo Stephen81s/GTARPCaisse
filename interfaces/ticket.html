@@ -1,67 +1,18 @@
 <!-- ============================================================
-     HEADER GLOBAL — présent sur toutes les interfaces
+     🎟️ PAGE : TICKET
+     Interface de gestion des tickets / loterie / tirages
      ============================================================ -->
 
-<header class="header">
-  <div class="header-left">
-    <span class="header-title">Confrérie du Néant</span>
-  </div>
+<div class="page-wrapper">
 
-  <div class="header-right">
-    <button class="header-btn" onclick="showInterface('interface_home')">Accueil</button>
-    <button class="header-btn" onclick="showInterface('interface_caisse')">Caisse</button>
-    <button class="header-btn" onclick="showInterface('interface_ticket')">Ticket</button>
-    <button class="header-btn" onclick="showInterface('interface_ressource')">Ressource</button>
-    <button class="header-btn" onclick="showInterface('interface_service')">Service</button>
-  </div>
-</header>
+    <h1 class="page-title">🎟️ Ticket Loterie</h1>
 
-<!-- ============================================================
-     MODULE TICKET — Interface principale
-     ============================================================ -->
+    <p class="page-description">
+        Interface permettant de créer, gérer et valider des tickets RP.
+    </p>
 
-<div class="ticket-container">
-
-  <h2 class="titre-interface">Module Ticket</h2>
-
-  <!-- LOG : Nom du client -->
-  <div class="ticket-field">
-    <label>Client</label>
-    <input type="text" id="ticketClient">
-  </div>
-
-  <!-- LOG : Employé -->
-  <div class="ticket-field">
-    <label>Employé</label>
-    <select id="ticketEmploye"></select>
-  </div>
-
-  <!-- LOG : Description -->
-  <div class="ticket-field">
-    <label>Description</label>
-    <textarea id="ticketDescription" rows="4"></textarea>
-  </div>
-
-  <!-- LOG : Montant -->
-  <div class="ticket-field">
-    <label>Montant (€)</label>
-    <input type="number" id="ticketMontant" value="0">
-  </div>
-
-  <!-- LOG : Bouton de validation -->
-  <button class="ticket-btn" onclick="validerTicket()">Créer le ticket</button>
+    <div class="ticket-container">
+        <p>Contenu ticket à intégrer ici…</p>
+    </div>
 
 </div>
-
-<!-- ============================================================
-     INITIALISATION DU MODULE TICKET
-     ============================================================ -->
-
-<script>
-  console.log("[TICKET] HTML chargé — lancement initTicket()");
-  if (typeof initTicket === "function") {
-    initTicket();
-  } else {
-    console.error("[TICKET] ERREUR : initTicket() introuvable — ticket.js non chargé ?");
-  }
-</script>

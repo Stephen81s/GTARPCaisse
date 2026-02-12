@@ -1,65 +1,19 @@
 <!-- ============================================================
-     HEADER GLOBAL — présent sur toutes les interfaces
+     🟨 PAGE : RESSOURCE
+     Interface de gestion des ressources / stocks / matériaux
      ============================================================ -->
 
-<header class="header">
-  <div class="header-left">
-    <span class="header-title">Confrérie du Néant</span>
-  </div>
+<div class="page-wrapper">
 
-  <div class="header-right">
-    <button class="header-btn" onclick="showInterface('interface_home')">Accueil</button>
-    <button class="header-btn" onclick="showInterface('interface_caisse')">Caisse</button>
-    <button class="header-btn" onclick="showInterface('interface_ticket')">Ticket</button>
-    <button class="header-btn" onclick="showInterface('interface_ressource')">Ressource</button>
-    <button class="header-btn" onclick="showInterface('interface_service')">Service</button>
-  </div>
-</header>
+    <h1 class="page-title">🟨 Gestion des Ressources</h1>
 
-<!-- ============================================================
-     MODULE RESSOURCE — Interface principale
-     ============================================================ -->
+    <p class="page-description">
+        Interface permettant de gérer les ressources, matières premières,
+        quantités et inventaires.
+    </p>
 
-<div class="ressource-container">
-
-  <h2 class="titre-interface">Module Ressource</h2>
-
-  <!-- LOG : Nom de la ressource -->
-  <div class="ressource-field">
-    <label>Nom de la ressource</label>
-    <input type="text" id="ressourceNom">
-  </div>
-
-  <!-- LOG : Quantité -->
-  <div class="ressource-field">
-    <label>Quantité</label>
-    <input type="number" id="ressourceQuantite" value="0">
-  </div>
-
-  <!-- LOG : Type -->
-  <div class="ressource-field">
-    <label>Type</label>
-    <select id="ressourceType">
-      <option value="legal">Légal</option>
-      <option value="illegal">Illégal</option>
-      <option value="violet">Violet</option>
-    </select>
-  </div>
-
-  <!-- LOG : Bouton de validation -->
-  <button class="ressource-btn" onclick="validerRessource()">Enregistrer la ressource</button>
+    <div class="ressource-container">
+        <p>Contenu ressource à intégrer ici…</p>
+    </div>
 
 </div>
-
-<!-- ============================================================
-     INITIALISATION DU MODULE RESSOURCE
-     ============================================================ -->
-
-<script>
-  console.log("[RESSOURCE] HTML chargé — lancement initRessource()");
-  if (typeof initRessource === "function") {
-    initRessource();
-  } else {
-    console.error("[RESSOURCE] ERREUR : initRessource() introuvable — ressource.js non chargé ?");
-  }
-</script>

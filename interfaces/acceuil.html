@@ -1,72 +1,39 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Accueil — Confrérie du Néant</title>
+<!-- ============================================================
+     🏠 PAGE : ACCUEIL — Confrérie du Néant
+     ============================================================ -->
 
-    <!-- Feuille de style globale -->
-    <link rel="stylesheet" href="css/style.css">
-</head>
+<div class="home-wrapper">
 
-<body>
+    <div class="home-image-box">
+        <img src="https://i.imgur.com/aFbuv5q.png"
+             alt="Logo Confrérie du Néant"
+             class="home-image">
+    </div>
 
-    <!-- ============================================================
-         🔝 HEADER GLOBAL — commun à toutes les pages
-         ============================================================ -->
-    <header class="header">
-        <div class="header-title">GTARP — Interface Stephen</div>
+    <section class="home-content">
 
-        <nav class="header-right">
-            <a class="header-btn" href="accueil.html">Accueil</a>
-            <a class="header-btn" href="caisse.html">Caisse</a>
-            <a class="header-btn" href="ticket.html">Ticket</a>
-            <a class="header-btn" href="ressource.html">Ressource</a>
-            <a class="header-btn" href="service.html">Service</a>
-        </nav>
-    </header>
+        <h1 class="home-title">La Confrérie du Néant</h1>
 
-    <!-- ============================================================
-         🏠 PAGE D’ACCUEIL — Confrérie du Néant
-         ============================================================ -->
-    <main class="home-wrapper">
+        <p class="home-subtext">
+            Bienvenue dans l’interface de gestion RP.<br>
+            Choisissez une section ou visitez nos réseaux.
+        </p>
 
-        <!-- IMAGE À GAUCHE -->
-        <div class="home-image-box">
-            <img src="https://i.imgur.com/aFbuv5q.png"
-                 alt="Logo Confrérie du Néant"
-                 class="home-image">
+        <div class="home-buttons">
+            <button class="home-btn" onclick="loadPage('caisse')">📦 Ouvrir la Caisse</button>
+            <button class="home-btn" onclick="loadPage('ticket')">🎟️ Ticket Loterie</button>
+            <button class="home-btn" onclick="loadPage('ressource')">🟨 Ressource</button>
+            <button class="home-btn" onclick="loadPage('service')">🟪 Service</button>
         </div>
 
-        <!-- CONTENU À DROITE -->
-        <section class="home-content">
+        <div class="home-links">
+            <a href="https://www.youtube.com/@lcdstef" target="_blank" class="home-link yt">▶️ YouTube</a>
+            <a href="https://www.twitch.tv/lcdstef" target="_blank" class="home-link twitch">🎮 Twitch</a>
+            <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238" target="_blank" class="home-link tiktok">🎵 TikTok</a>
+            <a href="https://discord.gg/8fJFMs5eXK" target="_blank" class="home-link discord">💬 Discord</a>
+            <a href="https://streamlabs.com/lcdstef" target="_blank" class="home-link streamlabs">💸 Streamlabs</a>
+        </div>
 
-            <h1 class="home-title">La Confrérie du Néant</h1>
+    </section>
 
-            <p class="home-subtext">
-                Bienvenue dans l’interface de gestion RP.<br>
-                Choisissez une section ou visitez nos réseaux.
-            </p>
-
-            <!-- BOUTONS INTERNES -->
-            <div class="home-buttons">
-                <a class="home-btn" href="caisse.html">📦 Ouvrir la Caisse</a>
-                <a class="home-btn" href="ticket.html">🎟️ Ticket Loterie</a>
-                <a class="home-btn" href="ressource.html">🟨 Ressource</a>
-                <a class="home-btn" href="service.html">🟪 Service</a>
-            </div>
-
-            <!-- LIENS RÉSEAUX -->
-            <div class="home-links">
-                <a href="https://www.youtube.com/@lcdstef" target="_blank" class="home-link yt">▶️ YouTube</a>
-                <a href="https://www.twitch.tv/lcdstef" target="_blank" class="home-link twitch">🎮 Twitch</a>
-                <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238" target="_blank" class="home-link tiktok">🎵 TikTok</a>
-                <a href="https://discord.gg/8fJFMs5eXK" target="_blank" class="home-link discord">💬 Discord</a>
-                <a href="https://streamlabs.com/lcdstef" target="_blank" class="home-link streamlabs">💸 Streamlabs</a>
-            </div>
-
-        </section>
-
-    </main>
-
-</body>
-</html>
+</div>
