@@ -1,26 +1,31 @@
 // ============================================================
-//  ROUTER.JS — CHARGEUR DE PAGES (VERSION RACINE + GITHUB PAGES)
-//  Auteur : Stephen
-//  Version : CORE v3.0
+//  ROUTER.JS — VERSION ULTRA LOGGÉE
 // ============================================================
 
+// Petit helper pour chronométrer
+function now() {
+    return performance.now().toFixed(2);
+}
+
+log("router", "Initialisation du router…");
 
 // ============================================================
 //  🧠 Détection automatique du chemin de base
-//  - Local : "" (racine)
-//  - GitHub Pages : "/NomDuRepo"
 // ============================================================
 
 function getBasePath() {
     const parts = window.location.pathname.split("/").filter(Boolean);
 
-    // Exemple GitHub Pages :
-    // https://stephen81s.github.io/GTARPCaisse/
-    // pathname = "/GTARPCaisse/"
+    log("router", `pathname = ${window.location.pathname}`);
+    log("router", `parts = ${JSON.stringify(parts)}`);
+
     if (parts.length > 0) {
-        return "/" + parts[0];
+        const base = "/" + parts[0];
+        logSuccess("router", `BASE détecté = ${base}`);
+        return base;
     }
 
+    logSuccess("router", "BASE détecté = '' (racine)");
     return "";
 }
 
@@ -39,7 +44,8 @@ const pageCache = {};
 // ============================================================
 
 async function loadPage(pageName) {
-    log("router", `Demande de chargement : ${pageName}`);
+    const start = now();
+    logWarn("router", `=== loadPage('${pageName}') START @ ${start}ms ===`);
 
     const container = document.getElementById("page-container");
     if (!container) {
@@ -49,18 +55,21 @@ async function loadPage(pageName) {
 
     // 1. Cache
     if (pageCache[pageName]) {
-        log("router", `Page ${pageName} chargée depuis le cache`);
+        logSuccess("router", `CACHE HIT → ${pageName}`);
         container.innerHTML = pageCache[pageName];
         initPageModule(pageName);
+        logWarn("router", `=== loadPage('${pageName}') END (cache) @ ${now()}ms ===`);
         return;
     }
 
-    // 2. Fetch du fichier HTML à la racine
+    // 2. Fetch du fichier HTML
     try {
         const url = `${BASE}/${pageName}.html?cache=${Date.now()}`;
-        log("router", `Chargement depuis : ${url}`);
+        log("router", `FETCH → ${url}`);
 
         const response = await fetch(url);
+
+        log("router", `HTTP status = ${response.status}`);
 
         if (!response.ok) {
             logError("router", `Fichier introuvable : ${url}`);
@@ -71,23 +80,26 @@ async function loadPage(pageName) {
         const html = await response.text();
 
         // 3. Suppression des scripts internes
+        log("router", `Suppression des <script> internes…`);
         const sanitized = removeScripts(html);
 
         // 4. Mise en cache
         pageCache[pageName] = sanitized;
+        logSuccess("router", `Page ${pageName} mise en cache`);
 
         // 5. Injection
         container.innerHTML = sanitized;
-
-        logSuccess("router", `Page ${pageName} chargée avec succès`);
+        logSuccess("router", `Page ${pageName} injectée dans le DOM`);
 
         // 6. Initialisation du module JS
         initPageModule(pageName);
 
     } catch (err) {
-        logError("router", "Erreur lors du chargement :", err);
+        logError("router", `Erreur lors du chargement de ${pageName}`, err);
         container.innerHTML = `<h2>Erreur</h2><p>Impossible de charger la page.</p>`;
     }
+
+    logWarn("router", `=== loadPage('${pageName}') END @ ${now()}ms ===`);
 }
 
 
@@ -96,7 +108,9 @@ async function loadPage(pageName) {
 // ============================================================
 
 function removeScripts(html) {
-    return html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+    const cleaned = html.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "");
+    log("router", `Scripts internes supprimés (${html.length} → ${cleaned.length} chars)`);
+    return cleaned;
 }
 
 
@@ -105,27 +119,42 @@ function removeScripts(html) {
 // ============================================================
 
 function initPageModule(pageName) {
-    log("router", `Initialisation du module : ${pageName}`);
+    log("router", `Initialisation du module JS pour '${pageName}'`);
 
     switch (pageName) {
         case "caisse":
-            if (typeof initCaisse === "function") initCaisse();
+            if (typeof initCaisse === "function") {
+                logSuccess("router", "initCaisse() exécuté");
+                initCaisse();
+            }
             break;
 
         case "ticket":
-            if (typeof initTicket === "function") initTicket();
+            if (typeof initTicket === "function") {
+                logSuccess("router", "initTicket() exécuté");
+                initTicket();
+            }
             break;
 
         case "ressource":
-            if (typeof initRessource === "function") initRessource();
+            if (typeof initRessource === "function") {
+                logSuccess("router", "initRessource() exécuté");
+                initRessource();
+            }
             break;
 
         case "service":
-            if (typeof initService === "function") initService();
+            if (typeof initService === "function") {
+                logSuccess("router", "initService() exécuté");
+                initService();
+            }
             break;
 
         case "admin":
-            if (typeof initAdmin === "function") initAdmin();
+            if (typeof initAdmin === "function") {
+                logSuccess("router", "initAdmin() exécuté");
+                initAdmin();
+            }
             break;
 
         default:
@@ -138,4 +167,4 @@ function initPageModule(pageName) {
 //  🏁 Confirmation
 // ============================================================
 
-logSuccess("ROUTER.JS (RACINE + GITHUB PAGES) chargé et opérationnel");
+logSuccess("ROUTER.JS ULTRA LOGGÉ chargé et opérationnel");
