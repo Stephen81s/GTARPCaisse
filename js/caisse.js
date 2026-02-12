@@ -1,48 +1,42 @@
 // ============================================================
-//  CONFIG
+//  CONFIG POCKETBASE
 // ============================================================
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxtRL13AwKz-GCICw1mkFtdRPlQEGEPAetdeQrlMA3o-57V6IL-Xy3JfU7_56-h6hp0/exec";
+const pb = new PocketBase("https://pocketbase-server-t8sv.onrender.com");
 
-// ============================================================
-//  API
-// ============================================================
-
-async function api(action, payload = {}) {
-  const res = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ action, ...payload })
-  });
-  return res.json();
-}
+console.log("[CAISSE] Connexion PocketBase :", pb.baseUrl);
 
 // ============================================================
 //  CHARGEMENT DES DONNÉES
 // ============================================================
 
 async function chargerDonneesCaisse() {
-  const [
-    typesOperation,
-    employes,
-    clients,
-    paiements,
-    articles
-  ] = await Promise.all([
-    api("getTypeOperations"),
-    api("getEmployes"),
-    api("getClients"),
-    api("getPaiements"),
-    api("getArticles")
-  ]);
+  try {
+    const [
+      typesOperation,
+      employes,
+      clients,
+      paiements,
+      articles
+    ] = await Promise.all([
+      pb.collection("TypeOperations").getFullList(),
+      pb.collection("Employes").getFullList(),
+      pb.collection("Annuaire").getFullList(),
+      pb.collection("Moyens_de_paiment").getFullList(),
+      pb.collection("Articles").getFullList()
+    ]);
 
-  initCaisse({
-    typesOperation,
-    employes,
-    clients,
-    paiements,
-    articles
-  });
+    initCaisse({
+      typesOperation,
+      employes,
+      clients,
+      paiements,
+      articles
+    });
+
+  } catch (err) {
+    console.error("[CAISSE] Erreur chargement PocketBase :", err);
+  }
 }
 
 chargerDonneesCaisse();
@@ -69,8 +63,8 @@ function remplirTypesOperation(list) {
   sel.innerHTML = "";
   list.forEach(t => {
     const opt = document.createElement("option");
-    opt.value = t.nom;
-    opt.textContent = t.nom;
+    opt.value = t.type_doperation;
+    opt.textContent = t.type_doperation;
     sel.appendChild(opt);
   });
 }
@@ -80,8 +74,8 @@ function remplirEmployes(list) {
   sel.innerHTML = "";
   list.forEach(e => {
     const opt = document.createElement("option");
-    opt.value = e.nom;
-    opt.textContent = e.nom;
+    opt.value = e.Nom;
+    opt.textContent = e.Nom;
     sel.appendChild(opt);
   });
 }
@@ -91,8 +85,8 @@ function remplirClients(list) {
   sel.innerHTML = "";
   list.forEach(c => {
     const opt = document.createElement("option");
-    opt.value = c.nom;
-    opt.textContent = c.nom;
+    opt.value = c.Nom;
+    opt.textContent = c.Nom;
     sel.appendChild(opt);
   });
 }
@@ -102,8 +96,8 @@ function remplirPaiements(list) {
   sel.innerHTML = "";
   list.forEach(p => {
     const opt = document.createElement("option");
-    opt.value = p.nom;
-    opt.textContent = p.nom;
+    opt.value = p.moyen_de_paiment;
+    opt.textContent = p.moyen_de_paiment;
     sel.appendChild(opt);
   });
 }
@@ -113,7 +107,7 @@ function remplirArticles(list) {
   dl.innerHTML = "";
   list.forEach(a => {
     const opt = document.createElement("option");
-    opt.value = a.nom;
+    opt.value = a.Nom;
     dl.appendChild(opt);
   });
 }
@@ -138,6 +132,7 @@ function ajouterLigneArticle() {
 
 function updateTotals() {
   let total = 0;
+
   document.querySelectorAll(".ligne-article").forEach(l => {
     const val = Number(l.querySelector(".totalLigne").value) || 0;
     total += val;
