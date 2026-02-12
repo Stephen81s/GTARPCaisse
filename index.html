@@ -1,54 +1,92 @@
-<!-- ============================================================
-     🏠 PAGE : ACCUEIL — Confrérie du Néant
-     Version SANS router — Compatible iframe
-============================================================ -->
+<!DOCTYPE html>
+<html lang="fr">
 
-<div id="interface_accueil" class="interface home-wrapper">
+<head>
+    <meta charset="UTF-8">
+    <title>GTARP — Interface Stephen</title>
 
-    <!-- ============================
-         🖼️ LOGO / IMAGE PRINCIPALE
-    ============================= -->
-    <div class="home-image-box">
-        <img
-            src="https://i.imgur.com/aFbuv5q.png"
-            alt="Logo Confrérie du Néant"
-            class="home-image"
-        >
-    </div>
+    <!-- ============================================================
+         🎨 STYLE GLOBAL
+         Chargé une seule fois ici
+    ============================================================ -->
+    <link rel="stylesheet" href="css/style.css">
 
-    <!-- ============================
-         📄 CONTENU PRINCIPAL
-    ============================= -->
-    <section class="home-content">
+    <!-- ============================================================
+         🗄️ SUPABASE — Initialisation globale
+         (NE JAMAIS recharger ailleurs)
+    ============================================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        <h1 class="home-title">La Confrérie du Néant</h1>
+    <script>
+        // Client Supabase global
+        const supabase = window.supabase.createClient(
+            "https://oxqgytbquvopynfretpu.supabase.co",
+            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"
+        );
 
-        <p class="home-subtext">
-            Bienvenue dans l’interface de gestion RP.<br>
-            Choisissez une section ou visitez nos réseaux.
-        </p>
+        console.log("%c[INDEX] Supabase initialisé", "color:#4CAF50;font-weight:bold;");
+    </script>
 
-        <!-- ============================
-             🔘 BOUTONS DE NAVIGATION
-        ============================= -->
-        <div class="home-buttons">
-            <a href="caisse.html"><button class="home-btn">📦 Ouvrir la Caisse</button></a>
-            <a href="ticket.html"><button class="home-btn">🎟️ Ticket Loterie</button></a>
-            <a href="ressource.html"><button class="home-btn">🟨 Ressource</button></a>
-            <a href="service.html"><button class="home-btn">🟪 Service</button></a>
-        </div>
+    <!-- ============================================================
+         📜 MODULES JS GLOBAUX
+         (chargés une seule fois)
+    ============================================================ -->
+    <script src="js/logger.js" defer></script>
+    <script src="js/api.js" defer></script>
+    <script src="js/caisse.js" defer></script>
+    <script src="js/ressource.js" defer></script>
+    <script src="js/ticket.js" defer></script>
+    <script src="js/service.js" defer></script>
+    <script src="js/admin.js" defer></script>
 
-        <!-- ============================
-             🔗 LIENS EXTERNES
-        ============================= -->
-        <div class="home-links">
-            <a href="https://www.youtube.com/@lcdstef" target="_blank" class="home-link yt">▶️ YouTube</a>
-            <a href="https://www.twitch.tv/lcdstef" target="_blank" class="home-link twitch">🎮 Twitch</a>
-            <a href="https://www.tiktok.com/@lcdstef/video/7484324384115625238" target="_blank" class="home-link tiktok">🎵 TikTok</a>
-            <a href="https://discord.gg/8fJFMs5eXK" target="_blank" class="home-link discord">💬 Discord</a>
-            <a href="https://streamlabs.com/lcdstef" target="_blank" class="home-link streamlabs">💸 Streamlabs</a>
-        </div>
+    <!-- ============================================================
+         🧩 STYLE IFRAME
+    ============================================================ -->
+    <style>
+        #page-frame {
+            width: 100%;
+            height: calc(100vh - 80px);
+            border: none;
+            background: transparent;
+        }
+    </style>
+</head>
 
-    </section>
+<body>
 
-</div>
+    <!-- ============================================================
+         🔝 HEADER GLOBAL
+    ============================================================ -->
+    <header class="header">
+        <div class="header-title">GTARP — Interface Stephen V1</div>
+
+        <nav class="header-right">
+            <button onclick="openPage('interfaces/accueil.html')">Accueil</button>
+            <button onclick="openPage('interfaces/caisse.html')">Caisse</button>
+            <button onclick="openPage('interfaces/ticket.html')">Ticket</button>
+            <button onclick="openPage('interfaces/ressource.html')">Ressource</button>
+            <button onclick="openPage('interfaces/service.html')">Service</button>
+            <button onclick="openPage('interfaces/admin.html')">Admin</button>
+        </nav>
+    </header>
+
+    <!-- ============================================================
+         🧩 CONTENEUR DES PAGES (IFRAME)
+    ============================================================ -->
+    <main>
+        <iframe id="page-frame" src="interfaces/accueil.html"></iframe>
+    </main>
+
+    <!-- ============================================================
+         🔄 NAVIGATION
+         Fonction simple et robuste
+    ============================================================ -->
+    <script>
+        function openPage(page) {
+            console.log("%c[NAV] Ouverture de la page : " + page, "color:#2196F3;font-weight:bold;");
+            document.getElementById("page-frame").src = page;
+        }
+    </script>
+
+</body>
+</html>
