@@ -1,20 +1,17 @@
 // ============================================================
-//  NAVIGATION.JS — GESTION DES INTERFACES
-//  Ce fichier contrôle l'affichage des modules HTML chargés
-//  dynamiquement dans index.html.
+//  NAVIGATION.JS — Gestion centralisée des interfaces
 // ============================================================
 
 console.log("[NAVIGATION] Initialisation du système de navigation…");
 
-// ============================================================
+// ------------------------------------------------------------
 //  Fonction : showInterface(id)
 //  Affiche une interface et masque toutes les autres
-// ============================================================
+// ------------------------------------------------------------
 
 function showInterface(id) {
   console.log(`[NAVIGATION] → Demande d'affichage : ${id}`);
 
-  // Récupération de toutes les interfaces
   const interfaces = document.querySelectorAll(".interface");
 
   if (!interfaces.length) {
@@ -38,13 +35,13 @@ function showInterface(id) {
   target.style.display = "block";
   console.log(`[NAVIGATION] ✔ Interface affichée : ${id}`);
 
-  // ============================================================
-  //  Réinitialisation automatique des modules
-  //  (si une fonction init existe dans le module)
-  // ============================================================
+  // ------------------------------------------------------------
+  //  Appel automatique d'une fonction init si elle existe
+  //  Exemple : interface_ticket → initTicket()
+  // ------------------------------------------------------------
 
-  const initName = "init" + id.replace("interface_", "").charAt(0).toUpperCase()
-    + id.replace("interface_", "").slice(1);
+  const cleanId = id.replace("interface_", "");
+  const initName = "init" + cleanId.charAt(0).toUpperCase() + cleanId.slice(1);
 
   if (typeof window[initName] === "function") {
     console.log(`[NAVIGATION] → Appel automatique : ${initName}()`);
@@ -58,17 +55,17 @@ function showInterface(id) {
   }
 }
 
-// ============================================================
-//  Navigation automatique vers l'accueil au chargement
-// ============================================================
+// ------------------------------------------------------------
+//  Redirection automatique vers la page d'accueil
+// ------------------------------------------------------------
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("[NAVIGATION] DOM chargé — affichage de l'accueil");
+  console.log("[NAVIGATION] DOM chargé — affichage automatique de l'accueil");
   showInterface("interface_home");
 });
 
-// ============================================================
-//  FIN DU FICHIER NAVIGATION.JS
-// ============================================================
+// ------------------------------------------------------------
+//  Fin du fichier
+// ------------------------------------------------------------
 
 console.log("[NAVIGATION] navigation.js chargé avec succès.");
