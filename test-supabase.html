@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Supabase</title>
+
+    <!-- Import Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        // Initialisation du client
+        const supabase = window.supabase.createClient(
+            "https://oxqgytbquvopynfretpu.supabase.co",
+            "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"
+        );
+
+        async function testConnexion() {
+            const zone = document.getElementById("result");
+
+            try {
+                // On teste une table simple (ex: employes)
+                const { data, error } = await supabase
+                    .from("employes")
+                    .select("id")
+                    .limit(1);
+
+                if (error) {
+                    zone.innerHTML = "❌ Erreur Supabase : " + error.message;
+                    zone.style.color = "red";
+                    return;
+                }
+
+                zone.innerHTML = "✅ Connexion OK — Données reçues : " + JSON.stringify(data);
+                zone.style.color = "green";
+
+            } catch (e) {
+                zone.innerHTML = "❌ Exception JS : " + e.message;
+                zone.style.color = "red";
+            }
+        }
+    </script>
+</head>
+
+<body onload="testConnexion()">
+
+    <h1>Test de connexion Supabase</h1>
+    <p id="result">⏳ Test en cours…</p>
+
+</body>
+</html>
