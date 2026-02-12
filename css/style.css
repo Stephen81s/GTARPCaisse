@@ -21,7 +21,7 @@ h2.titre-interface {
 
 
 /* =====================================================================
-   🏠 ACCUEIL — interface_home
+   🏠 ACCUEIL — home.html
    ===================================================================== */
 
 .home-container {
@@ -67,7 +67,7 @@ h2.titre-interface {
 
 
 /* =====================================================================
-   💰 MODULE CAISSE — interface_caisse
+   💰 MODULE CAISSE — caisse.html
    ===================================================================== */
 
 /* Sélecteur Type d’opération */
@@ -259,7 +259,7 @@ h2.titre-interface {
 
 
 /* =====================================================================
-   🎫 MODULE TICKET — interface_ticket
+   🎫 MODULE TICKET — ticket.html
    ===================================================================== */
 
 .ticket-container {
@@ -310,7 +310,7 @@ h2.titre-interface {
 
 
 /* =====================================================================
-   📦 MODULE RESSOURCE — interface_ressource
+   📦 MODULE RESSOURCE — ressource.html
    ===================================================================== */
 
 .ressource-container {
@@ -360,7 +360,7 @@ h2.titre-interface {
 
 
 /* =====================================================================
-   🛠 MODULE SERVICE — interface_service
+   🛠 MODULE SERVICE — service.html
    ===================================================================== */
 
 .service-container {
