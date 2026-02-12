@@ -1,44 +1,68 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <title>Test Supabase</title>
+    <title>GTARP — Interface Stephen</title>
 
-    <!-- Import Supabase -->
+    <!-- ============================
+         🎨 STYLE GLOBAL
+    ============================= -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- ============================
+         🗄️ SUPABASE (OBLIGATOIRE)
+         Chargé UNE SEULE FOIS ici.
+    ============================= -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // Initialisation du client
+        // Connexion Supabase globale
         const supabase = window.supabase.createClient(
             "https://oxqgytbquvopynfretpu.supabase.co",
             "sb_publishable_tzM9hvhjG8e58gU_IqaS8A_hyWWqykB"
         );
-
-        async function testConnexion() {
-            const zone = document.getElementById("result");
-
-          
-                if (error) {
-                    zone.innerHTML = "❌ Erreur Supabase : " + error.message;
-                    zone.style.color = "red";
-                    return;
-                }
-
-                zone.innerHTML = "✅ Connexion OK — Données reçues : " + JSON.stringify(data);
-                zone.style.color = "green";
-
-            } catch (e) {
-                zone.innerHTML = "❌ Exception JS : " + e.message;
-                zone.style.color = "red";
-            }
-        }
+        console.log("%c[INDEX] Supabase initialisé", "color:#4CAF50;font-weight:bold;");
     </script>
+
+    <!-- ============================
+         📜 SCRIPTS CORE
+         (chargés une seule fois)
+    ============================= -->
+    <script src="js/logger.js" defer></script>
+    <script src="js/api.js" defer></script>
+    <script src="js/router.js" defer></script>
 </head>
 
-<body onload="testConnexion()">
+<body>
 
-    <h1>Test de connexion Supabase</h1>
-    <p id="result">⏳ Test en cours…</p>
+    <!-- ============================
+         🔝 HEADER GLOBAL
+    ============================= -->
+    <header class="header">
+        <div class="header-title">GTARP — Interface Stephen V1</div>
+
+        <nav class="header-right">
+            <button onclick="loadPage('accueil')">Accueil</button>
+            <button onclick="loadPage('caisse')">Caisse</button>
+            <button onclick="loadPage('ticket')">Ticket</button>
+            <button onclick="loadPage('ressource')">Ressource</button>
+            <button onclick="loadPage('service')">Service</button>
+            <button onclick="loadPage('admin')">Admin</button>
+        </nav>
+    </header>
+
+    <!-- ============================
+         🧩 CONTENEUR DES PAGES
+    ============================= -->
+    <main id="page-container">
+        <h2>Bienvenue</h2>
+        <p>Sélectionne une page dans le menu.</p>
+    </main>
+
+    <script>
+        console.log("%c[INDEX] Structure chargée, en attente du router…", "color:#2196F3;font-weight:bold;");
+    </script>
 
 </body>
 </html>
