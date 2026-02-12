@@ -2,9 +2,6 @@
 //  MODULE TICKET — LOGIQUE JS
 // ============================================================
 
-// ⚠️ Mets ici ton vrai WebApp Apps Script
-const API_URL = "https://script.google.com/macros/s/TON_WEBAPP_ID/exec";
-
 // ============================================================
 //  FONCTION API GÉNÉRIQUE
 // ============================================================
