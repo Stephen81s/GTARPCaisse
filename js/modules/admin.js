@@ -1,4 +1,17 @@
-console.log("%c[ADMIN] Initialisation…", "color:#3F51B5;font-weight:bold;");
+// ============================================================
+//  ADMIN.JS — Mode Admin (édition des tables Supabase)
+//  Auteur : Stephen
+//  Version : 1.1 (CORRIGÉE)
+// ============================================================
+
+// ❗ IMPORTANT :
+// Ce fichier NE DOIT RIEN exécuter au chargement.
+// Le router appelle initAdmin() quand la page admin est affichée.
+
+function initAdmin() {
+    console.log("%c[ADMIN] Initialisation…", "color:#3F51B5;font-weight:bold;");
+    chargerAdmin();
+}
 
 async function chargerAdmin() {
     const { data: articles } = await supabase.from("articles").select("*");
