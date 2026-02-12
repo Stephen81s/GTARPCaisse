@@ -1,12 +1,12 @@
 <!-- ============================================================
-     INDEX.HTML — POINT D’ENTRÉE DU SITE
+     INDEX.HTML — POINT D’ENTRÉE PRINCIPAL DU SITE
      Auteur : Stephen
      Version : PocketBase Edition
      Description :
-       - Charge la librairie PocketBase (globale pour tout le site)
+       - Charge PocketBase globalement (indispensable pour éviter les erreurs)
        - Initialise le router
-       - Charge dynamiquement les pages (caisse, admin, etc.)
-       - Structure propre, professionnelle et extensible
+       - Affiche le header global
+       - Contient le conteneur où les pages seront injectées
 ============================================================ -->
 
 <!DOCTYPE html>
@@ -14,64 +14,65 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>GTARP Caisse — Interface</title>
+    <title>GTARP — Interface Stephen</title>
 
     <!-- ============================================================
-         STYLES GLOBAUX
-    ============================================================ -->
-    <link rel="stylesheet" href="global.css">
+         🎨 Feuille de style globale
+         ============================================================ -->
+    <link rel="stylesheet" href="css/style.css">
 
     <!-- ============================================================
-         LIBRAIRIE POCKETBASE (OBLIGATOIRE)
+         🗄️ Librairie PocketBase (OBLIGATOIRE)
          Chargée ici pour être disponible dans TOUTES les pages.
          IMPORTANT :
          - Le router charge uniquement le <body>
-         - Donc PocketBase DOIT être chargé dans index.html
+         - Donc PocketBase doit être chargé dans index.html
          - Sinon : "PocketBase is not defined"
-    ============================================================ -->
+         ============================================================ -->
     <script src="https://unpkg.com/pocketbase/dist/pocketbase.umd.js"></script>
 
     <script>
-        console.log("%c[INDEX] PocketBase chargé globalement", "color: #4CAF50; font-weight: bold;");
+        console.log("%c[INDEX] PocketBase chargé globalement", "color:#4CAF50;font-weight:bold;");
     </script>
+
+    <!-- ============================================================
+         📜 Scripts globaux
+         ============================================================ -->
+    <script src="js/logger.js" defer></script>
+    <script src="js/router.js" defer></script>
 </head>
 
 <body>
 
     <!-- ============================================================
-         HEADER GLOBAL
-    ============================================================ -->
-    <header id="mainHeader">
-        <h1>GTARP — Gestion</h1>
+         🔝 HEADER GLOBAL — commun à toutes les pages
+         ============================================================ -->
+    <header class="header">
+        <div class="header-title">GTARP — Interface Stephen</div>
 
-        <nav>
-            <button onclick="loadPage('caisse')">Caisse</button>
-            <button onclick="loadPage('admin')">Admin</button>
-            <button onclick="loadPage('panel')">Panel rapide</button>
+        <nav class="header-right">
+            <button id="btn-accueil" class="header-btn" onclick="loadPage('accueil')">Accueil</button>
+            <button id="btn-caisse" class="header-btn" onclick="loadPage('caisse')">Caisse</button>
+            <button id="btn-ticket" class="header-btn" onclick="loadPage('ticket')">Ticket</button>
+            <button id="btn-ressource" class="header-btn" onclick="loadPage('ressource')">Ressource</button>
+            <button id="btn-service" class="header-btn" onclick="loadPage('service')">Service</button>
+
+            <!-- 🔧 Nouveau bouton Admin -->
+            <button id="btn-admin" class="header-btn" onclick="loadPage('admin')">Admin</button>
         </nav>
     </header>
 
     <!-- ============================================================
-         CONTENU DYNAMIQUE
-         Le router injecte ici les pages HTML
-    ============================================================ -->
-    <main id="app">
+         🧩 CONTENEUR DES PAGES INCLUSES
+         Le router.js va injecter ici le contenu de /interfaces/*.html
+         ============================================================ -->
+    <main id="page-container">
         <h2>Bienvenue</h2>
         <p>Sélectionne une page dans le menu.</p>
     </main>
 
-    <!-- ============================================================
-         ROUTER — CHARGEMENT DES PAGES
-         IMPORTANT :
-         - Charge les pages HTML dans #app
-         - Charge les scripts associés
-         - Ne recharge PAS le <head>
-         - D’où l’importance de charger PocketBase ici dans index.html
-    ============================================================ -->
-    <script src="router.js"></script>
-
     <script>
-        console.log("%c[INDEX] Router chargé", "color: #2196F3; font-weight: bold;");
+        console.log("%c[INDEX] Structure chargée, en attente du router…", "color:#2196F3;font-weight:bold;");
     </script>
 
 </body>
