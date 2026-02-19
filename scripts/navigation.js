@@ -9,7 +9,8 @@
      - Mise en surbrillance du bouton actif
      - Construction du menu selon le rôle utilisateur
      - Ajout dynamique de liens
-     - Hook onPageLoaded() appelé par loadPage()
+     - Intégration avec spa.loadPage()
+     - Hook onPageLoaded() appelé par spa.js
    ------------------------------------------------------------
    LOGS :
    🟦 [nav] Script navigation chargé.
@@ -26,7 +27,7 @@ function setActiveNav(pageName) {
   const links = document.querySelectorAll("#menu-links a");
   links.forEach(a => a.classList.remove("nav-active"));
 
-  const id = "nav-" + pageName.replace("page_", "");
+  const id = "nav-" + pageName;
   const active = document.getElementById(id);
 
   if (active) {
@@ -41,17 +42,29 @@ function setActiveNav(pageName) {
    NAVIGATION — Ajout d’un lien dans le menu
    ============================================================ */
 function addMenuLink(label, page) {
-  const id = "nav-" + page.replace("page_", "");
+  const id = "nav-" + page;
 
   const li = document.createElement("li");
   li.innerHTML = `
-    <a id="${id}" href="javascript:void(0)" onclick="loadPage('${page}')">
+    <a id="${id}" href="javascript:void(0)" onclick="navigation.go('${page}')">
       ${label}
     </a>
   `;
 
   document.getElementById("menu-links").appendChild(li);
 }
+
+/* ============================================================
+   NAVIGATION — Action principale
+   ============================================================ */
+var navigation = {
+
+  go: function(page) {
+    console.log("🔧 [nav] Navigation vers :", page);
+    currentPage = page;
+    spa.loadPage(page);
+  }
+};
 
 /* ============================================================
    MENU DYNAMIQUE SELON LE RÔLE
@@ -63,26 +76,29 @@ function buildMenu(role) {
   menu.innerHTML = "";
 
   // Toujours visible
-  addMenuLink("🏠 Accueil", "page_accueil");
+  addMenuLink("🏠 Accueil", "accueil");
 
+  // Rôles non-joueur
   if (role !== "joueur") {
-    addMenuLink("🧍 Joueurs", "page_joueurs");
-    addMenuLink("🏢 Entreprises", "page_entreprises");
-    addMenuLink("💼 Employés", "page_employes");
+    addMenuLink("🧍 Joueurs", "joueurs");
+    addMenuLink("🏢 Entreprises", "entreprises");
+    addMenuLink("💼 Employés", "employes");
   }
 
+  // Admin secondaire + principal
   if (role === "admin_secondaire" || role === "admin_principal") {
-    addMenuLink("🛡️ Admin Panel", "page_admin_panel");
+    addMenuLink("🛡️ Admin Panel", "admin_panel");
   }
 
+  // Admin principal uniquement
   if (role === "admin_principal") {
-    addMenuLink("👑 Configuration système", "page_config_systeme");
-    addMenuLink("🛠️ Maintenance", "page_maintenance_systeme");
+    addMenuLink("👑 Configuration système", "config_systeme");
+    addMenuLink("🛠️ Maintenance", "maintenance_systeme");
   }
 }
 
 /* ============================================================
-   HOOK : appelé automatiquement par loadPage()
+   HOOK : appelé automatiquement par spa.loadPage()
    ============================================================ */
 function onPageLoaded(pageName) {
   setActiveNav(pageName);

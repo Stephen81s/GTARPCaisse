@@ -43,9 +43,15 @@
   ============================================================ -->
   <script src="scripts/config.js"></script>
   <script src="scripts/navigation.js"></script>
-  <script src="scripts/admin.js"></script>
-  <script src="scripts/accueil.js"></script>
   <script src="scripts/spa.js"></script>
+
+  <!-- Modules front -->
+  <script src="scripts/admin_panel.js"></script>
+  <script src="scripts/accueil.js"></script>
+  <script src="scripts/joueurs.js"></script>
+  <script src="scripts/entreprises.js"></script>
+  <script src="scripts/employes.js"></script>
+  <script src="scripts/maintenance.js"></script>
 
   <script>
     console.log("🟦 [index] Initialisation…");
@@ -71,12 +77,14 @@
     window.onload = async function () {
       loadTheme();
 
-      // Récupération du rôle via API Web App
+      // Rôle utilisateur via API Web App
       const role = await api("ui_getUserRole");
       console.log("🟦 [index] Rôle utilisateur :", role);
 
       buildMenu(role);
-      loadPage("page_accueil");
+
+      // Charge la page d'accueil via le SPA
+      spa.loadPage("accueil");
     };
   </script>
 

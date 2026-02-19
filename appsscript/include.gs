@@ -1,72 +1,40 @@
 /**
  * ============================================================
  *  FICHIER : include.gs
- *  MODULE  : RP BUSINESS SYSTEM — LOADER HTML + INCLUDE
+ *  MODULE  : RP BUSINESS SYSTEM — HTML INCLUDES
  *  VERSION : PRO 2026
  *  AUTEUR  : Stephen + Copilot PRO
  * ------------------------------------------------------------
  *  DESCRIPTION :
- *  Fournit deux fonctions essentielles :
+ *    Fournit une fonction utilitaire permettant d'inclure des
+ *    fragments HTML dans les pages (partials, styles, scripts).
  *
- *   1) include(filename)
- *      → Charge un fragment HTML (partial)
- *      → Utilisé dans les fichiers HTML via :
- *         <?!= include('style_admin'); ?>
+ *    Utilisation dans un fichier HTML :
+ *      <?!= include('header'); ?>
+ *      <?!= include('style_admin'); ?>
  *
- *   2) loadPage(name)
- *      → Charge une page HTML complète via templating
- *      → Permet d'injecter des variables côté backend
- *
+ *    Le fichier doit exister dans /pages ou /styles ou /scripts
  * ------------------------------------------------------------
  *  LOGS :
  *  🟦 [include.gs] Module INCLUDE chargé.
  * ============================================================
  */
 
-console.log("🟦 [include.gs] Initialisation du module d'inclusion HTML…");
+console.log("🟦 [include.gs] Chargement du module INCLUDE...");
 
-/* ============================================================
-   include(filename)
-   ------------------------------------------------------------
-   Charge un fragment HTML (partial) et renvoie son contenu.
-   Utilisé dans les fichiers HTML via :
-      <?!= include('style_admin'); ?>
-   ============================================================ */
+/**
+ * Inclut un fichier HTML dans un template Apps Script.
+ *
+ * @param {string} filename - Nom du fichier sans extension.
+ * @returns {string} - Contenu HTML du fichier.
+ */
 function include(filename) {
-  console.log("📥 [include] include() →", filename);
-
   try {
-    const content = HtmlService
-      .createHtmlOutputFromFile(filename)
-      .getContent();
-
-    console.log("🟩 [include] Chargé :", filename);
-    return content;
-
+    const output = HtmlService.createHtmlOutputFromFile(filename).getContent();
+    return output;
   } catch (err) {
-    console.error("❌ [include] Erreur lors du chargement :", filename, err);
-    return "<!-- include error : " + filename + " -->";
-  }
-}
-
-/* ============================================================
-   loadPage(name)
-   ------------------------------------------------------------
-   Charge une page HTML complète via templating.
-   Utilisé côté backend si besoin d'injecter des variables.
-   ============================================================ */
-function loadPage(name) {
-  console.log("📄 [backend] loadPage() →", name);
-
-  try {
-    return HtmlService
-      .createTemplateFromFile(name)
-      .evaluate()
-      .getContent();
-
-  } catch (err) {
-    console.error("❌ [backend] loadPage ERROR :", name, err);
-    throw err;
+    console.error("❌ [include] Fichier introuvable :", filename, err);
+    throw new Error("Include impossible : fichier introuvable → " + filename);
   }
 }
 

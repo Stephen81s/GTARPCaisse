@@ -6,13 +6,18 @@
  *  AUTEUR  : Stephen + Copilot PRO
  * ------------------------------------------------------------
  *  DESCRIPTION :
- *  Remplit automatiquement l’onglet TYPES avec la liste
- *  officielle PRO 2026 des types RP :
- *    - Public
- *    - Légal
- *    - Criminel
- *    - Gang
- *    - Clandestin
+ *    Remplit automatiquement l’onglet TYPES avec la liste
+ *    officielle PRO 2026 des types RP :
+ *      - Public
+ *      - Légal
+ *      - Criminel
+ *      - Gang
+ *      - Clandestin
+ *
+ *    Le script :
+ *      - Efface l'ancien contenu
+ *      - Recrée l'en-tête
+ *      - Insère toutes les entrées PRO 2026
  * ------------------------------------------------------------
  *  LOGS :
  *  🟦 [populateTypes] Module chargé.
@@ -20,6 +25,7 @@
  */
 
 console.log("🟦 [populateTypes] Chargement du module TYPES...");
+
 
 /* ============================================================
    populateTypes()

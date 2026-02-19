@@ -6,74 +6,149 @@
  *  AUTEUR  : Stephen + Copilot PRO
  * ------------------------------------------------------------
  *  DESCRIPTION :
- *  Gestion des joueurs RP :
- *    - Accès à la feuille JOUEURS
- *    - Recherche d’un joueur par nom + prénom
- *    - Retour d'informations PRO 2026 (Entreprise_ID incluse)
+ *    Gestion des joueurs :
+ *      - Accès feuille JOUEURS
+ *      - Recherche par ID / nom
+ *      - Création (via admin.createJoueur)
+ *      - Normalisation des noms
+ *      - Mise à jour / désactivation
  * ------------------------------------------------------------
- *  LOGS :
- *  🟦 [joueur.gs] Module JOUEURS chargé.
+ *  FEUILLE : JOUEURS
+ *  COLONNES :
+ *    [0] Joueur_ID
+ *    [1] Nom
+ *    [2] Prenom
+ *    [3] Notes
+ *    [4] Date_creation
  * ============================================================
  */
 
-console.log("🟦 [joueur.gs] Chargement du module JOUEURS...");
+console.log("🟦 [joueur.gs] Module JOUEURS chargé.");
 
-var joueur = {};
+var joueur = {
 
-/* ============================================================
-   getSheet()
-   ------------------------------------------------------------
-   Retourne la feuille JOUEURS.
-   ============================================================ */
-joueur.getSheet = function () {
-  const sheet = admin.getSheetByName("JOUEURS");
+  /**
+   * Retourne la feuille JOUEURS.
+   */
+  getSheet: function () {
+    return admin.getSheetByName(consts.SHEET_JOUEURS);
+  },
 
-  if (!sheet) {
-    console.error("❌ [joueur] Feuille JOUEURS introuvable.");
-    throw new Error("Feuille JOUEURS introuvable.");
-  }
+  /**
+   * Retourne toutes les lignes brutes.
+   */
+  getAllRaw: function () {
+    const sheet = joueur.getSheet();
+    return sheet.getDataRange().getValues();
+  },
 
-  return sheet;
-};
+  /**
+   * Transforme une ligne en objet joueur.
+   */
+  mapRowToObject: function (row) {
+    return {
+      id: row[0],
+      nom: row[1],
+      prenom: row[2],
+      notes: row[3],
+      dateCreation: row[4]
+    };
+  },
 
-/* ============================================================
-   findJoueur(nom, prenom)
-   ------------------------------------------------------------
-   Recherche un joueur RP par nom + prénom (insensible à la casse)
-   Retourne :
-     - id
-     - nom
-     - prenom
-     - entrepriseID (colonne PRO 2026)
-   ============================================================ */
-joueur.findJoueur = function (nom, prenom) {
-  console.log("🔎 [joueur] Recherche :", nom, prenom);
+  /**
+   * Recherche un joueur par ID.
+   */
+  findByID: function (id) {
+    const data = joueur.getAllRaw();
 
-  const sheet = joueur.getSheet();
-  const data = sheet.getDataRange().getValues();
-
-  const targetNom = String(nom).toLowerCase();
-  const targetPrenom = String(prenom).toLowerCase();
-
-  for (let i = 1; i < data.length; i++) {
-    const n = String(data[i][1] || "").toLowerCase(); // Nom
-    const p = String(data[i][2] || "").toLowerCase(); // Prénom
-
-    if (n === targetNom && p === targetPrenom) {
-      const result = {
-        id: data[i][0],          // Joueur_ID
-        nom: data[i][1],         // Nom
-        prenom: data[i][2],      // Prénom
-        entrepriseID: data[i][3] // Entreprise_ID (PRO 2026)
-      };
-
-      console.log("🟩 [joueur] Joueur trouvé :", result);
-      return result;
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+        return joueur.mapRowToObject(data[i]);
+      }
     }
+
+    return null;
+  },
+
+  /**
+   * Recherche un joueur par nom + prénom.
+   * Normalisation PRO 2026.
+   */
+  findByName: function (nom, prenom) {
+    const n = utils.normalizeName(nom);
+    const p = utils.normalizeName(prenom);
+
+    const data = joueur.getAllRaw();
+
+    for (let i = 1; i < data.length; i++) {
+      if (
+        utils.normalizeName(data[i][1]) === n &&
+        utils.normalizeName(data[i][2]) === p
+      ) {
+        return joueur.mapRowToObject(data[i]);
+      }
+    }
+
+    return null;
+  },
+
+  /**
+   * Trouve un joueur ou le crée automatiquement.
+   * Utilisé par admin.createEntreprise().
+   */
+  findOrCreate: function (nom, prenom) {
+    const existing = joueur.findByName(nom, prenom);
+    if (existing) return existing.id;
+
+    // Création via admin
+    const id = admin.createJoueur(nom, prenom);
+    return id;
+  },
+
+  /**
+   * Liste tous les joueurs.
+   */
+  listAll: function () {
+    const data = joueur.getAllRaw();
+    const results = [];
+
+    for (let i = 1; i < data.length; i++) {
+      results.push(joueur.mapRowToObject(data[i]));
+    }
+
+    return results;
+  },
+
+  /**
+   * Met à jour un joueur.
+   * fields = { nom, prenom, notes }
+   */
+  updateJoueur: function (id, fields) {
+    if (!admin.isAdmin()) throw new Error("Accès refusé.");
+
+    const sheet = joueur.getSheet();
+    const data = sheet.getDataRange().getValues();
+
+    for (let i = 1; i < data.length; i++) {
+      if (data[i][0] === id) {
+
+        if (fields.nom !== undefined)
+          sheet.getRange(i + 1, 2).setValue(utils.normalizeName(fields.nom));
+
+        if (fields.prenom !== undefined)
+          sheet.getRange(i + 1, 3).setValue(utils.normalizeName(fields.prenom));
+
+        if (fields.notes !== undefined)
+          sheet.getRange(i + 1, 4).setValue(fields.notes);
+
+        Logger.log("🟩 [joueur] Joueur mis à jour : " + id);
+        return true;
+      }
+    }
+
+    return false;
   }
 
-  console.warn("🟧 [joueur] Aucun joueur trouvé pour :", nom, prenom);
-  return null;
 };
 
 console.log("🟩 [joueur.gs] Module JOUEURS chargé avec succès.");
