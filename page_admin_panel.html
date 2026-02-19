@@ -1,0 +1,144 @@
+<!-- ============================================================
+     PAGE : page_admin_panel
+     MODULE : Panneau Admin — RP Business System
+     VERSION : PRO 2026
+============================================================ -->
+
+<div class="page-container">
+
+  <!-- ÉTAT DE CONNEXION -->
+  <section class="card">
+    <h2>🔐 État de connexion</h2>
+    <div id="admin_etatConnexion">Chargement…</div>
+  </section>
+
+  <!-- MODULES JOUEUR RP -->
+  <section class="card">
+    <h2>🧍 Joueur RP</h2>
+    <button onclick="admin_ouvrirPopupCreate()">Créer un perso RP</button>
+    <button onclick="admin_ouvrirPopupLocal()">S’enregistrer (local)</button>
+    <button onclick="admin_resetLocalPlayer()">Reset joueur local</button>
+  </section>
+
+  <!-- MODULES ADMIN -->
+  <section class="card" id="adminSection" style="display:none;">
+    <h2>🛡️ Administration</h2>
+    <button onclick="admin_ouvrirPopupEntreprise()">Créer une entreprise</button>
+    <button onclick="admin_updateAll()">Mise à jour TOTALE</button>
+    <button onclick="admin_resetSystem()">RESET complet du système</button>
+  </section>
+
+  <!-- ADMIN PRINCIPAL -->
+  <section class="card" id="adminPrincipalSection" style="display:none;">
+    <h2>👑 Gestion des administrateurs</h2>
+
+    <button onclick="admin_openAddAdminPopup()">➕ Ajouter un admin</button>
+    <button onclick="admin_openRemoveAdminPopup()">➖ Retirer un admin</button>
+
+    <h3>Admins secondaires :</h3>
+    <ul id="admin_adminsList"></ul>
+  </section>
+
+</div>
+
+<!-- POPUP : Enregistrement local -->
+<div id="admin_popupLocal" class="popup-overlay" style="display:none;">
+  <div class="popup-box">
+    <h2>S’enregistrer</h2>
+
+    <label>Nom RP :</label>
+    <input id="admin_localNom" type="text">
+
+    <label>Prénom RP :</label>
+    <input id="admin_localPrenom" type="text">
+
+    <button onclick="admin_validerEnregistrementLocal()">S’enregistrer</button>
+    <button class="btn-close" onclick="admin_fermerPopupLocal()">Annuler</button>
+  </div>
+</div>
+
+<!-- POPUP : Création joueur -->
+<div id="admin_popupCreate" class="popup-overlay" style="display:none;">
+  <div class="popup-box">
+    <h2>Créer un joueur RP</h2>
+
+    <label>Nom RP :</label>
+    <input id="admin_createNom" type="text">
+
+    <label>Prénom RP :</label>
+    <input id="admin_createPrenom" type="text">
+
+    <button onclick="admin_validerCreationJoueur()">Créer</button>
+    <button class="btn-close" onclick="admin_fermerPopupCreate()">Annuler</button>
+  </div>
+</div>
+
+<!-- POPUP : Création entreprise -->
+<div id="admin_popupEntreprise" class="popup-overlay" style="display:none;">
+  <div class="popup-box">
+    <h2>Créer une entreprise</h2>
+
+    <label>Nom de l’entreprise :</label>
+    <input id="admin_popupNomEntreprise" type="text">
+
+    <label>Nom du patron :</label>
+    <input id="admin_popupPatronNom" type="text">
+
+    <label>Prénom du patron :</label>
+    <input id="admin_popupPatronPrenom" type="text">
+
+    <button onclick="admin_validerCreationEntreprise()">Créer</button>
+    <button class="btn-close" onclick="admin_fermerPopupEntreprise()">Annuler</button>
+  </div>
+</div>
+
+<!-- POPUP : Ajouter admin -->
+<div id="admin_popupAddAdmin" class="popup-overlay" style="display:none;">
+  <div class="popup-box">
+    <h2>Ajouter un administrateur</h2>
+
+    <label>Email Google :</label>
+    <input id="admin_addAdminEmail" type="email">
+
+    <button onclick="admin_addAdmin()">Ajouter</button>
+    <button class="btn-close" onclick="admin_closeAddAdminPopup()">Annuler</button>
+  </div>
+</div>
+
+<!-- POPUP : Retirer admin -->
+<div id="admin_popupRemoveAdmin" class="popup-overlay" style="display:none;">
+  <div class="popup-box">
+    <h2>Retirer un administrateur</h2>
+
+    <label>Email Google :</label>
+    <input id="admin_removeAdminEmail" type="email">
+
+    <button onclick="admin_removeAdmin()">Retirer</button>
+    <button class="btn-close" onclick="admin_closeRemoveAdminPopup()">Annuler</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     INITPAGE — appelé automatiquement par le moteur SPA
+     IMPORTANT : aucune variable globale ici !
+============================================================ -->
+<script>
+function initPage() {
+  console.log("🟦 [page_admin_panel] initPage() exécuté");
+
+  // Vérification des fonctions avant exécution
+  if (typeof admin_initRole === "function") {
+    console.log("🟩 [page_admin_panel] admin_initRole() → OK");
+    admin_initRole();
+  } else {
+    console.warn("🟧 [page_admin_panel] admin_initRole() introuvable");
+  }
+
+  if (typeof admin_afficherEtatConnexion === "function") {
+    console.log("🟩 [page_admin_panel] admin_afficherEtatConnexion() → OK");
+    admin_afficherEtatConnexion();
+  } else {
+    console.warn("🟧 [page_admin_panel] admin_afficherEtatConnexion() introuvable");
+  }
+}
+</script>

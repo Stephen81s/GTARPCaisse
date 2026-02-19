@@ -1,0 +1,136 @@
+<!-- ============================================================
+     PAGE : page_accueil
+     MODULE : Dashboard d’accueil — RP Business System
+     VERSION : PRO 2026
+============================================================ -->
+
+<div class="page-container">
+
+  <!-- SECTION 1 — BIENVENUE -->
+  <section class="card">
+    <h1>👋 Bienvenue</h1>
+    <p id="accueil_nom">Chargement du joueur…</p>
+    <p id="accueil_role">Rôle : …</p>
+  </section>
+
+  <!-- SECTION 2 — INFORMATIONS RP -->
+  <section class="card">
+    <h2>🧍 Votre personnage</h2>
+    <div id="accueil_personnage">Chargement…</div>
+
+    <h2>🏢 Votre entreprise</h2>
+    <div id="accueil_entreprise">Chargement…</div>
+  </section>
+
+  <!-- SECTION 3 — STATISTIQUES -->
+  <section class="card">
+    <h2>📊 Statistiques du système</h2>
+    <ul id="accueil_stats">
+      <li>Joueurs : …</li>
+      <li>Entreprises : …</li>
+      <li>Emplois : …</li>
+      <li>Grades : …</li>
+      <li>Employés : …</li>
+    </ul>
+  </section>
+
+  <!-- SECTION 4 — ACTIONS RAPIDES -->
+  <section class="card">
+    <h2>⚡ Actions rapides</h2>
+    <div id="accueil_actions">Chargement…</div>
+  </section>
+
+</div>
+
+<script>
+
+  /* ============================================================
+     CHARGEMENT DU JOUEUR LOCAL
+     ============================================================ */
+  function loadLocalPlayerAccueil() {
+    const data = localStorage.getItem("rp_player");
+    return data ? JSON.parse(data) : null;
+  }
+
+  /* ============================================================
+     INITIALISATION DE LA PAGE
+     ============================================================ */
+  function initAccueil() {
+    const player = loadLocalPlayerAccueil();
+
+    // Nom RP
+    if (player) {
+      document.getElementById("accueil_nom").innerHTML =
+        `<b>${player.nom} ${player.prenom}</b>`;
+    } else {
+      document.getElementById("accueil_nom").innerHTML =
+        "<span style='color:#ff6666;'>Aucun joueur local enregistré.</span>";
+    }
+
+    // Rôle
+    google.script.run
+      .withSuccessHandler(role => {
+        document.getElementById("accueil_role").innerHTML = "Rôle : <b>" + role + "</b>";
+        loadActionsRapides(role);
+      })
+      .ui_getUserRole();
+
+    // Infos RP
+    if (player) {
+      google.script.run
+        .withSuccessHandler(ent => {
+          if (ent) {
+            document.getElementById("accueil_entreprise").innerHTML =
+              `👑 Patron de : <b>${ent.entreprise}</b>`;
+          } else {
+            document.getElementById("accueil_entreprise").innerHTML =
+              "Aucune entreprise.";
+          }
+        })
+        .ui_checkIfPlayerIsPatron(player.nom, player.prenom);
+
+      document.getElementById("accueil_personnage").innerHTML =
+        `<b>${player.nom} ${player.prenom}</b>`;
+    }
+
+    // Stats système
+    google.script.run
+      .withSuccessHandler(stats => {
+        document.getElementById("accueil_stats").innerHTML = `
+          <li>Joueurs : <b>${stats.joueurs}</b></li>
+          <li>Entreprises : <b>${stats.entreprises}</b></li>
+          <li>Emplois : <b>${stats.emplois}</b></li>
+          <li>Grades : <b>${stats.grades}</b></li>
+          <li>Employés : <b>${stats.employes}</b></li>
+        `;
+      })
+      .ui_getSystemStats();
+  }
+
+  /* ============================================================
+     ACTIONS RAPIDES
+     ============================================================ */
+  function loadActionsRapides(role) {
+    const zone = document.getElementById("accueil_actions");
+
+    let html = "";
+
+    if (role === "admin_principal" || role === "admin_secondaire") {
+      html += `<button onclick="loadPage('page_admin_panel')">Ouvrir Admin Panel</button><br>`;
+      html += `<button onclick="loadPage('page_entreprises')">Créer une entreprise</button><br>`;
+      html += `<button onclick="loadPage('page_joueurs')">Créer un joueur</button><br>`;
+    }
+
+    if (role === "joueur") {
+      html += `<button onclick="loadPage('page_joueurs')">Voir mon personnage</button><br>`;
+    }
+
+    zone.innerHTML = html || "Aucune action disponible.";
+  }
+
+  /* ============================================================
+     LANCEMENT
+     ============================================================ */
+  initAccueil();
+
+</script>

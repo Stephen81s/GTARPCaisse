@@ -1,0 +1,76 @@
+<!-- ============================================================
+     SCRIPT : Navigation SPA
+     MODULE : Menu latéral dynamique
+     VERSION : PRO 2026
+============================================================ -->
+
+<script>
+console.log("🟦 [nav] Script navigation chargé.");
+
+let currentPage = null;
+
+/* ============================================================
+   NAVIGATION — Mise en surbrillance du bouton actif
+============================================================ */
+function setActiveNav(pageName) {
+  const links = document.querySelectorAll("#menu-links a");
+  links.forEach(a => a.classList.remove("nav-active"));
+
+  const id = "nav-" + pageName.replace("page_", "");
+  const active = document.getElementById(id);
+
+  if (active) {
+    active.classList.add("nav-active");
+    console.log("🟩 [nav] Bouton actif :", id);
+  } else {
+    console.warn("🟧 [nav] Aucun bouton trouvé pour :", id);
+  }
+}
+
+/* ============================================================
+   NAVIGATION — Ajout d’un lien dans le menu
+============================================================ */
+function addMenuLink(label, page) {
+  const id = "nav-" + page.replace("page_", "");
+
+  const li = document.createElement("li");
+  li.innerHTML = `<a id="${id}" href="javascript:void(0)" onclick="loadPage('${page}')">${label}</a>`;
+
+  document.getElementById("menu-links").appendChild(li);
+}
+
+/* ============================================================
+   MENU DYNAMIQUE SELON LE RÔLE
+============================================================ */
+function buildMenu(role) {
+  console.log("🟦 [nav] Construction du menu pour rôle :", role);
+
+  const menu = document.getElementById("menu-links");
+  menu.innerHTML = "";
+
+  // Toujours visible
+  addMenuLink("🏠 Accueil", "page_accueil");
+
+  if (role !== "joueur") {
+    addMenuLink("🧍 Joueurs", "page_joueurs");
+    addMenuLink("🏢 Entreprises", "page_entreprises");
+    addMenuLink("💼 Employés", "page_employes");
+  }
+
+  if (role === "admin_secondaire" || role === "admin_principal") {
+    addMenuLink("🛡️ Admin Panel", "page_admin_panel");
+  }
+
+  if (role === "admin_principal") {
+    addMenuLink("👑 Configuration système", "page_config_systeme");
+    addMenuLink("🛠️ Maintenance", "page_maintenance_systeme");
+  }
+}
+
+/* ============================================================
+   HOOK : appelé automatiquement par loadPage()
+============================================================ */
+function onPageLoaded(pageName) {
+  setActiveNav(pageName);
+}
+</script>

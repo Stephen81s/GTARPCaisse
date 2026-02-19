@@ -1,67 +1,163 @@
 <!DOCTYPE html>
-<html lang="fr">
-
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>GTARP — Interface Stephen 1</title>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>RP Business System — Accueil</title>
 
-    <link rel="stylesheet" href="css/style.css">
+  <!-- ============================================================
+       STYLE GLOBAL
+  ============================================================ -->
+  <?!= include('style_admin'); ?>
 
-    <!-- 1) Charger la librairie Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <!-- 2) Initialiser Supabase AVANT api.js -->
-    <script>
-        window.supabase = supabase.createClient(
-            "https://oxqgytbquvopynfretpu.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im94cWd5dGJxdXZvcHluZnJldHB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA5MDk0NjYsImV4cCI6MjA4NjQ4NTQ2Nn0.zEdv64BHAANkhSC1TX9QLk0EIC858oOC-zr58GBidVc"
-        );
-
-        console.log("%c[INDEX] Supabase initialisé", "color:#4CAF50;font-weight:bold;");
-    </script>
-
-    <!-- 3) Charger les modules JS qui utilisent Supabase -->
-    <script src="js/logger.js" defer></script>
-    <script src="js/api.js" defer></script>
-    <script src="js/caisse.js" defer></script>
-    <script src="js/ressource.js" defer></script>
-    <script src="js/ticket.js" defer></script>
-    <script src="js/service.js" defer></script>
-    <script src="js/admin.js" defer></script>
-
-    <style>
-        #page-frame {
-            width: 100%;
-            height: calc(100vh - 80px);
-            border: none;
-        }
-    </style>
+  <!-- ============================================================
+       SCRIPT NAVIGATION (chargé AVANT le script principal)
+       IMPORTANT : buildMenu(), addMenuLink(), onPageLoaded()
+       doivent exister AVANT loadPage()
+  ============================================================ -->
+  <?!= include('script_navigation'); ?>
 </head>
 
-<body>
+<body class="theme-light">
 
-    <header class="header">
-        <div class="header-title">GTARP — Interface Stephen V1</div>
-        <nav class="header-right">
-            <button onclick="openPage('interfaces/accueil.html')">Accueil</button>
-            <button onclick="openPage('interfaces/caisse.html')">Caisse</button>
-            <button onclick="openPage('interfaces/ticket.html')">Ticket</button>
-            <button onclick="openPage('interfaces/ressource.html')">Ressource</button>
-            <button onclick="openPage('interfaces/service.html')">Service</button>
-            <button onclick="openPage('interfaces/admin.html')">Admin</button>
-        </nav>
-    </header>
+  <!-- ============================================================
+       MENU LATÉRAL — DYNAMIQUE SELON LE RÔLE
+  ============================================================ -->
+  <aside id="sidebar">
 
-    <main>
-        <iframe id="page-frame" src="interfaces/accueil.html"></iframe>
-    </main>
+    <div class="menu-section">
+      <h2>📌 Navigation</h2>
+      <ul id="menu-links"></ul>
+    </div>
 
-    <script>
-        function openPage(page) {
-            console.log("%c[NAV] Ouverture de la page : " + page, "color:#2196F3;font-weight:bold;");
-            document.getElementById("page-frame").src = page;
+    <div class="menu-section">
+      <h2>⚙️ Paramètres</h2>
+
+      <label for="themeSelect">Thème :</label>
+      <select id="themeSelect" onchange="changeTheme()">
+        <option value="light">Clair</option>
+        <option value="dark">Sombre</option>
+      </select>
+    </div>
+
+  </aside>
+
+  <!-- ============================================================
+       CONTENEUR PRINCIPAL (pages dynamiques)
+  ============================================================ -->
+  <main class="main-container">
+    <div id="page-frame" class="page-frame">Chargement…</div>
+  </main>
+
+  <!-- ============================================================
+       SCRIPT PRINCIPAL — SPA + THEME + INIT
+  ============================================================ -->
+  <script>
+  console.log("🟦 [index] Script principal chargé.");
+
+  /* ============================================================
+     VARIABLE GLOBALE — DOIT ÊTRE UNIQUE
+  ============================================================ */
+  let currentPage = null;
+
+  /* ============================================================
+     THÈME CLAIR / SOMBRE
+  ============================================================ */
+  function loadTheme() {
+    const theme = localStorage.getItem("theme") || "light";
+    document.body.className = "theme-" + theme;
+    document.getElementById("themeSelect").value = theme;
+  }
+
+  function changeTheme() {
+    const theme = document.getElementById("themeSelect").value;
+    localStorage.setItem("theme", theme);
+    loadTheme();
+  }
+
+  /* ============================================================
+     ROUTER SPA — CHARGEMENT DYNAMIQUE DES PAGES
+  ============================================================ */
+  function loadPage(pageName) {
+
+    if (currentPage === pageName) {
+      console.log("ℹ️ [index] Page déjà active :", pageName);
+      return;
+    }
+
+    console.log("📄 [index] Demande d’ouverture :", pageName);
+    currentPage = pageName;
+
+    google.script.run
+      .withSuccessHandler(html => {
+
+        console.log("🟩 [index] Page reçue :", pageName);
+
+        const frame = document.getElementById("page-frame");
+
+        // 1) EXTRACTION DES SCRIPTS
+        const temp = document.createElement("div");
+        temp.innerHTML = html;
+
+        const scripts = [...temp.querySelectorAll("script")];
+        scripts.forEach(s => s.remove());
+
+        // 2) INJECTION DU HTML
+        frame.innerHTML = temp.innerHTML;
+
+        // 2.5) MISE À JOUR DU MENU ACTIF
+        if (typeof onPageLoaded === "function") {
+          onPageLoaded(pageName);
         }
-    </script>
+
+        // 3) RÉINJECTION DES SCRIPTS
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+
+          if (oldScript.src) newScript.src = oldScript.src;
+          else newScript.textContent = oldScript.textContent;
+
+          frame.appendChild(newScript);
+        });
+
+        console.log("🟩 [index] Injection terminée. Appel initPage()…");
+
+        // 4) APPEL AUTOMATIQUE DE initPage()
+        if (typeof initPage === "function") {
+          console.log("🟦 [index] initPage() détecté → exécution");
+          initPage();
+        } else {
+          console.warn("🟧 [index] Aucun initPage() trouvé dans le fragment");
+        }
+
+      })
+      .withFailureHandler(err => {
+        console.error("❌ [index] ERREUR lors du chargement :", err);
+      })
+      .include(pageName);
+  }
+
+  /* ============================================================
+     CHARGEMENT INITIAL
+  ============================================================ */
+  window.onload = function () {
+    loadTheme();
+
+    google.script.run
+      .withSuccessHandler(role => {
+        console.log("🟦 [index] Rôle utilisateur :", role);
+        buildMenu(role);
+        loadPage("page_accueil");
+      })
+      .ui_getUserRole();
+  };
+
+  </script>
+
+  <!-- ============================================================
+       SCRIPT ADMIN PANEL (JS GLOBAL)
+  ============================================================ -->
+  <?!= include('script_panel_admin'); ?>
 
 </body>
 </html>
