@@ -1,0 +1,61 @@
+<!-- ============================================================
+     PAGE : page_admin_panel
+     MODULE : Admin Panel — RP Business System
+     VERSION : PRO 2026
+============================================================ -->
+
+<div class="page-container">
+
+  <!-- SECTION 1 — TITRE -->
+  <section class="card">
+    <h1>🛡️ Admin Panel</h1>
+    <p>Gestion avancée du système RP Business.</p>
+  </section>
+
+  <!-- SECTION 2 — CRÉATION -->
+  <section class="card">
+    <h2>➕ Création</h2>
+
+    <div class="form-row">
+      <label>Nom :</label>
+      <input id="admin_nom" type="text" placeholder="Nom">
+    </div>
+
+    <div class="form-row">
+      <label>Prénom :</label>
+      <input id="admin_prenom" type="text" placeholder="Prénom">
+    </div>
+
+    <button onclick="adminPanel.createJoueur()">Créer un joueur</button>
+
+    <hr>
+
+    <div class="form-row">
+      <label>Nom entreprise :</label>
+      <input id="admin_ent_nom" type="text" placeholder="Nom entreprise">
+    </div>
+
+    <div class="form-row">
+      <label>Type :</label>
+      <input id="admin_ent_type" type="text" placeholder="Type RP">
+    </div>
+
+    <button onclick="adminPanel.createEntreprise()">Créer une entreprise</button>
+  </section>
+
+  <!-- SECTION 3 — OUTILS -->
+  <section class="card">
+    <h2>🧰 Outils administratifs</h2>
+
+    <button onclick="adminPanel.refreshCaches()">🔄 Rafraîchir les caches</button>
+    <button onclick="adminPanel.rebuildTypes()">📚 Recharger les types RP</button>
+    <button onclick="adminPanel.rebuildAll()">⚙️ Reconstruire tout le système</button>
+  </section>
+
+  <!-- SECTION 4 — LOGS -->
+  <section class="card">
+    <h2>📜 Logs</h2>
+    <pre id="admin_logs">En attente…</pre>
+  </section>
+
+</div>
