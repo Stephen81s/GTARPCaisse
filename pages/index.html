@@ -39,7 +39,9 @@
 
   <!-- ============================================================
        SCRIPTS
+       IMPORTANT : config.js doit être chargé AVANT tout le reste
   ============================================================ -->
+  <script src="scripts/config.js"></script>
   <script src="scripts/navigation.js"></script>
   <script src="scripts/admin.js"></script>
   <script src="scripts/accueil.js"></script>
@@ -69,7 +71,7 @@
     window.onload = async function () {
       loadTheme();
 
-      // Récupération du rôle via API REST
+      // Récupération du rôle via API Web App
       const role = await api("ui_getUserRole");
       console.log("🟦 [index] Rôle utilisateur :", role);
 
