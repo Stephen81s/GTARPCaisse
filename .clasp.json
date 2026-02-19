@@ -1,24 +1,4 @@
 {
-  // ============================================================
-  //  FICHIER : .clasp.json
-  //  MODULE  : Configuration Clasp — RP Business System
-  //  VERSION : PRO 2026
-  //  AUTEUR  : Stephen + Copilot PRO
-  // ------------------------------------------------------------
-  //  DESCRIPTION :
-  //  Ce fichier indique à Clasp où se trouvent les fichiers
-  //  Apps Script (.gs / .html backend) dans ton projet local.
-  //
-  //  IMPORTANT :
-  //  - Seul le dossier "appsscript" sera envoyé à Apps Script.
-  //  - Les fichiers front (pages, scripts, styles) NE seront PAS
-  //    envoyés à Apps Script.
-  //  - Apps Script n'accepte pas les dossiers, mais Clasp va
-  //    "aplatir" automatiquement le contenu du dossier.
-  // ============================================================
-
   "scriptId": "1K1CCzs3x6lxfLod6YCYEUv3U9z7xeHsH3wRtB5pqpTf7TdWElnHzUHmH",
-
-  // Dossier local contenant les fichiers backend (.gs / .html)
   "rootDir": "appsscript"
 }

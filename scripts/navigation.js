@@ -1,10 +1,27 @@
+/* ============================================================
+   FICHIER : navigation.js
+   MODULE  : RP BUSINESS SYSTEM — NAVIGATION FRONT
+   VERSION : PRO 2026
+   AUTEUR  : Stephen + Copilot PRO
+   ------------------------------------------------------------
+   DESCRIPTION :
+   Gère la navigation dynamique du site :
+     - Mise en surbrillance du bouton actif
+     - Construction du menu selon le rôle utilisateur
+     - Ajout dynamique de liens
+     - Hook onPageLoaded() appelé par loadPage()
+   ------------------------------------------------------------
+   LOGS :
+   🟦 [nav] Script navigation chargé.
+   ============================================================ */
+
 console.log("🟦 [nav] Script navigation chargé.");
 
 let currentPage = null;
 
 /* ============================================================
    NAVIGATION — Mise en surbrillance du bouton actif
-============================================================ */
+   ============================================================ */
 function setActiveNav(pageName) {
   const links = document.querySelectorAll("#menu-links a");
   links.forEach(a => a.classList.remove("nav-active"));
@@ -22,19 +39,23 @@ function setActiveNav(pageName) {
 
 /* ============================================================
    NAVIGATION — Ajout d’un lien dans le menu
-============================================================ */
+   ============================================================ */
 function addMenuLink(label, page) {
   const id = "nav-" + page.replace("page_", "");
 
   const li = document.createElement("li");
-  li.innerHTML = `<a id="${id}" href="javascript:void(0)" onclick="loadPage('${page}')">${label}</a>`;
+  li.innerHTML = `
+    <a id="${id}" href="javascript:void(0)" onclick="loadPage('${page}')">
+      ${label}
+    </a>
+  `;
 
   document.getElementById("menu-links").appendChild(li);
 }
 
 /* ============================================================
    MENU DYNAMIQUE SELON LE RÔLE
-============================================================ */
+   ============================================================ */
 function buildMenu(role) {
   console.log("🟦 [nav] Construction du menu pour rôle :", role);
 
@@ -62,7 +83,7 @@ function buildMenu(role) {
 
 /* ============================================================
    HOOK : appelé automatiquement par loadPage()
-============================================================ */
+   ============================================================ */
 function onPageLoaded(pageName) {
   setActiveNav(pageName);
 }
