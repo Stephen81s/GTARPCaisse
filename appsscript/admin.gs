@@ -3,9 +3,23 @@
  *  FICHIER : admin.gs
  *  MODULE  : RP BUSINESS SYSTEM — ADMIN CORE
  *  VERSION : PRO 2026
- *  AUTHOR  : Stephen
+ *  AUTEUR  : Stephen + Copilot PRO
+ * ------------------------------------------------------------
+ *  DESCRIPTION :
+ *  Module central d'administration :
+ *    - Gestion des rôles (admin principal / secondaire / joueur)
+ *    - Gestion des admins secondaires
+ *    - Création joueurs / entreprises
+ *    - Accès aux feuilles
+ *    - Configuration système
+ *    - Maintenance PRO 2026
+ * ------------------------------------------------------------
+ *  LOGS :
+ *  🟦 [admin.gs] Module ADMIN CORE chargé.
  * ============================================================
  */
+
+console.log("🟦 [admin.gs] Chargement du module ADMIN CORE...");
 
 var admin = {};
 
@@ -13,22 +27,37 @@ var admin = {};
    OUTILS DE BASE
    ============================================================ */
 
+/**
+ * Retourne une feuille par son nom.
+ */
 admin.getSheetByName = function (name) {
   const ss = SpreadsheetApp.getActive();
   const sheet = ss.getSheetByName(name);
-  if (!sheet) throw new Error("Feuille introuvable : " + name);
+
+  if (!sheet) {
+    console.error("❌ [admin] Feuille introuvable :", name);
+    throw new Error("Feuille introuvable : " + name);
+  }
+
   return sheet;
 };
 
+/**
+ * Génère le prochain ID basé sur le dernier ID existant.
+ */
 admin.getNextID = function (sheet, prefix) {
   const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return prefix + "1";
+  if (lastRow < 2) return prefix + "001";
 
   const lastID = sheet.getRange(lastRow, 1).getValue();
   const num = parseInt(lastID.replace(prefix, ""), 10) + 1;
-  return prefix + num;
+
+  return prefix + Utilities.formatString("%03d", num);
 };
 
+/**
+ * Enregistre une configuration clé/valeur.
+ */
 admin.setConfig = function (key, value) {
   const sheet = admin.getSheetByName(consts.SHEET_CONFIG);
   const data = sheet.getDataRange().getValues();
@@ -43,6 +72,9 @@ admin.setConfig = function (key, value) {
   sheet.appendRow([key, value]);
 };
 
+/**
+ * Récupère une configuration.
+ */
 admin.getConfig = function (key) {
   const sheet = admin.getSheetByName(consts.SHEET_CONFIG);
   const data = sheet.getDataRange().getValues();
@@ -54,6 +86,7 @@ admin.getConfig = function (key) {
   return null;
 };
 
+
 /* ============================================================
    SÉCURITÉ — EMAIL GOOGLE
    ============================================================ */
@@ -61,6 +94,7 @@ admin.getConfig = function (key) {
 admin.getCurrentEmail = function () {
   return Session.getActiveUser().getEmail();
 };
+
 
 /* ============================================================
    RÔLES — ADMIN PRINCIPAL / SECONDAIRE
@@ -91,6 +125,7 @@ admin.getUserRole = function () {
   if (admin.isAdminSecondaire()) return "admin_secondaire";
   return "joueur";
 };
+
 
 /* ============================================================
    GESTION DES ADMINS (ADMIN PRINCIPAL ONLY)
@@ -133,8 +168,9 @@ admin.getAdminsList = function () {
   };
 };
 
+
 /* ============================================================
-   CRÉATION JOUEUR
+   CRÉATION JOUEUR — PRO 2026
    ============================================================ */
 
 admin.createJoueur = function (nom, prenom) {
@@ -143,44 +179,33 @@ admin.createJoueur = function (nom, prenom) {
   const sheet = admin.getSheetByName(consts.SHEET_JOUEURS);
   const id = admin.getNextID(sheet, consts.PREFIX_JOUEUR);
 
-  sheet.appendRow([id, nom, prenom, "", new Date()]);
+  sheet.appendRow([id, nom, prenom, ""]);
   return id;
 };
 
+
 /* ============================================================
-   CRÉATION ENTREPRISE (PRO 2026)
+   CRÉATION ENTREPRISE — PRO 2026
    ============================================================ */
 
 admin.createEntreprise = function (nom, patronNom, patronPrenom) {
   if (!admin.isAdmin()) throw new Error("Accès refusé.");
 
-  const sheetEnt = admin.getSheetByName(consts.SHEET_ENTREPRISES);
-  const sheetJ = admin.getSheetByName(consts.SHEET_JOUEURS);
+  const joueurID = joueur.findOrCreate(patronNom, patronPrenom);
+  const sheet = admin.getSheetByName(consts.SHEET_ENTREPRISES);
+  const id = admin.getNextID(sheet, consts.PREFIX_ENTREPRISE);
+  const cle = generateKey();
 
-  // Trouver le joueur
-  const data = sheetJ.getDataRange().getValues();
-  let joueurID = null;
-
-  for (let i = 1; i < data.length; i++) {
-    if (data[i][1] === patronNom && data[i][2] === patronPrenom) {
-      joueurID = data[i][0];
-      break;
-    }
-  }
-
-  if (!joueurID)
-    throw new Error("Joueur introuvable : " + patronNom + " " + patronPrenom);
-
-  // Créer l'entreprise
-  const id = admin.getNextID(sheetEnt, consts.PREFIX_ENTREPRISE);
-  const now = new Date();
-
-  sheetEnt.appendRow([
+  sheet.appendRow([
     id,
     nom,
-    joueurID,   // Patron_ID
-    "", "", "", "", "",
-    now,
+    joueurID,
+    "",
+    "",
+    "",
+    "",
+    cle,
+    new Date(),
     "",
     true
   ]);
@@ -188,189 +213,61 @@ admin.createEntreprise = function (nom, patronNom, patronPrenom) {
   return id;
 };
 
-/* ============================================================
-   MODULE EMPLOIS — PRO 2026
-   ============================================================ */
-
-admin.createEmploi = function (entrepriseID, nom, description) {
-  if (!admin.isAdmin()) throw new Error("Accès refusé.");
-
-  const sheet = admin.getSheetByName(consts.SHEET_EMPLOIS);
-  const id = admin.getNextID(sheet, consts.PREFIX_EMPLOI);
-
-  sheet.appendRow([
-    id,
-    entrepriseID,
-    nom,
-    description || "",
-    true
-  ]);
-
-  return id;
-};
 
 /* ============================================================
-   MODULE GRADES — PRO 2026
-   ============================================================ */
-
-admin.createGrade = function (emploiID, nom, niveau, salaire) {
-  if (!admin.isAdmin()) throw new Error("Accès refusé.");
-
-  const sheet = admin.getSheetByName(consts.SHEET_GRADES);
-  const id = admin.getNextID(sheet, consts.PREFIX_GRADE);
-
-  sheet.appendRow([
-    id,
-    emploiID,
-    nom,
-    niveau || 1,
-    salaire || 0,
-    true
-  ]);
-
-  return id;
-};
-
-/* ============================================================
-   MODULE EMPLOYÉS — PRO 2026
-   ============================================================ */
-
-admin.assignPlayerToEmploi = function (joueurID, entrepriseID, emploiID, gradeID) {
-  if (!admin.isAdmin()) throw new Error("Accès refusé.");
-
-  const sheet = admin.getSheetByName(consts.SHEET_EMPLOYES);
-  const id = admin.getNextID(sheet, consts.PREFIX_EMPLOYE);
-
-  sheet.appendRow([
-    id,
-    joueurID,
-    entrepriseID,
-    emploiID,
-    gradeID,
-    new Date(),
-    true
-  ]);
-
-  return id;
-};
-
-/* ============================================================
-   CHECK PATRON
+   CHECK PATRON — PRO 2026
    ============================================================ */
 
 admin.checkIfPlayerIsPatron = function (nom, prenom) {
+  const joueurID = joueur.findByName(nom, prenom);
+  if (!joueurID) return null;
+
   const sheet = admin.getSheetByName(consts.SHEET_ENTREPRISES);
   const data = sheet.getDataRange().getValues();
 
   for (let i = 1; i < data.length; i++) {
-    const patronID = data[i][2];
-    const joueurSheet = admin.getSheetByName(consts.SHEET_JOUEURS);
-    const joueurs = joueurSheet.getDataRange().getValues();
-
-    for (let j = 1; j < joueurs.length; j++) {
-      if (joueurs[j][0] === patronID &&
-          joueurs[j][1] === nom &&
-          joueurs[j][2] === prenom) {
-        return { entreprise: data[i][1], id: data[i][0] };
-      }
+    if (data[i][2] === joueurID) {
+      return { entreprise: data[i][1], id: data[i][0] };
     }
   }
 
   return null;
 };
 
+
 /* ============================================================
-   MAINTENANCE
+   MAINTENANCE — PRO 2026
    ============================================================ */
 
 admin.updateSchema = function () {
   if (!admin.isAdmin()) throw new Error("Accès refusé.");
-  return "Schéma mis à jour.";
+  return createSchemaSheet();
 };
-
-admin.resetSystem = function () {
-  if (!admin.isAdminPrincipal()) throw new Error("Accès refusé.");
-  return "Système réinitialisé.";
-};
-
-/* ============================================================
-   SCAN DES FONCTIONS → FEUILLE FUNCTIONS
-   ============================================================ */
 
 admin.updateFunctions = function () {
   if (!admin.isAdmin()) throw new Error("Accès refusé.");
-
-  Logger.log("🟦 Scan des fonctions…");
-
-  const ss = SpreadsheetApp.getActive();
-  let sheet = ss.getSheetByName(consts.SHEET_FUNCTIONS);
-  if (!sheet) sheet = ss.insertSheet(consts.SHEET_FUNCTIONS);
-
-  sheet.clear();
-  sheet.appendRow(["Nom", "Module", "Type", "Description"]);
-
-  const results = [];
-  const globalObj = (1, eval)("this");
-
-  // Fonctions globales
-  for (let key in globalObj) {
-    if (typeof globalObj[key] === "function") {
-      if (key.startsWith("on") || key === "include") continue;
-      results.push([key, "Code.gs", "UI / GLOBAL", ""]);
-    }
-  }
-
-  // Fonctions admin
-  for (let key in admin) {
-    if (typeof admin[key] === "function") {
-      results.push([key, "admin.gs", "CORE ADMIN", ""]);
-    }
-  }
-
-  sheet.getRange(2, 1, results.length, 4).setValues(results);
-
-  return "OK — " + results.length + " fonctions détectées.";
+  return createFunctionsSheet();
 };
-
-/* ============================================================
-   SCAN DES CONSTANTES → FEUILLE CONSTANTES
-   ============================================================ */
 
 admin.updateConstantes = function () {
   if (!admin.isAdmin()) throw new Error("Accès refusé.");
-
-  Logger.log("🟦 Mise à jour CONSTANTES…");
-
-  const ss = SpreadsheetApp.getActive();
-  let sheet = ss.getSheetByName(consts.SHEET_CONSTANTES);
-  if (!sheet) sheet = ss.insertSheet(consts.SHEET_CONSTANTES);
-
-  sheet.clear();
-  sheet.appendRow(["Nom", "Valeur", "Description"]);
-
-  const rows = [];
-
-  for (let key in consts) {
-    rows.push([key, consts[key], ""]);
-  }
-
-  sheet.getRange(2, 1, rows.length, 3).setValues(rows);
-
-  return "OK — " + rows.length + " constantes mises à jour.";
+  return populateConstantes();
 };
-
-/* ============================================================
-   MISE À JOUR TOTALE
-   ============================================================ */
 
 admin.updateAll = function () {
   if (!admin.isAdmin()) throw new Error("Accès refusé.");
 
   const logs = [];
-
   logs.push("SCHEMA : " + admin.updateSchema());
   logs.push("FUNCTIONS : " + admin.updateFunctions());
   logs.push("CONSTANTES : " + admin.updateConstantes());
 
   return logs.join("\n");
 };
+
+admin.resetSystem = function () {
+  if (!admin.isAdminPrincipal()) throw new Error("Accès refusé.");
+  return createCoreSheet();
+};
+
+console.log("🟩 [admin.gs] Module ADMIN CORE chargé avec succès.");

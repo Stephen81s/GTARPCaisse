@@ -1,20 +1,37 @@
 /* ============================================================
-   SCRIPT : Admin Panel — RP Business System
+   FICHIER : admin.js
+   MODULE  : RP BUSINESS SYSTEM — ADMIN PANEL (FRONT)
    VERSION : PRO 2026 — API REST + SPA
+   AUTEUR  : Stephen + Copilot PRO
+   ------------------------------------------------------------
+   DESCRIPTION :
+   Gère toute la logique front du panneau administrateur :
+     - Popups
+     - Création joueur / entreprise
+     - Enregistrement local
+     - Gestion des admins (admin principal)
+     - Maintenance système
+     - Initialisation du rôle
+   ------------------------------------------------------------
+   LOGS :
+   🟦 [admin] Script Admin Panel chargé.
    ============================================================ */
 
 console.log("🟦 [admin] Script Admin Panel chargé.");
 
-/* ============================================================
-   POPUPS
-============================================================ */
+
+// ============================================================
+// POPUPS
+// ============================================================
 function admin_showPopup(id) {
   document.getElementById(id).style.display = "flex";
 }
+
 function admin_hidePopup(id) {
   document.getElementById(id).style.display = "none";
 }
 
+// Popups spécifiques
 function admin_ouvrirPopupLocal() { admin_showPopup("admin_popupLocal"); }
 function admin_fermerPopupLocal() { admin_hidePopup("admin_popupLocal"); }
 
@@ -30,9 +47,10 @@ function admin_closeAddAdminPopup() { admin_hidePopup("admin_popupAddAdmin"); }
 function admin_openRemoveAdminPopup() { admin_showPopup("admin_popupRemoveAdmin"); }
 function admin_closeRemoveAdminPopup() { admin_hidePopup("admin_popupRemoveAdmin"); }
 
-/* ============================================================
-   ÉTAT DE CONNEXION
-============================================================ */
+
+// ============================================================
+// ÉTAT DE CONNEXION
+// ============================================================
 async function admin_afficherEtatConnexion() {
   const zone = document.getElementById("admin_etatConnexion");
   zone.innerText = "Chargement…";
@@ -45,9 +63,10 @@ async function admin_afficherEtatConnexion() {
   }
 }
 
-/* ============================================================
-   INITIALISATION DU RÔLE
-============================================================ */
+
+// ============================================================
+// INITIALISATION DU RÔLE
+// ============================================================
 async function admin_initRole() {
   const role = await api("ui_getUserRole");
 
@@ -62,9 +81,10 @@ async function admin_initRole() {
   }
 }
 
-/* ============================================================
-   CRÉATION JOUEUR RP
-============================================================ */
+
+// ============================================================
+// CRÉATION JOUEUR RP
+// ============================================================
 async function admin_validerCreationJoueur() {
   const nom = document.getElementById("admin_createNom").value.trim();
   const prenom = document.getElementById("admin_createPrenom").value.trim();
@@ -73,9 +93,10 @@ async function admin_validerCreationJoueur() {
   admin_fermerPopupCreate();
 }
 
-/* ============================================================
-   ENREGISTREMENT LOCAL
-============================================================ */
+
+// ============================================================
+// ENREGISTREMENT LOCAL
+// ============================================================
 async function admin_validerEnregistrementLocal() {
   const nom = document.getElementById("admin_localNom").value.trim();
   const prenom = document.getElementById("admin_localPrenom").value.trim();
@@ -88,9 +109,10 @@ async function admin_resetLocalPlayer() {
   await api("admin_resetLocal");
 }
 
-/* ============================================================
-   CRÉATION ENTREPRISE
-============================================================ */
+
+// ============================================================
+// CRÉATION ENTREPRISE
+// ============================================================
 async function admin_validerCreationEntreprise() {
   const nom = document.getElementById("admin_popupNomEntreprise").value.trim();
   const patronNom = document.getElementById("admin_popupPatronNom").value.trim();
@@ -100,9 +122,10 @@ async function admin_validerCreationEntreprise() {
   admin_fermerPopupEntreprise();
 }
 
-/* ============================================================
-   ADMIN PRINCIPAL — GESTION DES ADMINS
-============================================================ */
+
+// ============================================================
+// ADMIN PRINCIPAL — GESTION DES ADMINS
+// ============================================================
 async function admin_chargerAdmins() {
   const admins = await api("admin_getAdmins");
 
@@ -130,9 +153,10 @@ async function admin_removeAdmin() {
   admin_chargerAdmins();
 }
 
-/* ============================================================
-   MAINTENANCE SYSTÈME
-============================================================ */
+
+// ============================================================
+// MAINTENANCE SYSTÈME
+// ============================================================
 async function admin_updateAll() {
   await api("admin_updateAll");
 }
