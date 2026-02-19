@@ -1,0 +1,36 @@
+/* ============================================================
+   style_global.css — Styles généraux PRO 2026
+   ============================================================ */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.theme-light {
+  --bg: #f5f5f5;
+  --text: #222;
+}
+
+.theme-dark {
+  --bg: #1e1e1e;
+  --text: #ddd;
+}
+
+.main-container {
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px #0002;
+}
+
+.theme-dark .card {
+  background: #2a2a2a;
+}
