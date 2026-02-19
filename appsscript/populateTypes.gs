@@ -1,18 +1,48 @@
 /**
  * ============================================================
- *  populateTypes()
- *  Auteur : Stephen
- *  Description :
- *      Remplit automatiquement l’onglet TYPES avec la liste
- *      PRO des types RP (Public, Légal, Criminel, Gang, Clandestin).
+ *  FICHIER : populateTypes.gs
+ *  MODULE  : RP BUSINESS SYSTEM — TYPES RP
+ *  VERSION : PRO 2026
+ *  AUTEUR  : Stephen + Copilot PRO
+ * ------------------------------------------------------------
+ *  DESCRIPTION :
+ *  Remplit automatiquement l’onglet TYPES avec la liste
+ *  officielle PRO 2026 des types RP :
+ *    - Public
+ *    - Légal
+ *    - Criminel
+ *    - Gang
+ *    - Clandestin
+ * ------------------------------------------------------------
+ *  LOGS :
+ *  🟦 [populateTypes] Module chargé.
  * ============================================================
  */
+
+console.log("🟦 [populateTypes] Chargement du module TYPES...");
+
+/* ============================================================
+   populateTypes()
+   ------------------------------------------------------------
+   Remplit la feuille TYPES avec la liste complète des types RP.
+   Efface l'ancien contenu, recrée l'en-tête, insère les données.
+   ============================================================ */
 function populateTypes() {
+  console.log("🔧 [populateTypes] Début du remplissage de la feuille TYPES...");
+
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = ss.getSheetByName("TYPES");
+
+  if (!sheet) {
+    console.error("❌ [populateTypes] Feuille TYPES introuvable.");
+    throw new Error("Feuille TYPES introuvable.");
+  }
+
+  // Nettoyage + en-tête
   sheet.clear();
   sheet.appendRow(["Type_ID", "Nom", "Categorie"]);
 
+  // Liste PRO 2026
   const types = [
     // PUBLIC
     ["T001", "Police", "Public"],
@@ -70,6 +100,8 @@ function populateTypes() {
     ["T054", "Groupes survivalistes", "Clandestin"]
   ];
 
+  // Insertion des données
   sheet.getRange(2, 1, types.length, 3).setValues(types);
-  Logger.log("📌 TYPES remplis automatiquement (" + types.length + " entrées)");
+
+  console.log("🟩 [populateTypes] TYPES remplis automatiquement (" + types.length + " entrées).");
 }

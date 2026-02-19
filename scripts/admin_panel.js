@@ -6,28 +6,6 @@
 console.log("🟦 [admin] Script Admin Panel chargé.");
 
 /* ============================================================
-   CONFIG API
-============================================================ */
-const API_URL = "https://script.google.com/macros/s/TON_DEPLOYMENT_ID/exec";
-
-async function api(action, params = {}) {
-  const url = new URL(API_URL);
-  url.searchParams.set("action", action);
-
-  for (const [k, v] of Object.entries(params)) {
-    url.searchParams.set(k, v);
-  }
-
-  try {
-    const res = await fetch(url);
-    return await res.json();
-  } catch (err) {
-    console.error("❌ [api] Erreur API :", err);
-    throw err;
-  }
-}
-
-/* ============================================================
    POPUPS
 ============================================================ */
 function admin_showPopup(id) {
