@@ -1,265 +1,164 @@
 /* ============================================================
-   SCRIPT  : admin_panel.js
-   MODULE  : JS global du panneau admin — RP Business System
-   VERSION : PRO 2026 — API REST
+   SCRIPT : Admin Panel — RP Business System
+   VERSION : PRO 2026 — API REST + SPA
    ============================================================ */
 
-(function() {
+console.log("🟦 [admin] Script Admin Panel chargé.");
 
-  // ============================================================
-  // CONFIG API
-  // ============================================================
-  const API_URL = "https://script.google.com/macros/s/TON_DEPLOYMENT_ID/exec";
+/* ============================================================
+   CONFIG API
+============================================================ */
+const API_URL = "https://script.google.com/macros/s/TON_DEPLOYMENT_ID/exec";
 
-  async function api(action, params = {}) {
-    const url = new URL(API_URL);
-    url.searchParams.set("action", action);
+async function api(action, params = {}) {
+  const url = new URL(API_URL);
+  url.searchParams.set("action", action);
 
-    Object.entries(params).forEach(([k, v]) => {
-      url.searchParams.set(k, v);
-    });
+  for (const [k, v] of Object.entries(params)) {
+    url.searchParams.set(k, v);
+  }
 
+  try {
     const res = await fetch(url);
-    return res.json();
+    return await res.json();
+  } catch (err) {
+    console.error("❌ [api] Erreur API :", err);
+    throw err;
   }
+}
 
-  // ============================================================
-  // PROTECTION : NE PAS EXÉCUTER DANS LA FENÊTRE OAUTH
-  // ============================================================
-  if (window.location.href.includes("createOAuthDialog=true")) {
-    console.warn("Admin script ignoré dans la fenêtre OAuth.");
-    return;
+/* ============================================================
+   POPUPS
+============================================================ */
+function admin_showPopup(id) {
+  document.getElementById(id).style.display = "flex";
+}
+function admin_hidePopup(id) {
+  document.getElementById(id).style.display = "none";
+}
+
+function admin_ouvrirPopupLocal() { admin_showPopup("admin_popupLocal"); }
+function admin_fermerPopupLocal() { admin_hidePopup("admin_popupLocal"); }
+
+function admin_ouvrirPopupCreate() { admin_showPopup("admin_popupCreate"); }
+function admin_fermerPopupCreate() { admin_hidePopup("admin_popupCreate"); }
+
+function admin_ouvrirPopupEntreprise() { admin_showPopup("admin_popupEntreprise"); }
+function admin_fermerPopupEntreprise() { admin_hidePopup("admin_popupEntreprise"); }
+
+function admin_openAddAdminPopup() { admin_showPopup("admin_popupAddAdmin"); }
+function admin_closeAddAdminPopup() { admin_hidePopup("admin_popupAddAdmin"); }
+
+function admin_openRemoveAdminPopup() { admin_showPopup("admin_popupRemoveAdmin"); }
+function admin_closeRemoveAdminPopup() { admin_hidePopup("admin_popupRemoveAdmin"); }
+
+/* ============================================================
+   ÉTAT DE CONNEXION
+============================================================ */
+async function admin_afficherEtatConnexion() {
+  const zone = document.getElementById("admin_etatConnexion");
+  zone.innerText = "Chargement…";
+
+  try {
+    const etat = await api("admin_getEtatConnexion");
+    zone.innerText = etat;
+  } catch {
+    zone.innerText = "Erreur";
   }
+}
 
-  // ============================================================
-  // RÔLE UTILISATEUR
-  // ============================================================
-  async function admin_initRole() {
+/* ============================================================
+   INITIALISATION DU RÔLE
+============================================================ */
+async function admin_initRole() {
+  const role = await api("ui_getUserRole");
 
-    const section = document.getElementById("adminSection");
-    const principal = document.getElementById("adminPrincipalSection");
+  document.getElementById("adminSection").style.display =
+    (role === "admin_secondaire" || role === "admin_principal") ? "block" : "none";
 
-    if (!section) return;
+  document.getElementById("adminPrincipalSection").style.display =
+    (role === "admin_principal") ? "block" : "none";
 
-    const role = await api("getUserRole");
-
-    if (role === "admin_principal") {
-      section.style.display = "block";
-      if (principal) principal.style.display = "block";
-      admin_loadAdminsList();
-    }
-
-    if (role === "admin_secondaire") {
-      section.style.display = "block";
-    }
+  if (role === "admin_principal") {
+    admin_chargerAdmins();
   }
+}
 
-  // ============================================================
-  // POPUPS
-  // ============================================================
-  function admin_ouvrirPopupLocal() {
-    const el = document.getElementById("admin_popupLocal");
-    if (el) el.style.display = "flex";
-  }
-  function admin_fermerPopupLocal() {
-    const el = document.getElementById("admin_popupLocal");
-    if (el) el.style.display = "none";
-  }
+/* ============================================================
+   CRÉATION JOUEUR RP
+============================================================ */
+async function admin_validerCreationJoueur() {
+  const nom = document.getElementById("admin_createNom").value.trim();
+  const prenom = document.getElementById("admin_createPrenom").value.trim();
 
-  function admin_ouvrirPopupCreate() {
-    const el = document.getElementById("admin_popupCreate");
-    if (el) el.style.display = "flex";
-  }
-  function admin_fermerPopupCreate() {
-    const el = document.getElementById("admin_popupCreate");
-    if (el) el.style.display = "none";
-  }
+  await api("admin_creerJoueur", { nom, prenom });
+  admin_fermerPopupCreate();
+}
 
-  function admin_ouvrirPopupEntreprise() {
-    const el = document.getElementById("admin_popupEntreprise");
-    if (el) el.style.display = "flex";
-  }
-  function admin_fermerPopupEntreprise() {
-    const el = document.getElementById("admin_popupEntreprise");
-    if (el) el.style.display = "none";
-  }
+/* ============================================================
+   ENREGISTREMENT LOCAL
+============================================================ */
+async function admin_validerEnregistrementLocal() {
+  const nom = document.getElementById("admin_localNom").value.trim();
+  const prenom = document.getElementById("admin_localPrenom").value.trim();
 
-  function admin_openAddAdminPopup() {
-    const el = document.getElementById("admin_popupAddAdmin");
-    if (el) el.style.display = "flex";
-  }
-  function admin_closeAddAdminPopup() {
-    const el = document.getElementById("admin_popupAddAdmin");
-    if (el) el.style.display = "none";
-  }
+  await api("admin_enregistrerLocal", { nom, prenom });
+  admin_fermerPopupLocal();
+}
 
-  function admin_openRemoveAdminPopup() {
-    const el = document.getElementById("admin_popupRemoveAdmin");
-    if (el) el.style.display = "flex";
-  }
-  function admin_closeRemoveAdminPopup() {
-    const el = document.getElementById("admin_popupRemoveAdmin");
-    if (el) el.style.display = "none";
-  }
+async function admin_resetLocalPlayer() {
+  await api("admin_resetLocal");
+}
 
-  // ============================================================
-  // LOCAL PLAYER
-  // ============================================================
-  function admin_saveLocalPlayer(player) {
-    localStorage.setItem("rp_player", JSON.stringify(player));
-  }
+/* ============================================================
+   CRÉATION ENTREPRISE
+============================================================ */
+async function admin_validerCreationEntreprise() {
+  const nom = document.getElementById("admin_popupNomEntreprise").value.trim();
+  const patronNom = document.getElementById("admin_popupPatronNom").value.trim();
+  const patronPrenom = document.getElementById("admin_popupPatronPrenom").value.trim();
 
-  function admin_loadLocalPlayer() {
-    const data = localStorage.getItem("rp_player");
-    return data ? JSON.parse(data) : null;
-  }
+  await api("admin_creerEntreprise", { nom, patronNom, patronPrenom });
+  admin_fermerPopupEntreprise();
+}
 
-  function admin_resetLocalPlayer() {
-    localStorage.removeItem("rp_player");
-    loadPage("page_admin_panel");
-  }
+/* ============================================================
+   ADMIN PRINCIPAL — GESTION DES ADMINS
+============================================================ */
+async function admin_chargerAdmins() {
+  const admins = await api("admin_getAdmins");
 
-  // ============================================================
-  // VALIDATION POPUPS
-  // ============================================================
-  function admin_validerEnregistrementLocal() {
-    const zone = document.getElementById("admin_etatConnexion");
-    if (!zone) return;
+  const ul = document.getElementById("admin_adminsList");
+  ul.innerHTML = "";
 
-    const nom = document.getElementById("admin_localNom").value.trim();
-    const prenom = document.getElementById("admin_localPrenom").value.trim();
+  admins.forEach(mail => {
+    const li = document.createElement("li");
+    li.innerText = mail;
+    ul.appendChild(li);
+  });
+}
 
-    if (!nom || !prenom) {
-      alert("Merci de remplir nom et prénom RP.");
-      return;
-    }
+async function admin_addAdmin() {
+  const email = document.getElementById("admin_addAdminEmail").value.trim();
+  await api("admin_addAdmin", { email });
+  admin_closeAddAdminPopup();
+  admin_chargerAdmins();
+}
 
-    admin_saveLocalPlayer({ nom, prenom });
-    admin_fermerPopupLocal();
-    admin_afficherEtatConnexion();
-  }
+async function admin_removeAdmin() {
+  const email = document.getElementById("admin_removeAdminEmail").value.trim();
+  await api("admin_removeAdmin", { email });
+  admin_closeRemoveAdminPopup();
+  admin_chargerAdmins();
+}
 
-  async function admin_validerCreationJoueur() {
-    const nom = document.getElementById("admin_createNom").value.trim();
-    const prenom = document.getElementById("admin_createPrenom").value.trim();
+/* ============================================================
+   MAINTENANCE SYSTÈME
+============================================================ */
+async function admin_updateAll() {
+  await api("admin_updateAll");
+}
 
-    if (!nom || !prenom) {
-      alert("Merci de remplir nom et prénom RP.");
-      return;
-    }
-
-    const id = await api("registerPlayer", { nom, prenom });
-
-    alert("Joueur créé avec ID : " + id);
-    admin_fermerPopupCreate();
-  }
-
-  async function admin_validerCreationEntreprise() {
-    const nom = document.getElementById("admin_popupNomEntreprise").value.trim();
-    const patronNom = document.getElementById("admin_popupPatronNom").value.trim();
-    const patronPrenom = document.getElementById("admin_popupPatronPrenom").value.trim();
-
-    if (!nom || !patronNom || !patronPrenom) {
-      alert("Merci de remplir tous les champs.");
-      return;
-    }
-
-    await api("createEntreprise", {
-      nom,
-      patronNom,
-      patronPrenom
-    });
-
-    alert("Entreprise créée !");
-    admin_fermerPopupEntreprise();
-  }
-
-  // ============================================================
-  // ADMINS
-  // ============================================================
-  async function admin_addAdmin() {
-    const email = document.getElementById("admin_addAdminEmail").value.trim();
-
-    const msg = await api("addAdmin", { email });
-
-    alert(msg);
-    admin_closeAddAdminPopup();
-    admin_loadAdminsList();
-  }
-
-  async function admin_removeAdmin() {
-    const email = document.getElementById("admin_removeAdminEmail").value.trim();
-
-    const msg = await api("removeAdmin", { email });
-
-    alert(msg);
-    admin_closeRemoveAdminPopup();
-    admin_loadAdminsList();
-  }
-
-  async function admin_loadAdminsList() {
-    const ul = document.getElementById("admin_adminsList");
-    if (!ul) return;
-
-    const data = await api("getAdminsList");
-
-    ul.innerHTML = "";
-    data.secondaires.forEach(email => {
-      const li = document.createElement("li");
-      li.textContent = email;
-      ul.appendChild(li);
-    });
-  }
-
-  // ============================================================
-  // ÉTAT DE CONNEXION
-  // ============================================================
-  async function admin_afficherEtatConnexion() {
-    const zone = document.getElementById("admin_etatConnexion");
-    if (!zone) return;
-
-    const player = admin_loadLocalPlayer();
-
-    if (!player) {
-      zone.innerHTML = `
-        <span style='color:#ff6666;'>Aucun joueur enregistré.</span><br><br>
-        <button onclick="admin_ouvrirPopupLocal()">S’enregistrer</button>
-      `;
-      return;
-    }
-
-    zone.innerHTML = `<b>${player.nom} ${player.prenom}</b><br>`;
-
-    const ent = await api("isPatron", {
-      nom: player.nom,
-      prenom: player.prenom
-    });
-
-    if (ent) {
-      zone.innerHTML += `<span style='color:#00ff66;'>👑 Patron de : ${ent.nom}</span>`;
-    }
-  }
-
-  // ============================================================
-  // EXPORT GLOBAL
-  // ============================================================
-  window.admin_initRole = admin_initRole;
-  window.admin_afficherEtatConnexion = admin_afficherEtatConnexion;
-  window.admin_validerEnregistrementLocal = admin_validerEnregistrementLocal;
-  window.admin_validerCreationJoueur = admin_validerCreationJoueur;
-  window.admin_validerCreationEntreprise = admin_validerCreationEntreprise;
-  window.admin_addAdmin = admin_addAdmin;
-  window.admin_removeAdmin = admin_removeAdmin;
-
-  window.admin_ouvrirPopupLocal = admin_ouvrirPopupLocal;
-  window.admin_fermerPopupLocal = admin_fermerPopupLocal;
-  window.admin_ouvrirPopupCreate = admin_ouvrirPopupCreate;
-  window.admin_fermerPopupCreate = admin_fermerPopupCreate;
-  window.admin_ouvrirPopupEntreprise = admin_ouvrirPopupEntreprise;
-  window.admin_fermerPopupEntreprise = admin_fermerPopupEntreprise;
-  window.admin_openAddAdminPopup = admin_openAddAdminPopup;
-  window.admin_closeAddAdminPopup = admin_closeAddAdminPopup;
-  window.admin_openRemoveAdminPopup = admin_openRemoveAdminPopup;
-  window.admin_closeRemoveAdminPopup = admin_closeRemoveAdminPopup;
-
-})();
+async function admin_resetSystem() {
+  await api("admin_resetSystem");
+}

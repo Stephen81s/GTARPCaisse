@@ -1,10 +1,3 @@
-<!-- ============================================================
-     SCRIPT : Navigation SPA
-     MODULE : Menu latéral dynamique
-     VERSION : PRO 2026
-============================================================ -->
-
-<script>
 console.log("🟦 [nav] Script navigation chargé.");
 
 let currentPage = null;
@@ -73,4 +66,3 @@ function buildMenu(role) {
 function onPageLoaded(pageName) {
   setActiveNav(pageName);
 }
-</script>
