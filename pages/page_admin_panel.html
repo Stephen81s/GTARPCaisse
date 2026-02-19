@@ -1,61 +1,137 @@
-<!-- ============================================================
-     PAGE : page_admin_panel
-     MODULE : Admin Panel — RP Business System
-     VERSION : PRO 2026
-============================================================ -->
+/* ============================================================
+   FICHIER : admin_panel.js
+   MODULE  : Admin Panel — RP Business System
+   VERSION : PRO 2026
+   AUTEUR  : Stephen + Copilot PRO
+   ------------------------------------------------------------
+   DESCRIPTION :
+   Gère toutes les actions administratives :
+     - Création de joueurs
+     - Création d’entreprises
+     - Rafraîchissement des caches
+     - Reconstruction des types RP
+     - Reconstruction complète du système
+     - Affichage des logs
+   ------------------------------------------------------------
+   LOGS :
+   🟦 [admin] Module Admin Panel chargé.
+   ============================================================ */
 
-<div class="page-container">
+console.log("🟦 [admin] Module Admin Panel chargé.");
 
-  <!-- SECTION 1 — TITRE -->
-  <section class="card">
-    <h1>🛡️ Admin Panel</h1>
-    <p>Gestion avancée du système RP Business.</p>
-  </section>
+const adminPanel = {
 
-  <!-- SECTION 2 — CRÉATION -->
-  <section class="card">
-    <h2>➕ Création</h2>
+  /* ------------------------------------------------------------
+     UTILITAIRE — Ajoute un message dans la zone de logs
+     ------------------------------------------------------------ */
+  log(msg) {
+    const box = document.getElementById("admin_logs");
+    if (!box) {
+      console.error("❌ [admin] Zone #admin_logs introuvable.");
+      return;
+    }
 
-    <div class="form-row">
-      <label>Nom :</label>
-      <input id="admin_nom" type="text" placeholder="Nom">
-    </div>
+    const time = new Date().toLocaleTimeString();
+    box.textContent += `[${time}] ${msg}\n`;
+  },
 
-    <div class="form-row">
-      <label>Prénom :</label>
-      <input id="admin_prenom" type="text" placeholder="Prénom">
-    </div>
+  /* ------------------------------------------------------------
+     CRÉATION — Joueur
+     ------------------------------------------------------------ */
+  async createJoueur() {
+    const nom = document.getElementById("admin_nom").value.trim();
+    const prenom = document.getElementById("admin_prenom").value.trim();
 
-    <button onclick="adminPanel.createJoueur()">Créer un joueur</button>
+    if (!nom || !prenom) {
+      this.log("❌ Impossible de créer un joueur : champs incomplets.");
+      return;
+    }
 
-    <hr>
+    this.log(`🧍 Création du joueur : ${prenom} ${nom}…`);
 
-    <div class="form-row">
-      <label>Nom entreprise :</label>
-      <input id="admin_ent_nom" type="text" placeholder="Nom entreprise">
-    </div>
+    try {
+      const result = await api("admin_createJoueur", { nom, prenom });
+      this.log(`🟩 Joueur créé : ${JSON.stringify(result)}`);
+    } catch (err) {
+      this.log(`❌ Erreur création joueur : ${err}`);
+    }
+  },
 
-    <div class="form-row">
-      <label>Type :</label>
-      <input id="admin_ent_type" type="text" placeholder="Type RP">
-    </div>
+  /* ------------------------------------------------------------
+     CRÉATION — Entreprise
+     ------------------------------------------------------------ */
+  async createEntreprise() {
+    const nom = document.getElementById("admin_ent_nom").value.trim();
+    const type = document.getElementById("admin_ent_type").value.trim();
 
-    <button onclick="adminPanel.createEntreprise()">Créer une entreprise</button>
-  </section>
+    if (!nom || !type) {
+      this.log("❌ Impossible de créer une entreprise : champs incomplets.");
+      return;
+    }
 
-  <!-- SECTION 3 — OUTILS -->
-  <section class="card">
-    <h2>🧰 Outils administratifs</h2>
+    this.log(`🏢 Création entreprise : ${nom} (${type})…`);
 
-    <button onclick="adminPanel.refreshCaches()">🔄 Rafraîchir les caches</button>
-    <button onclick="adminPanel.rebuildTypes()">📚 Recharger les types RP</button>
-    <button onclick="adminPanel.rebuildAll()">⚙️ Reconstruire tout le système</button>
-  </section>
+    try {
+      const result = await api("admin_createEntreprise", { nom, type });
+      this.log(`🟩 Entreprise créée : ${JSON.stringify(result)}`);
+    } catch (err) {
+      this.log(`❌ Erreur création entreprise : ${err}`);
+    }
+  },
 
-  <!-- SECTION 4 — LOGS -->
-  <section class="card">
-    <h2>📜 Logs</h2>
-    <pre id="admin_logs">En attente…</pre>
-  </section>
+  /* ------------------------------------------------------------
+     OUTILS — Rafraîchir les caches
+     ------------------------------------------------------------ */
+  async refreshCaches() {
+    this.log("🔄 Rafraîchissement des caches…");
 
-</div>
+    try {
+      const result = await api("admin_refreshCaches");
+      this.log(`🟩 Caches rafraîchis : ${JSON.stringify(result)}`);
+    } catch (err) {
+      this.log(`❌ Erreur refresh caches : ${err}`);
+    }
+  },
+
+  /* ------------------------------------------------------------
+     OUTILS — Recharger les types RP
+     ------------------------------------------------------------ */
+  async rebuildTypes() {
+    this.log("📚 Reconstruction des types RP…");
+
+    try {
+      const result = await api("admin_rebuildTypes");
+      this.log(`🟩 Types RP reconstruits : ${JSON.stringify(result)}`);
+    } catch (err) {
+      this.log(`❌ Erreur rebuild types : ${err}`);
+    }
+  },
+
+  /* ------------------------------------------------------------
+     OUTILS — Reconstruction complète du système
+     ------------------------------------------------------------ */
+  async rebuildAll() {
+    this.log("⚙️ Reconstruction complète du système…");
+
+    try {
+      const result = await api("admin_rebuildAll");
+      this.log(`🟩 Reconstruction terminée : ${JSON.stringify(result)}`);
+    } catch (err) {
+      this.log(`❌ Erreur rebuild all : ${err}`);
+    }
+  },
+
+  /* ------------------------------------------------------------
+     OUTILS — Afficher les logs système
+     ------------------------------------------------------------ */
+  async showLogs() {
+    this.log("📜 Récupération des logs système…");
+
+    try {
+      const logs = await api("admin_getLogs");
+      this.log(`🟩 Logs système :\n${logs.join("\n")}`);
+    } catch (err) {
+      this.log(`❌ Erreur récupération logs : ${err}`);
+    }
+  }
+};
