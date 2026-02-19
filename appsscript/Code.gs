@@ -1,6 +1,6 @@
 /* ============================================================
    Code.gs — Backend API PRO 2026
-   Point d’entrée unique pour toutes les actions API
+   Point d’entrée unique pour toutes les actions API ss
    ============================================================ */
 
 /**
