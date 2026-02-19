@@ -20,7 +20,7 @@ console.log("🟦 [config] Configuration chargée.");
 // URL DE L'API (WEB APP APPS SCRIPT)
 // ============================================================
 const API_URL =
-  "https://script.google.com/macros/s/AKfycbxX795abvANEfdvYVJ-_e-PYFdSOa0iyTZ43Tl7CWaaTEJGZ0rWj2e38ug0MFbe5AtS/exec";
+  "https://script.google.com/macros/s/AKfycbyFi1fr-wACOSJTGg9fF8_4V90ldtF-krKIrovrpzwsDSQM_I-TMg0QSDt8NFR5jTvQ/exec";
 
 
 // ============================================================
