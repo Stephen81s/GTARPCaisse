@@ -2,17 +2,30 @@
  * FICHIER : navigation.js
  * ARCHITECTURE : PRO 2026
  * AUTEUR : Stephen
- *
- * DESCRIPTION :
- *   - Routeur principal du frontend
- *   - Charge dynamiquement les pages HTML dans #app
- *   - Gère le menu, le loader et les erreurs
- *
- * NOTES :
- *   - Les pages sont dans /pages/<page>.html
- *   - Le loader global est #loader
- *   - Le conteneur principal est #app
  ***************************************************************/
+
+
+/***************************************************************
+ * EXECUTION DES SCRIPTS INTERNES
+ ***************************************************************/
+function executeScripts(container) {
+    const scripts = container.querySelectorAll("script");
+
+    scripts.forEach(oldScript => {
+        const newScript = document.createElement("script");
+
+        if (oldScript.textContent) {
+            newScript.textContent = oldScript.textContent;
+        }
+
+        if (oldScript.src) {
+            newScript.src = oldScript.src;
+        }
+
+        document.body.appendChild(newScript);
+        oldScript.remove();
+    });
+}
 
 
 /***************************************************************
@@ -26,9 +39,13 @@ async function loadPage(pageName) {
         if (!response.ok) throw new Error(`Page introuvable : ${pageName}`);
 
         const html = await response.text();
-        document.getElementById("app").innerHTML = html;
+        const app = document.getElementById("app");
+        app.innerHTML = html;
 
-        // Exécute un script d'initialisation si présent
+        // Exécute les scripts internes de la page
+        executeScripts(app);
+
+        // Appelle init_<page> si présent
         if (typeof window[`init_${pageName}`] === "function") {
             window[`init_${pageName}`]();
         }
@@ -62,21 +79,9 @@ function setupNavigation() {
 
 
 /***************************************************************
- * LOADER GLOBAL
- ***************************************************************/
-function showLoader() {
-    document.getElementById("loader").classList.remove("hidden");
-}
-
-function hideLoader() {
-    document.getElementById("loader").classList.add("hidden");
-}
-
-
-/***************************************************************
- * INITIALISATION AU CHARGEMENT
+ * INITIALISATION
  ***************************************************************/
 window.addEventListener("DOMContentLoaded", () => {
     setupNavigation();
-    loadPage("core"); // Page d’accueil
+    loadPage("core");
 });

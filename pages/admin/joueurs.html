@@ -1,0 +1,172 @@
+<!--
+    FICHIER : joueurs.html
+    ARCHITECTURE : PRO 2026
+    AUTEUR : Stephen
+-->
+
+<section class="page-container">
+
+    <h1>Joueurs</h1>
+
+    <button class="btn-primary" onclick="openJoueurModal()">+ Ajouter un joueur</button>
+
+    <table class="pro-table" id="table-joueurs">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Date de naissance</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</section>
+
+<!-- MODAL -->
+<div id="joueur-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Nouveau joueur</h2>
+
+        <label>Nom</label>
+        <input type="text" id="jou-nom" />
+
+        <label>Prénom</label>
+        <input type="text" id="jou-prenom" />
+
+        <label>Date de naissance</label>
+        <input type="date" id="jou-date" />
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeJoueurModal()">Annuler</button>
+            <button class="btn-primary" onclick="saveJoueur()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(() => {
+
+    // ============================================================
+    // VARIABLES INTERNES (isolées)
+    // ============================================================
+    let editingJoueurId = null;
+
+
+    // ============================================================
+    // INITIALISATION
+    // ============================================================
+    async function init_joueurs() {
+        await loadJoueurs();
+    }
+
+
+    // ============================================================
+    // CHARGEMENT DES JOUEURS
+    // ============================================================
+    async function loadJoueurs() {
+        const data = await apiCall("api_getJoueurs");
+
+        const tbody = document.querySelector("#table-joueurs tbody");
+        tbody.innerHTML = "";
+
+        data.forEach(j => {
+            const tr = document.createElement("tr");
+
+            tr.innerHTML = `
+                <td>${j.id}</td>
+                <td>${j.nom}</td>
+                <td>${j.prenom}</td>
+                <td>${formatDate(j.dateNaissance)}</td>
+                <td>
+                    <button onclick="editJoueur('${j.id}', '${j.nom}', '${j.prenom}', '${j.dateNaissance}')">Modifier</button>
+                    <button onclick="deleteJoueur('${j.id}')">Supprimer</button>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
+        });
+    }
+
+
+    // ============================================================
+    // MODAL
+    // ============================================================
+    function openJoueurModal() {
+        editingJoueurId = null;
+        document.getElementById("modal-title").textContent = "Nouveau joueur";
+        document.getElementById("jou-nom").value = "";
+        document.getElementById("jou-prenom").value = "";
+        document.getElementById("jou-date").value = "";
+        document.getElementById("joueur-modal").classList.remove("hidden");
+    }
+
+    function closeJoueurModal() {
+        document.getElementById("joueur-modal").classList.add("hidden");
+    }
+
+
+    // ============================================================
+    // EDITION
+    // ============================================================
+    function editJoueur(id, nom, prenom, dateNaissance) {
+        editingJoueurId = id;
+        document.getElementById("modal-title").textContent = "Modifier joueur";
+        document.getElementById("jou-nom").value = nom;
+        document.getElementById("jou-prenom").value = prenom;
+        document.getElementById("jou-date").value = dateNaissance;
+        document.getElementById("joueur-modal").classList.remove("hidden");
+    }
+
+
+    // ============================================================
+    // SAUVEGARDE
+    // ============================================================
+    async function saveJoueur() {
+        const nom = document.getElementById("jou-nom").value;
+        const prenom = document.getElementById("jou-prenom").value;
+        const dateNaissance = document.getElementById("jou-date").value;
+
+        if (!nom || !prenom || !dateNaissance) {
+            showError("Veuillez remplir tous les champs");
+            return;
+        }
+
+        if (editingJoueurId) {
+            await apiCall("api_updateJoueur", editingJoueurId, { nom, prenom, dateNaissance });
+            showSuccess("Joueur mis à jour");
+        } else {
+            await apiCall("api_createJoueur", nom, prenom, dateNaissance);
+            showSuccess("Joueur créé");
+        }
+
+        closeJoueurModal();
+        loadJoueurs();
+    }
+
+
+    // ============================================================
+    // SUPPRESSION
+    // ============================================================
+    async function deleteJoueur(id) {
+        if (!confirm("Supprimer ce joueur ?")) return;
+
+        await apiCall("api_deleteJoueur", id);
+        showSuccess("Joueur supprimé");
+        loadJoueurs();
+    }
+
+
+    // ============================================================
+    // EXPOSITION AU GLOBAL (uniquement ce qui est nécessaire)
+    // ============================================================
+    window.init_joueurs = init_joueurs;
+    window.openJoueurModal = openJoueurModal;
+    window.editJoueur = editJoueur;
+    window.saveJoueur = saveJoueur;
+    window.deleteJoueur = deleteJoueur;
+
+})();
+</script>

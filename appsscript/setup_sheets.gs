@@ -1105,6 +1105,7 @@ function setupOptions() {
  *   - Initialiser USERS avec un compte admin
  *   - Initialiser USER_ROLES avec les rôles système
  *   - Initialiser LOGS avec une première entrée
+ *   - Initialiser les FEUILLES RP (entreprises, employés, stock…)
  *   - Garantir que le système démarre avec une base propre
  *
  * Notes :
@@ -1125,7 +1126,46 @@ const SYSTEM_ROLES = [
 
 
 /***************************************************************
- * FONCTION : setupSystemSheets()
+ * BLOC 10A — FEUILLES RP (Entreprises)
+ *
+ * Objectif :
+ *   - Créer toutes les feuilles nécessaires au système RP
+ *   - Ne pas recréer les feuilles existantes
+ ***************************************************************/
+function setupRPSheets() {
+  logSetup("=== Initialisation des FEUILLES RP ===");
+
+  const ss = SpreadsheetApp.getActive();
+
+  const rpSheets = [
+    { name: "ENTREPRISES", header: ["ID", "Nom", "Type", "Solde", "PatronCode"] },
+    { name: "EMPLOYES", header: ["CodeJoueur", "Nom", "Prenom", "EntrepriseID", "Role"] },
+    { name: "PERMISSIONS", header: ["EntrepriseID", "Role", "Banque", "Caisse", "Craft", "Stock", "Articles", "Employes", "Config"] },
+    { name: "STOCK", header: ["EntrepriseID", "Item", "Quantite"] },
+    { name: "ARTICLES", header: ["EntrepriseID", "Article", "Prix", "Categorie"] },
+    { name: "CRAFTS", header: ["EntrepriseID", "Produit", "Ingredient", "Quantite"] },
+    { name: "HISTORIQUE", header: ["Date", "EntrepriseID", "Employe", "Type", "Details", "Montant"] },
+    { name: "CODES", header: ["Code", "RoleGlobal", "EntrepriseID"] }
+  ];
+
+  rpSheets.forEach(s => {
+    let sh = ss.getSheetByName(s.name);
+
+    if (!sh) {
+      sh = ss.insertSheet(s.name);
+      sh.appendRow(s.header);
+      logSetup("🟩 Feuille RP créée : " + s.name);
+    } else {
+      logSetup("🟦 Feuille RP déjà existante : " + s.name);
+    }
+  });
+
+  logSetup("=== Fin initialisation FEUILLES RP ===");
+}
+
+
+/***************************************************************
+ * BLOC 10B — FONCTION : setupSystemSheets()
  * Initialise USERS, USER_ROLES, LOGS
  ***************************************************************/
 function setupSystemSheets() {
@@ -1187,7 +1227,6 @@ function setupSystemSheets() {
     logSetup("Feuille LOGS initialisée.");
   }
 
-
   logSetup("=== Fin initialisation des FEUILLES SYSTÈME ===");
 }
 /***************************************************************
@@ -1197,13 +1236,7 @@ function setupSystemSheets() {
  *   - Orchestrer l’intégralité du setup de la BDD
  *   - Appeler chaque bloc dans l’ordre logique
  *   - Logger début et fin du processus
- *
- * Notes :
- *   - Cette fonction est la SEULE à exécuter manuellement
- *   - Elle reconstruit 100% de la BDD proprement
  ***************************************************************/
-
-
 function setup_rebuildFullDatabase() {
   setup_logStart();
 
@@ -1231,7 +1264,10 @@ function setup_rebuildFullDatabase() {
     // 7) Installation des options
     setupOptions();
 
-    // 8) Initialisation des feuilles système
+    // 8) Initialisation des feuilles RP (Entreprises)
+    setupRPSheets();
+
+    // 9) Initialisation des feuilles système (USERS, ROLES, LOGS)
     setupSystemSheets();
 
     logSetup("=== SETUP COMPLET TERMINÉ AVEC SUCCÈS ===");
