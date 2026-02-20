@@ -1,0 +1,238 @@
+<!--
+    FICHIER : services.html
+    ARCHITECTURE : PRO 2026
+    AUTEUR : Stephen
+
+    DESCRIPTION :
+        - Module de gestion des services
+        - Lecture, création, mise à jour, suppression
+        - Table dynamique + formulaire modal
+-->
+
+<section class="page-container">
+
+    <h1>Services</h1>
+
+    <button class="btn-primary" onclick="openServiceModal()">+ Ajouter un service</button>
+
+    <table class="pro-table" id="table-services">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Entreprise</th>
+                <th>Nom</th>
+                <th>Prix</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rempli dynamiquement -->
+        </tbody>
+    </table>
+
+</section>
+
+
+<!-- MODAL CREATION / EDITION -->
+<div id="service-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Nouveau service</h2>
+
+        <label>Entreprise</label>
+        <input type="text" id="srv-ent" placeholder="ID entreprise" />
+
+        <label>Nom du service</label>
+        <input type="text" id="srv-nom" />
+
+        <label>Prix</label>
+        <input type="number" id="srv-prix" />
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeServiceModal()">Annuler</button>
+            <button class="btn-primary" onclick="saveService()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .page-container {
+        padding: 30px;
+    }
+
+    .btn-primary {
+        background: #0078ff;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .btn-secondary {
+        background: #ccc;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .pro-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .pro-table th, .pro-table td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .pro-table th {
+        background: #f5f5f5;
+        text-align: left;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.hidden {
+        display: none;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 350px;
+    }
+
+    .modal-content input,
+    .modal-content select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
+
+
+<script>
+let editingServiceId = null;
+
+/***************************************************************
+ * INITIALISATION
+ ***************************************************************/
+async function init_services() {
+    loadServices();
+}
+
+
+/***************************************************************
+ * CHARGEMENT DES SERVICES
+ ***************************************************************/
+async function loadServices() {
+    const data = await apiCall("api_getServices");
+
+    const tbody = document.querySelector("#table-services tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(s => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${s.id}</td>
+            <td>${s.entreprise_id}</td>
+            <td>${s.nom}</td>
+            <td>${formatPrice(s.prix)}</td>
+            <td>
+                <button onclick="editService('${s.id}', '${s.entreprise_id}', '${s.nom}', '${s.prix}')">Modifier</button>
+                <button onclick="deleteService('${s.id}')">Supprimer</button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+
+/***************************************************************
+ * MODAL
+ ***************************************************************/
+function openServiceModal() {
+    editingServiceId = null;
+    document.getElementById("modal-title").textContent = "Nouveau service";
+    document.getElementById("srv-ent").value = "";
+    document.getElementById("srv-nom").value = "";
+    document.getElementById("srv-prix").value = "";
+    document.getElementById("service-modal").classList.remove("hidden");
+}
+
+function closeServiceModal() {
+    document.getElementById("service-modal").classList.add("hidden");
+}
+
+
+/***************************************************************
+ * EDITION
+ ***************************************************************/
+function editService(id, entreprise_id, nom, prix) {
+    editingServiceId = id;
+    document.getElementById("modal-title").textContent = "Modifier service";
+    document.getElementById("srv-ent").value = entreprise_id;
+    document.getElementById("srv-nom").value = nom;
+    document.getElementById("srv-prix").value = prix;
+    document.getElementById("service-modal").classList.remove("hidden");
+}
+
+
+/***************************************************************
+ * SAUVEGARDE
+ ***************************************************************/
+async function saveService() {
+    const entreprise_id = document.getElementById("srv-ent").value;
+    const nom = document.getElementById("srv-nom").value;
+    const prix = document.getElementById("srv-prix").value;
+
+    if (!entreprise_id || !nom || !prix) {
+        showError("Veuillez remplir tous les champs");
+        return;
+    }
+
+    if (editingServiceId) {
+        await apiCall("api_updateService", editingServiceId, { entreprise_id, nom, prix });
+        showSuccess("Service mis à jour");
+    } else {
+        await apiCall("api_createService", entreprise_id, nom, prix);
+        showSuccess("Service créé");
+    }
+
+    closeServiceModal();
+    loadServices();
+}
+
+
+/***************************************************************
+ * SUPPRESSION
+ ***************************************************************/
+async function deleteService(id) {
+    if (!confirm("Supprimer ce service ?")) return;
+
+    await apiCall("api_deleteService", id);
+    showSuccess("Service supprimé");
+    loadServices();
+}
+</script>

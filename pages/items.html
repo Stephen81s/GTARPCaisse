@@ -1,0 +1,257 @@
+<!--
+    FICHIER : items.html
+    ARCHITECTURE : PRO 2026
+    AUTEUR : Stephen
+
+    DESCRIPTION :
+        - Module de gestion des items
+        - Lecture, création, mise à jour, suppression
+        - Table dynamique + formulaire modal
+-->
+
+<section class="page-container">
+
+    <h1>Items</h1>
+
+    <button class="btn-primary" onclick="openItemModal()">+ Ajouter un item</button>
+
+    <table class="pro-table" id="table-items">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom</th>
+                <th>Type</th>
+                <th>Rareté</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rempli dynamiquement -->
+        </tbody>
+    </table>
+
+</section>
+
+
+<!-- MODAL CREATION / EDITION -->
+<div id="item-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Nouvel item</h2>
+
+        <label>Nom</label>
+        <input type="text" id="itm-nom" />
+
+        <label>Type</label>
+        <select id="itm-type"></select>
+
+        <label>Rareté</label>
+        <input type="text" id="itm-rarete" />
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeItemModal()">Annuler</button>
+            <button class="btn-primary" onclick="saveItem()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .page-container {
+        padding: 30px;
+    }
+
+    .btn-primary {
+        background: #0078ff;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .btn-secondary {
+        background: #ccc;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .pro-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .pro-table th, .pro-table td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .pro-table th {
+        background: #f5f5f5;
+        text-align: left;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.hidden {
+        display: none;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 350px;
+    }
+
+    .modal-content input,
+    .modal-content select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
+
+
+<script>
+let editingItemId = null;
+
+/***************************************************************
+ * INITIALISATION
+ ***************************************************************/
+async function init_items() {
+    await loadItemTypes();
+    loadItems();
+}
+
+
+/***************************************************************
+ * CHARGEMENT DES TYPES
+ ***************************************************************/
+async function loadItemTypes() {
+    const types = await apiCall("api_getItemTypes");
+
+    const select = document.getElementById("itm-type");
+    select.innerHTML = "";
+
+    types.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.value;
+        opt.textContent = t.description;
+        select.appendChild(opt);
+    });
+}
+
+
+/***************************************************************
+ * CHARGEMENT DES ITEMS
+ ***************************************************************/
+async function loadItems() {
+    const data = await apiCall("api_getItems");
+
+    const tbody = document.querySelector("#table-items tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(i => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${i.id}</td>
+            <td>${i.nom}</td>
+            <td>${i.type}</td>
+            <td>${i.rarete}</td>
+            <td>
+                <button onclick="editItem('${i.id}', '${i.nom}', '${i.type}', '${i.rarete}')">Modifier</button>
+                <button onclick="deleteItem('${i.id}')">Supprimer</button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+
+/***************************************************************
+ * MODAL
+ ***************************************************************/
+function openItemModal() {
+    editingItemId = null;
+    document.getElementById("modal-title").textContent = "Nouvel item";
+    document.getElementById("itm-nom").value = "";
+    document.getElementById("itm-type").value = "";
+    document.getElementById("itm-rarete").value = "";
+    document.getElementById("item-modal").classList.remove("hidden");
+}
+
+function closeItemModal() {
+    document.getElementById("item-modal").classList.add("hidden");
+}
+
+
+/***************************************************************
+ * EDITION
+ ***************************************************************/
+function editItem(id, nom, type, rarete) {
+    editingItemId = id;
+    document.getElementById("modal-title").textContent = "Modifier item";
+    document.getElementById("itm-nom").value = nom;
+    document.getElementById("itm-type").value = type;
+    document.getElementById("itm-rarete").value = rarete;
+    document.getElementById("item-modal").classList.remove("hidden");
+}
+
+
+/***************************************************************
+ * SAUVEGARDE
+ ***************************************************************/
+async function saveItem() {
+    const nom = document.getElementById("itm-nom").value;
+    const type = document.getElementById("itm-type").value;
+    const rarete = document.getElementById("itm-rarete").value;
+
+    if (!nom || !type || !rarete) {
+        showError("Veuillez remplir tous les champs");
+        return;
+    }
+
+    if (editingItemId) {
+        await apiCall("api_updateItem", editingItemId, { nom, type, rarete });
+        showSuccess("Item mis à jour");
+    } else {
+        await apiCall("api_createItem", nom, type, rarete);
+        showSuccess("Item créé");
+    }
+
+    closeItemModal();
+    loadItems();
+}
+
+
+/***************************************************************
+ * SUPPRESSION
+ ***************************************************************/
+async function deleteItem(id) {
+    if (!confirm("Supprimer cet item ?")) return;
+
+    await apiCall("api_deleteItem", id);
+    showSuccess("Item supprimé");
+    loadItems();
+}
+</script>

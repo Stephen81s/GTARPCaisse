@@ -1,0 +1,284 @@
+<!--
+    FICHIER : vehicules.html
+    ARCHITECTURE : PRO 2026
+    AUTEUR : Stephen
+
+    DESCRIPTION :
+        - Module de gestion des véhicules
+        - Lecture, création, mise à jour, suppression
+        - Table dynamique + formulaire modal
+-->
+
+<section class="page-container">
+
+    <h1>Véhicules</h1>
+
+    <button class="btn-primary" onclick="openVehiculeModal()">+ Ajouter un véhicule</button>
+
+    <table class="pro-table" id="table-vehicules">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Joueur</th>
+                <th>Modèle</th>
+                <th>Type</th>
+                <th>Plaque</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rempli dynamiquement -->
+        </tbody>
+    </table>
+
+</section>
+
+
+<!-- MODAL CREATION / EDITION -->
+<div id="vehicule-modal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="modal-title">Nouveau véhicule</h2>
+
+        <label>Joueur</label>
+        <select id="veh-joueur"></select>
+
+        <label>Modèle</label>
+        <input type="text" id="veh-modele" />
+
+        <label>Type</label>
+        <select id="veh-type"></select>
+
+        <label>Plaque</label>
+        <input type="text" id="veh-plaque" />
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeVehiculeModal()">Annuler</button>
+            <button class="btn-primary" onclick="saveVehicule()">Enregistrer</button>
+        </div>
+    </div>
+</div>
+
+
+<style>
+    .page-container {
+        padding: 30px;
+    }
+
+    .btn-primary {
+        background: #0078ff;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    .btn-secondary {
+        background: #ccc;
+        padding: 10px 18px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .pro-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .pro-table th, .pro-table td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .pro-table th {
+        background: #f5f5f5;
+        text-align: left;
+    }
+
+    .modal {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal.hidden {
+        display: none;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        width: 350px;
+    }
+
+    .modal-content input,
+    .modal-content select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 15px;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+    }
+</style>
+
+
+<script>
+let editingVehiculeId = null;
+
+/***************************************************************
+ * INITIALISATION
+ ***************************************************************/
+async function init_vehicules() {
+    await loadJoueurs();
+    await loadVehiculeTypes();
+    loadVehicules();
+}
+
+
+/***************************************************************
+ * CHARGEMENT DES JOUEURS
+ ***************************************************************/
+async function loadJoueurs() {
+    const joueurs = await apiCall("api_getJoueurs");
+
+    const select = document.getElementById("veh-joueur");
+    select.innerHTML = "";
+
+    joueurs.forEach(j => {
+        const opt = document.createElement("option");
+        opt.value = j.id;
+        opt.textContent = `${j.nom} ${j.prenom}`;
+        select.appendChild(opt);
+    });
+}
+
+
+/***************************************************************
+ * CHARGEMENT DES TYPES
+ ***************************************************************/
+async function loadVehiculeTypes() {
+    const types = await apiCall("api_getVehiculeTypes");
+
+    const select = document.getElementById("veh-type");
+    select.innerHTML = "";
+
+    types.forEach(t => {
+        const opt = document.createElement("option");
+        opt.value = t.value;
+        opt.textContent = t.description;
+        select.appendChild(opt);
+    });
+}
+
+
+/***************************************************************
+ * CHARGEMENT DES VÉHICULES
+ ***************************************************************/
+async function loadVehicules() {
+    const data = await apiCall("api_getVehicules");
+
+    const tbody = document.querySelector("#table-vehicules tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(v => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${v.id}</td>
+            <td>${v.joueur_id}</td>
+            <td>${v.modele}</td>
+            <td>${v.type}</td>
+            <td>${v.plaque}</td>
+            <td>
+                <button onclick="editVehicule('${v.id}', '${v.joueur_id}', '${v.modele}', '${v.type}', '${v.plaque}')">Modifier</button>
+                <button onclick="deleteVehicule('${v.id}')">Supprimer</button>
+            </td>
+        `;
+
+        tbody.appendChild(tr);
+    });
+}
+
+
+/***************************************************************
+ * MODAL
+ ***************************************************************/
+function openVehiculeModal() {
+    editingVehiculeId = null;
+    document.getElementById("modal-title").textContent = "Nouveau véhicule";
+    document.getElementById("veh-joueur").value = "";
+    document.getElementById("veh-modele").value = "";
+    document.getElementById("veh-type").value = "";
+    document.getElementById("veh-plaque").value = "";
+    document.getElementById("vehicule-modal").classList.remove("hidden");
+}
+
+function closeVehiculeModal() {
+    document.getElementById("vehicule-modal").classList.add("hidden");
+}
+
+
+/***************************************************************
+ * EDITION
+ ***************************************************************/
+function editVehicule(id, joueur_id, modele, type, plaque) {
+    editingVehiculeId = id;
+    document.getElementById("modal-title").textContent = "Modifier véhicule";
+    document.getElementById("veh-joueur").value = joueur_id;
+    document.getElementById("veh-modele").value = modele;
+    document.getElementById("veh-type").value = type;
+    document.getElementById("veh-plaque").value = plaque;
+    document.getElementById("vehicule-modal").classList.remove("hidden");
+}
+
+
+/***************************************************************
+ * SAUVEGARDE
+ ***************************************************************/
+async function saveVehicule() {
+    const joueur_id = document.getElementById("veh-joueur").value;
+    const modele = document.getElementById("veh-modele").value;
+    const type = document.getElementById("veh-type").value;
+    const plaque = document.getElementById("veh-plaque").value;
+
+    if (!joueur_id || !modele || !type || !plaque) {
+        showError("Veuillez remplir tous les champs");
+        return;
+    }
+
+    if (editingVehiculeId) {
+        await apiCall("api_updateVehicule", editingVehiculeId, { joueur_id, modele, type, plaque });
+        showSuccess("Véhicule mis à jour");
+    } else {
+        await apiCall("api_createVehicule", joueur_id, modele, type, plaque);
+        showSuccess("Véhicule créé");
+    }
+
+    closeVehiculeModal();
+    loadVehicules();
+}
+
+
+/***************************************************************
+ * SUPPRESSION
+ ***************************************************************/
+async function deleteVehicule(id) {
+    if (!confirm("Supprimer ce véhicule ?")) return;
+
+    await apiCall("api_deleteVehicule", id);
+    showSuccess("Véhicule supprimé");
+    loadVehicules();
+}
+</script>

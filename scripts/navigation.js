@@ -1,105 +1,82 @@
-/* ============================================================
-   FICHIER : navigation.js
-   MODULE  : RP BUSINESS SYSTEM — NAVIGATION FRONT
-   VERSION : PRO 2026
-   AUTEUR  : Stephen + Copilot PRO
-   ------------------------------------------------------------
-   DESCRIPTION :
-   Gère la navigation dynamique du site :
-     - Mise en surbrillance du bouton actif
-     - Construction du menu selon le rôle utilisateur
-     - Ajout dynamique de liens
-     - Intégration avec spa.loadPage()
-     - Hook onPageLoaded() appelé par spa.js
-   ------------------------------------------------------------
-   LOGS :
-   🟦 [nav] Script navigation chargé.
-   ============================================================ */
+/***************************************************************
+ * FICHIER : navigation.js
+ * ARCHITECTURE : PRO 2026
+ * AUTEUR : Stephen
+ *
+ * DESCRIPTION :
+ *   - Routeur principal du frontend
+ *   - Charge dynamiquement les pages HTML dans #app
+ *   - Gère le menu, le loader et les erreurs
+ *
+ * NOTES :
+ *   - Les pages sont dans /pages/<page>.html
+ *   - Le loader global est #loader
+ *   - Le conteneur principal est #app
+ ***************************************************************/
 
-console.log("🟦 [nav] Script navigation chargé.");
 
-let currentPage = null;
+/***************************************************************
+ * CHARGEMENT D’UNE PAGE
+ ***************************************************************/
+async function loadPage(pageName) {
+    showLoader();
 
-/* ============================================================
-   NAVIGATION — Mise en surbrillance du bouton actif
-   ============================================================ */
-function setActiveNav(pageName) {
-  const links = document.querySelectorAll("#menu-links a");
-  links.forEach(a => a.classList.remove("nav-active"));
+    try {
+        const response = await fetch(`pages/${pageName}.html`);
+        if (!response.ok) throw new Error(`Page introuvable : ${pageName}`);
 
-  const id = "nav-" + pageName;
-  const active = document.getElementById(id);
+        const html = await response.text();
+        document.getElementById("app").innerHTML = html;
 
-  if (active) {
-    active.classList.add("nav-active");
-    console.log("🟩 [nav] Bouton actif :", id);
-  } else {
-    console.warn("🟧 [nav] Aucun bouton trouvé pour :", id);
-  }
+        // Exécute un script d'initialisation si présent
+        if (typeof window[`init_${pageName}`] === "function") {
+            window[`init_${pageName}`]();
+        }
+
+    } catch (err) {
+        document.getElementById("app").innerHTML = `
+            <div class="error">
+                <h2>Erreur</h2>
+                <p>${err.message}</p>
+            </div>
+        `;
+    }
+
+    hideLoader();
 }
 
-/* ============================================================
-   NAVIGATION — Ajout d’un lien dans le menu
-   ============================================================ */
-function addMenuLink(label, page) {
-  const id = "nav-" + page;
 
-  const li = document.createElement("li");
-  li.innerHTML = `
-    <a id="${id}" href="javascript:void(0)" onclick="navigation.go('${page}')">
-      ${label}
-    </a>
-  `;
+/***************************************************************
+ * GESTION DU MENU
+ ***************************************************************/
+function setupNavigation() {
+    const buttons = document.querySelectorAll("#menu button");
 
-  document.getElementById("menu-links").appendChild(li);
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const page = btn.dataset.page;
+            loadPage(page);
+        });
+    });
 }
 
-/* ============================================================
-   NAVIGATION — Action principale
-   ============================================================ */
-var navigation = {
 
-  go: function(page) {
-    console.log("🔧 [nav] Navigation vers :", page);
-    currentPage = page;
-    spa.loadPage(page);
-  }
-};
-
-/* ============================================================
-   MENU DYNAMIQUE SELON LE RÔLE
-   ============================================================ */
-function buildMenu(role) {
-  console.log("🟦 [nav] Construction du menu pour rôle :", role);
-
-  const menu = document.getElementById("menu-links");
-  menu.innerHTML = "";
-
-  // Toujours visible
-  addMenuLink("🏠 Accueil", "accueil");
-
-  // Rôles non-joueur
-  if (role !== "joueur") {
-    addMenuLink("🧍 Joueurs", "joueurs");
-    addMenuLink("🏢 Entreprises", "entreprises");
-    addMenuLink("💼 Employés", "employes");
-  }
-
-  // Admin secondaire + principal
-  if (role === "admin_secondaire" || role === "admin_principal") {
-    addMenuLink("🛡️ Admin Panel", "admin_panel");
-  }
-
-  // Admin principal uniquement
-  if (role === "admin_principal") {
-    addMenuLink("👑 Configuration système", "config_systeme");
-    addMenuLink("🛠️ Maintenance", "maintenance_systeme");
-  }
+/***************************************************************
+ * LOADER GLOBAL
+ ***************************************************************/
+function showLoader() {
+    document.getElementById("loader").classList.remove("hidden");
 }
 
-/* ============================================================
-   HOOK : appelé automatiquement par spa.loadPage()
-   ============================================================ */
-function onPageLoaded(pageName) {
-  setActiveNav(pageName);
+function hideLoader() {
+    document.getElementById("loader").classList.add("hidden");
 }
+
+
+/***************************************************************
+ * INITIALISATION AU CHARGEMENT
+ ***************************************************************/
+window.addEventListener("DOMContentLoaded", () => {
+    setupNavigation();
+    loadPage("core"); // Page d’accueil
+});

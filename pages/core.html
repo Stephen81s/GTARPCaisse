@@ -1,0 +1,104 @@
+<!--
+    FICHIER : core.html
+    ARCHITECTURE : PRO 2026
+    AUTEUR : Stephen
+
+    DESCRIPTION :
+        - Page d’accueil du RP Manager
+        - Présente un tableau de bord minimal
+        - Peut être enrichie avec des widgets (stats, alertes, etc.)
+-->
+
+<section class="core-container">
+
+    <h1>Bienvenue sur RP Manager PRO</h1>
+
+    <p class="subtitle">
+        Le tableau de bord central de gestion RP — PRO 2026.
+    </p>
+
+    <div class="core-grid">
+
+        <div class="core-card">
+            <h2>Gestion</h2>
+            <ul>
+                <li>Entreprises</li>
+                <li>Joueurs</li>
+                <li>Articles</li>
+                <li>Services</li>
+            </ul>
+        </div>
+
+        <div class="core-card">
+            <h2>Administration</h2>
+            <ul>
+                <li>Amendes</li>
+                <li>Faux papiers</li>
+                <li>Licences</li>
+                <li>Commandes</li>
+            </ul>
+        </div>
+
+        <div class="core-card">
+            <h2>Inventaire</h2>
+            <ul>
+                <li>Items</li>
+                <li>Véhicules</li>
+            </ul>
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+    .core-container {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .subtitle {
+        margin-top: -10px;
+        color: #666;
+        font-size: 1.2em;
+    }
+
+    .core-grid {
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    .core-card {
+        background: #fff;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        width: 260px;
+        text-align: left;
+    }
+
+    .core-card h2 {
+        margin-bottom: 10px;
+        font-size: 1.3em;
+    }
+
+    .core-card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .core-card li {
+        padding: 5px 0;
+        color: #444;
+    }
+</style>
+
+<script>
+function init_core() {
+    showSuccess("Interface chargée");
+}
+</script>

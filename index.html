@@ -1,93 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>RP Business System — PRO 2026</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RP Manager PRO 2026</title>
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="styles/style_admin.css">
-  <link rel="stylesheet" href="styles/style_global.css">
+    <!-- STYLES GLOBAUX -->
+    <link rel="stylesheet" href="styles/main.css" />
+
+    <!-- HEADER PRO -->
+    <!--
+        FICHIER : index.html
+        ARCHITECTURE : PRO 2026
+        AUTEUR : Stephen
+
+        DESCRIPTION :
+            - Point d’entrée principal du front
+            - Charge dynamiquement les pages HTML
+            - Initialise l’interface et la navigation
+
+        NOTES :
+            - Toutes les pages sont chargées dans #app
+            - Le routeur est géré par navigation.js
+            - Les appels backend passent par api.js
+    -->
 </head>
 
-<body class="theme-light">
+<body>
 
-  <!-- ============================================================
-       MENU LATÉRAL
-  ============================================================ -->
-  <aside id="sidebar">
-    <div class="menu-section">
-      <h2>📌 Navigation</h2>
-      <ul id="menu-links"></ul>
+    <!-- BARRE DE NAVIGATION -->
+    <header id="topbar">
+        <div class="logo">RP Manager PRO</div>
+        <nav id="menu">
+            <button data-page="core">Accueil</button>
+            <button data-page="entreprises">Entreprises</button>
+            <button data-page="joueurs">Joueurs</button>
+            <button data-page="articles">Articles</button>
+            <button data-page="services">Services</button>
+            <button data-page="amendes">Amendes</button>
+            <button data-page="items">Items</button>
+            <button data-page="vehicules">Véhicules</button>
+            <button data-page="licences">Licences</button>
+            <button data-page="commandes">Commandes</button>
+        </nav>
+    </header>
+
+    <!-- CONTENEUR PRINCIPAL -->
+    <main id="app">
+        <!-- Le contenu des pages sera injecté ici -->
+    </main>
+
+    <!-- LOADER GLOBAL -->
+    <div id="loader" class="hidden">
+        <div class="spinner"></div>
+        <p>Chargement...</p>
     </div>
 
-    <div class="menu-section">
-      <h2>⚙️ Paramètres</h2>
-      <label for="themeSelect">Thème :</label>
-      <select id="themeSelect" onchange="changeTheme()">
-        <option value="light">Clair</option>
-        <option value="dark">Sombre</option>
-      </select>
-    </div>
-  </aside>
-
-  <!-- ============================================================
-       CONTENU PRINCIPAL (SPA)
-  ============================================================ -->
-  <main class="main-container">
-    <div id="page-frame" class="page-frame">Chargement…</div>
-  </main>
-
-  <!-- ============================================================
-       SCRIPTS
-       IMPORTANT : config.js doit être chargé AVANT tout le reste
-  ============================================================ -->
-  <script src="scripts/spa.js"></script>
-  <script src="scripts/config.js"></script>
-  <script src="scripts/navigation.js"></script>
-  
-
-  <!-- Modules front -->
-  <script src="scripts/admin_panel.js"></script>
-  <script src="scripts/accueil.js"></script>
-  <script src="scripts/joueurs.js"></script>
-  <script src="scripts/entreprises.js"></script>
-  <script src="scripts/employes.js"></script>
-  <script src="scripts/maintenance.js"></script>
-
-  <script>
-    console.log("🟦 [index] Initialisation…");
-
-    /* ============================================================
-       THÈME
-    ============================================================ */
-    function loadTheme() {
-      const theme = localStorage.getItem("theme") || "light";
-      document.body.className = "theme-" + theme;
-      document.getElementById("themeSelect").value = theme;
-    }
-
-    function changeTheme() {
-      const theme = document.getElementById("themeSelect").value;
-      localStorage.setItem("theme", theme);
-      loadTheme();
-    }
-
-    /* ============================================================
-       CHARGEMENT INITIAL
-    ============================================================ */
-    window.onload = async function () {
-      loadTheme();
-
-      // Rôle utilisateur via API Web App
-      const role = await api("ui_getUserRole");
-      console.log("🟦 [index] Rôle utilisateur :", role);
-
-      buildMenu(role);
-
-      // Charge la page d'accueil via le SPA
-      spa.loadPage("accueil");
-    };
-  </script>
-
+    <!-- SCRIPTS FRONT -->
+    <script src="scripts/navigation.js"></script>
+    <script src="scripts/app.js"></script>
 </body>
 </html>
