@@ -1,24 +1,60 @@
 /***************************************************************
- * FICHIER : app.js
- * ARCHITECTURE : PRO 2026
- * AUTEUR : Stephen
+ * FICHIER : app.js (PRO 2026 — Version Avancée)
+ * AUTEUR : Stephen + Copilot PRO
  *
  * DESCRIPTION :
  *   - Moteur principal du frontend
- *   - Wrapper API pour google.script.run
- *   - Gestion des notifications et erreurs
- *   - Fonctions utilitaires globales
- *
- * NOTES :
- *   - Toutes les pages utilisent apiCall() pour contacter le backend
- *   - Les erreurs sont affichées proprement dans l’UI
+ *   - API unifiée (backend + local)
+ *   - Gestion centralisée des erreurs
+ *   - Logger PRO 2026
+ *   - Notifications globales
+ *   - Loader global
+ *   - Mode DEBUG activable
  ***************************************************************/
 
 
 /***************************************************************
- * WRAPPER API GLOBAL
+ * CONFIGURATION GLOBALE
+ ***************************************************************/
+const APP = {
+    debug: true,   // Passe à false en production
+    version: "PRO 2026",
+    logs: []
+};
+
+
+/***************************************************************
+ * LOGGER PRO 2026
+ ***************************************************************/
+function log(message, type = "info") {
+    const timestamp = new Date().toISOString();
+    const entry = { timestamp, type, message };
+
+    APP.logs.push(entry);
+
+    if (APP.debug) {
+        const color = type === "error" ? "color:red" :
+                      type === "warn"  ? "color:orange" :
+                                         "color:#4da3ff";
+        console.log(`%c[LOG ${type.toUpperCase()}] ${message}`, color);
+    }
+}
+
+function logError(message) {
+    log(message, "error");
+}
+
+function logWarn(message) {
+    log(message, "warn");
+}
+
+
+/***************************************************************
+ * API UNIFIÉE (Google Apps Script)
  ***************************************************************/
 function apiCall(functionName, ...params) {
+    log(`API → Appel : ${functionName}(${params.join(", ")})`);
+
     return new Promise((resolve, reject) => {
 
         showLoader();
@@ -28,15 +64,19 @@ function apiCall(functionName, ...params) {
                 hideLoader();
 
                 if (!response || response.success !== true) {
-                    showError(response?.error || "Erreur inconnue");
-                    reject(response);
+                    const err = response?.error || "Erreur inconnue";
+                    logError(`API → Erreur : ${err}`);
+                    showError(err);
+                    reject(err);
                     return;
                 }
 
+                log(`API → Succès : ${functionName}`);
                 resolve(response.data);
             })
             .withFailureHandler((err) => {
                 hideLoader();
+                logError(`API → Exception : ${err.message}`);
                 showError("Erreur API : " + err.message);
                 reject(err);
             })[functionName](...params);
@@ -45,7 +85,7 @@ function apiCall(functionName, ...params) {
 
 
 /***************************************************************
- * NOTIFICATIONS
+ * NOTIFICATIONS PRO 2026
  ***************************************************************/
 function showSuccess(message) {
     showToast(message, "success");
@@ -62,9 +102,7 @@ function showToast(message, type = "info") {
 
     document.body.appendChild(toast);
 
-    setTimeout(() => {
-        toast.classList.add("visible");
-    }, 10);
+    setTimeout(() => toast.classList.add("visible"), 10);
 
     setTimeout(() => {
         toast.classList.remove("visible");
@@ -87,9 +125,13 @@ function formatDate(dateStr) {
     return new Date(dateStr).toLocaleString("fr-FR");
 }
 
+function uuid() {
+    return crypto.randomUUID();
+}
+
 
 /***************************************************************
- * LOADER GLOBAL (utilisé aussi par navigation.js)
+ * LOADER GLOBAL
  ***************************************************************/
 function showLoader() {
     document.getElementById("loader").classList.remove("hidden");
@@ -98,3 +140,25 @@ function showLoader() {
 function hideLoader() {
     document.getElementById("loader").classList.add("hidden");
 }
+
+
+/***************************************************************
+ * ERREURS GLOBALES (PRO 2026)
+ ***************************************************************/
+window.addEventListener("error", (event) => {
+    logError(`Erreur JS : ${event.message}`);
+    showError("Une erreur interne est survenue.");
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+    logError(`Promise rejetée : ${event.reason}`);
+    showError("Une erreur interne est survenue.");
+});
+
+
+/***************************************************************
+ * INITIALISATION GLOBALE
+ ***************************************************************/
+window.addEventListener("DOMContentLoaded", () => {
+    log("Application PRO 2026 initialisée.");
+});
