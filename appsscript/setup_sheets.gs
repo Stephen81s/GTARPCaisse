@@ -164,13 +164,19 @@ function setup_logEnd() {
 }
 /***************************************************************
  * BLOC 2 — LISTE OFFICIELLE DES FEUILLES
- * Définition complète de toutes les feuilles que la BDD doit contenir.
- * Cette liste est utilisée pour :
- *   - supprimer les feuilles inutiles
- *   - créer les feuilles manquantes
- *   - installer les colonnes
- *   - installer les constantes
- *   - installer les modules et fonctions
+ * 
+ * Objectif :
+ *   - Définir TOUTES les feuilles que la BDD doit contenir
+ *   - Permettre :
+ *       • deleteExtraSheets() → supprime le reste
+ *       • createAllSheets() → crée les manquantes
+ *       • setupColumns() → installe les colonnes
+ *       • setupConstantes() → installe les constantes
+ *       • setupModules() / setupFonctions() → s'appuient dessus
+ *
+ * IMPORTANT :
+ *   Ce bloc doit refléter EXACTEMENT les feuilles utilisées
+ *   par ton système RP/ERP actuel. Rien de plus, rien de moins.
  ***************************************************************/
 
 
@@ -196,6 +202,9 @@ const CONFIG_SHEETS = [
 
 /***************************************************************
  * FEUILLES D’OPTIONS (catégories, types, paramètres RP)
+ * 
+ * Ces feuilles sont utilisées pour stocker les types d’articles,
+ * services, amendes, faux papiers, items, véhicules, licences…
  ***************************************************************/
 const OPTION_SHEETS = [
   "ARTICLES_OPTIONS",
@@ -210,17 +219,30 @@ const OPTION_SHEETS = [
 
 /***************************************************************
  * FEUILLES MÉTIER (RP / ERP)
+ * 
+ * VERSION CORRIGÉE :
+ *   → uniquement les feuilles réellement utilisées
+ *   → suppression des anciennes feuilles inutiles
+ *   → ajout des feuilles manquantes (PERMISSIONS, STOCK, etc.)
  ***************************************************************/
 const METIER_SHEETS = [
+
   // ENTREPRISES
   "ENTREPRISES",
   "EMPLOYES",
-  "GRADES",
-  "ENTREPRISE_TRANSACTIONS",
+  "PERMISSIONS",
+  "GRADES",                 // si tu l’utilises encore
+  "ENTREPRISE_TRANSACTIONS",// si utilisé pour logs banque
 
   // ARTICLES
   "ARTICLES",
-  "ARTICLES_ENTREPRISES",
+  "ARTICLES_ENTREPRISES",   // si utilisé
+
+  // STOCK / CRAFT
+  "STOCK",
+  "CRAFTS",
+  "HISTORIQUE",
+  "CODES",
 
   // SERVICES
   "SERVICES",
@@ -247,6 +269,20 @@ const METIER_SHEETS = [
   "COMMANDES",
   "COMMANDES_LIGNES"
 ];
+
+
+/***************************************************************
+ * LISTE FINALE DES FEUILLES REQUISES
+ * (concaténation de toutes les catégories)
+ ***************************************************************/
+const REQUIRED_SHEETS = [
+  ...SYSTEM_SHEETS,
+  ...CONFIG_SHEETS,
+  ...OPTION_SHEETS,
+  ...METIER_SHEETS
+];
+
+logSetup("BLOC 2 chargé : liste officielle des feuilles initialisée.");
 
 
 /***************************************************************
@@ -477,23 +513,19 @@ function setupColumns() {
 
   logSetup("=== Fin installation des colonnes ===");
 }
+
 /***************************************************************
  * BLOC 6 — INSTALLATION DES CONSTANTES
  *
  * Objectif :
- *   - Installer toutes les constantes système dans la feuille
- *     CONSTANTES (noms des feuilles, compteurs d’ID, paramètres)
- *   - Centraliser toutes les valeurs que le backend doit lire
- *   - Logger chaque écriture
- *
- * Notes :
- *   - writeConst() (BLOC 1) gère l’écriture sécurisée
+ *   - Centraliser toutes les constantes système
+ *   - Installer les noms de feuilles, compteurs, paramètres
+ *   - Éviter les doublons et collisions
  ***************************************************************/
 
 
 /***************************************************************
  * CONSTANTES : NOMS DES FEUILLES
- * Le backend ne doit JAMAIS contenir un nom de feuille en dur.
  ***************************************************************/
 const CONST_SHEET_NAMES = {
   SHEET_CONSTANTES: "CONSTANTES",
@@ -543,8 +575,6 @@ const CONST_SHEET_NAMES = {
 
 /***************************************************************
  * CONSTANTES : COMPTEURS D’ID
- * Chaque module utilise un compteur pour générer :
- *   ENT001, EMP001, ART001, etc.
  ***************************************************************/
 const CONST_COUNTERS = {
   NEXT_ENTREPRISE_ID: 1,
@@ -563,22 +593,50 @@ const CONST_COUNTERS = {
 
 
 /***************************************************************
- * CONSTANTES : PARAMÈTRES SYSTÈME
+ * CONSTANTES : PARAMÈTRES SYSTÈME (VERSION FUSIONNÉE)
  ***************************************************************/
 const CONST_SYSTEM = {
-  SYSTEM_VERSION: "1.0.0",
+
+  // Version système
+  SYSTEM_VERSION: "PRO-2026",
+
+  // TVA par défaut
   DEFAULT_TVA: 20,
+
+  // Rôle par défaut
   DEFAULT_ROLE: "joueur",
+
+  // Statuts génériques
   STATUS_ACTIVE: "active",
   STATUS_INACTIVE: "inactive",
   STATUS_PENDING: "pending",
-  ADMIN_EMAIL: "admin@gtarp.fr" // tu pourras changer
+
+  // Email administrateur principal
+  ADMIN_EMAIL: "admin@gtarp.fr",
+
+  // URL WebApp (mise à jour auto après déploiement)
+  WEBAPP_URL: "",
+
+  // Activation des logs Discord
+  ENABLE_DISCORD_LOGS: true
+};
+
+
+/***************************************************************
+ * CONSTANTES DISCORD — Webhooks pour les logs RP
+ ***************************************************************/
+const CONST_DISCORD = {
+  LOGS_BANQUE: "",
+  LOGS_CRAFT: "",
+  LOGS_STOCK: "",
+  LOGS_EMPLOYES: "",
+  LOGS_PERMISSIONS: "",
+  LOGS_ENTREPRISE: ""
 };
 
 
 /***************************************************************
  * FONCTION : setupConstantes()
- * Installe toutes les constantes dans la feuille CONSTANTES
  ***************************************************************/
 function setupConstantes() {
   logSetup("=== Installation des CONSTANTES ===");
@@ -595,23 +653,26 @@ function setupConstantes() {
   // Noms des feuilles
   Object.keys(CONST_SHEET_NAMES).forEach(key => {
     writeConst(key, CONST_SHEET_NAMES[key]);
-    logSetup(`Constante installée : ${key} = ${CONST_SHEET_NAMES[key]}`);
   });
 
   // Compteurs d’ID
   Object.keys(CONST_COUNTERS).forEach(key => {
     writeConst(key, CONST_COUNTERS[key]);
-    logSetup(`Compteur ID initialisé : ${key} = ${CONST_COUNTERS[key]}`);
   });
 
   // Paramètres système
   Object.keys(CONST_SYSTEM).forEach(key => {
     writeConst(key, CONST_SYSTEM[key]);
-    logSetup(`Paramètre système : ${key} = ${CONST_SYSTEM[key]}`);
+  });
+
+  // Webhooks Discord
+  Object.keys(CONST_DISCORD).forEach(key => {
+    writeConst(key, CONST_DISCORD[key]);
   });
 
   logSetup("=== Fin installation des CONSTANTES ===");
 }
+
 /***************************************************************
  * BLOC 7 — INSTALLATION DES MODULES
  *
