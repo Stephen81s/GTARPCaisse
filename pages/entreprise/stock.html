@@ -1,0 +1,56 @@
+<!-- ============================================================
+     FICHIER : pages/entreprise/stock.html
+     ARCHITECTURE : RP MANAGER — PRO 2026
+     MODULE : Gestion du stock
+     DESCRIPTION :
+        - Liste du stock
+        - Entrées / sorties
+        - Ajustements
+     AUTEUR : Stephen
+     ============================================================ -->
+
+<section class="page-container">
+
+    <h1 class="page-title">Stock</h1>
+
+    <button class="btn-primary" onclick="openStockModal()">
+        + Ajouter une entrée de stock
+    </button>
+
+    <table class="pro-table" id="table-stock">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Article</th>
+                <th>Quantité</th>
+                <th>Dernière modification</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</section>
+
+<!-- MODAL -->
+<div id="stock-modal" class="modal hidden">
+    <div class="modal-content">
+
+        <h2 id="stock-modal-title">Entrée de stock</h2>
+
+        <label>Article</label>
+        <select id="stock-article"></select>
+
+        <label>Quantité</label>
+        <input type="number" id="stock-quantite">
+
+        <div class="modal-actions">
+            <button class="btn-secondary" onclick="closeStockModal()">Annuler</button>
+            <button class="btn-primary" onclick="saveStock()">Enregistrer</button>
+        </div>
+
+    </div>
+</div>
+
+<link rel="stylesheet" href="../../styles/entreprise.css">
+<script src="../../scripts/entreprise/stock.js"></script>

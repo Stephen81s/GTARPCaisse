@@ -1,0 +1,80 @@
+<!-- ============================================================
+     FICHIER : pages/entreprise/entreprise.html
+     ARCHITECTURE : RP MANAGER — PRO 2026
+     MODULE : Dashboard entreprise
+     DESCRIPTION :
+        - Informations générales
+        - Statistiques
+        - Accès rapide aux modules
+        - Activités récentes
+     AUTEUR : Stephen
+     ============================================================ -->
+
+<section class="page-container">
+
+    <h1 class="page-title" id="ent-nom">Entreprise</h1>
+    <span class="badge" id="ent-type">Type</span>
+
+    <!-- ========================================================
+         STATISTIQUES
+         ======================================================== -->
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h3>Solde</h3>
+            <p id="stat-solde">0 $</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Employés</h3>
+            <p id="stat-employes">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Stock total</h3>
+            <p id="stat-stock">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Recettes</h3>
+            <p id="stat-crafts">0</p>
+        </div>
+
+    </div>
+
+    <!-- ========================================================
+         ACCÈS RAPIDE
+         ======================================================== -->
+    <h2>Accès rapide</h2>
+
+    <div class="quick-links">
+        <a class="quick-btn" href="banque.html?id=" id="link-banque">Banque</a>
+        <a class="quick-btn" href="employes.html?id=" id="link-employes">Employés</a>
+        <a class="quick-btn" href="permissions.html?id=" id="link-permissions">Permissions</a>
+        <a class="quick-btn" href="stock.html?id=" id="link-stock">Stock</a>
+        <a class="quick-btn" href="crafts.html?id=" id="link-crafts">Recettes</a>
+        <a class="quick-btn" href="articles.html?id=" id="link-articles">Articles</a>
+        <a class="quick-btn" href="historique.html?id=" id="link-historique">Historique</a>
+    </div>
+
+    <!-- ========================================================
+         ACTIVITÉS RÉCENTES
+         ======================================================== -->
+    <h2>Activités récentes</h2>
+
+    <table class="pro-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Action</th>
+                <th>Utilisateur</th>
+            </tr>
+        </thead>
+        <tbody id="recent-logs"></tbody>
+    </table>
+
+</section>
+
+<link rel="stylesheet" href="../../styles/entreprise.css">
+<script src="../../scripts/entreprise/entreprise.js"></script>

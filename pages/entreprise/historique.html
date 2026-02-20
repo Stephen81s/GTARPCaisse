@@ -1,0 +1,55 @@
+<!-- ============================================================
+     FICHIER : pages/entreprise/historique.html
+     ARCHITECTURE : RP MANAGER — PRO 2026
+     MODULE : Historique entreprise
+     DESCRIPTION :
+        - Logs internes
+        - Filtres (type, date, utilisateur)
+        - Table dynamique
+     AUTEUR : Stephen
+     ============================================================ -->
+
+<section class="page-container">
+
+    <h1 class="page-title">Historique</h1>
+
+    <div class="card">
+
+        <h2>Filtres</h2>
+
+        <div class="filters-row">
+            <select id="filter-type">
+                <option value="">Tous types</option>
+                <option value="banque">Banque</option>
+                <option value="stock">Stock</option>
+                <option value="craft">Craft</option>
+                <option value="employe">Employés</option>
+                <option value="permission">Permissions</option>
+            </select>
+
+            <input type="date" id="filter-date">
+
+            <input type="text" id="filter-user" placeholder="Utilisateur">
+
+            <button class="btn-grey" onclick="loadHistorique()">Filtrer</button>
+        </div>
+
+        <table class="pro-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                    <th>Utilisateur</th>
+                    <th>Détails</th>
+                </tr>
+            </thead>
+            <tbody id="historique-body"></tbody>
+        </table>
+
+    </div>
+
+</section>
+
+<link rel="stylesheet" href="../../styles/entreprise.css">
+<script src="../../scripts/entreprise/historique.js"></script>
