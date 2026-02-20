@@ -270,21 +270,6 @@ const METIER_SHEETS = [
   "COMMANDES_LIGNES"
 ];
 
-
-/***************************************************************
- * LISTE FINALE DES FEUILLES REQUISES
- * (concaténation de toutes les catégories)
- ***************************************************************/
-const REQUIRED_SHEETS = [
-  ...SYSTEM_SHEETS,
-  ...CONFIG_SHEETS,
-  ...OPTION_SHEETS,
-  ...METIER_SHEETS
-];
-
-logSetup("BLOC 2 chargé : liste officielle des feuilles initialisée.");
-
-
 /***************************************************************
  * LISTE FINALE DES FEUILLES REQUISES
  * (concaténation de toutes les catégories)
