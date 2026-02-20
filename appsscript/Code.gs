@@ -1,56 +1,97 @@
-/**
- * ============================================================
- *  GTARPCaisse — API Backend (PRO 2026)
- *  Architecture REST pour front GitHub Pages
- * ============================================================
- */
+/* ============================================================
+   FICHIER : Code.gs
+   MODULE  : Backend RP Business — Activation via clé + Rôles
+   VERSION : PRO 2026
+   AUTEUR  : Stephen + Copilot PRO
+   ------------------------------------------------------------
+   DESCRIPTION :
+   - Vérification d’une clé d’activation dans la BDD (feuille KEYS)
+   - Attribution du rôle selon la clé
+   - Marquage de la clé comme utilisée
+   - Réponses JSON standardisées
+   ------------------------------------------------------------
+   PRÉREQUIS BDD :
+   Feuille : KEYS
+   Colonnes (ligne 1) :
+     A : key
+     B : role
+     C : used ("yes" / "no")
+   Exemple :
+     ABC-123-XYZ | joueur           | no
+     ADM-999-AAA | admin_principal | no
+   ------------------------------------------------------------
+   LOGS :
+   🟦 [backend] Code.gs chargé.
+   ============================================================ */
 
-function json(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
+console.log("🟦 [backend] Code.gs chargé.");
+
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-function doGet(e) {
-  const action = e?.parameter?.action;
+/* ============================================================
+   ACTIVATION — Vérification de la clé dans la BDD
+   ============================================================ */
+function ui_activateKey(key) {
+  console.log("🟦 [activate] Vérification clé :", key);
 
-  if (!action) {
-    return json({ status: "ok", message: "GTARPCaisse API active" });
+  const sheet = SpreadsheetApp.getActive().getSheetByName("KEYS");
+  if (!sheet) {
+    console.error("❌ [activate] Feuille KEYS introuvable.");
+    return { success: false, error: "BDD manquante" };
   }
+
+  const data = sheet.getDataRange().getValues();
+  console.log("🟦 [activate] Lignes KEYS chargées :", data.length);
+
+  for (let i = 1; i < data.length; i++) {
+    const rowKey  = String(data[i][0]).trim();
+    const rowRole = String(data[i][1]).trim();
+    const rowUsed = String(data[i][2]).trim();
+
+    if (rowKey === key) {
+
+      if (rowUsed === "yes") {
+        console.warn("🟧 [activate] Clé déjà utilisée.");
+        return { success: false, error: "Clé déjà utilisée" };
+      }
+
+      console.log(`🟩 [activate] Clé valide → rôle = ${rowRole}`);
+
+      // Marquer la clé comme utilisée
+      sheet.getRange(i + 1, 3).setValue("yes");
+
+      return { success: true, role: rowRole };
+    }
+  }
+
+  console.warn("🟥 [activate] Clé inconnue.");
+  return { success: false, error: "Clé invalide" };
+}
+
+/* ============================================================
+   POINT D’ENTRÉE WEBAPP — doGet
+   ============================================================ */
+function doGet(e) {
+  const params = e?.parameter || {};
+  const action = params.action || "";
+  console.log("🟦 [api] doGet action :", action, "params :", JSON.stringify(params));
 
   try {
     switch (action) {
 
-      // UI / Rôles
-      case "ui_getUserRole": return json(ui_getUserRole());
-      case "ui_isAdmin": return json(ui_isAdmin());
-      case "ui_isAdminPrincipal": return json(ui_isAdminPrincipal());
-      case "ui_isAdminSecondaire": return json(ui_isAdminSecondaire());
-
-      // Joueurs
-      case "joueurs_getAll": return json(joueurs_getAll());
-
-      // Entreprises
-      case "entreprises_getAll": return json(entreprises_getAll());
-
-      // Employés
-      case "employes_getAll": return json(employes_getAll());
-
-      // Maintenance
-      case "ui_updateSchema": return json(ui_updateSchema());
-      case "ui_updateFunctions": return json(ui_updateFunctions());
-      case "ui_updateConstantes": return json(ui_updateConstantes());
-      case "ui_updateAll": return json(ui_updateAll());
-      case "ui_resetSystem": return json(ui_resetSystem());
-
-      // Populate
-      case "populateTypes": return json(populateTypes());
+      case "ui_activateKey":
+        return json(ui_activateKey(params.key));
 
       default:
-        return json({ error: `Action inconnue : ${action}` });
+        console.warn("🟧 [api] Action inconnue :", action);
+        return json({ error: "Action inconnue : " + action });
     }
 
   } catch (err) {
-    return json({ error: err.message, stack: err.stack });
+    console.error("❌ [api] Erreur doGet :", err);
+    return json({ error: "Erreur serveur : " + err });
   }
 }
