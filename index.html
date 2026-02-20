@@ -8,57 +8,72 @@
     <!-- STYLES GLOBAUX -->
     <link rel="stylesheet" href="styles/main.css" />
 
-    <!-- HEADER PRO -->
     <!--
+        ============================================================
         FICHIER : index.html
         ARCHITECTURE : PRO 2026
         AUTEUR : Stephen
 
         DESCRIPTION :
             - Point d’entrée principal du front
-            - Charge dynamiquement les pages HTML
+            - Charge dynamiquement les pages HTML via spa.js
             - Initialise l’interface et la navigation
 
         NOTES :
-            - Toutes les pages sont chargées dans #app
-            - Le routeur est géré par navigation.js
-            - Les appels backend passent par api.js
+            - Toutes les pages sont injectées dans #page-frame
+            - Le menu est un hamburger déroulant en haut à gauche
+            - Le header est fixe en haut
+        ============================================================
     -->
 </head>
 
 <body>
 
-    <!-- BARRE DE NAVIGATION -->
+    <!-- ============================================================
+         HEADER GLOBAL — RP MANAGER PRO + MENU DÉROULANT
+         ============================================================ -->
     <header id="topbar">
+
+        <!-- Logo -->
         <div class="logo">RP Manager PRO</div>
-        <nav id="menu">
+
+        <!-- Bouton hamburger -->
+        <div id="menu-toggle">☰</div>
+
+        <!-- Menu déroulant -->
+        <nav id="menu" class="hidden">
             <button data-page="core">Accueil</button>
+            <button data-page="banque">Banque</button>
+            <button data-page="caisse">Caisse</button>
             <button data-page="entreprises">Entreprises</button>
             <button data-page="joueurs">Joueurs</button>
-            <button data-page="articles">Articles</button>
             <button data-page="services">Services</button>
-            <button data-page="amendes">Amendes</button>
-            <button data-page="items">Items</button>
-            <button data-page="vehicules">Véhicules</button>
-            <button data-page="licences">Licences</button>
-            <button data-page="commandes">Commandes</button>
         </nav>
+
     </header>
 
-    <!-- CONTENEUR PRINCIPAL -->
-    <main id="app">
-        <!-- Le contenu des pages sera injecté ici -->
-    </main>
 
-    <!-- LOADER GLOBAL -->
+    <!-- ============================================================
+         ZONE CENTRALE — PAGES CHARGÉES PAR LE SPA
+         ============================================================ -->
+    <main id="page-frame"></main>
+
+
+    <!-- ============================================================
+         LOADER GLOBAL
+         ============================================================ -->
     <div id="loader" class="hidden">
         <div class="spinner"></div>
         <p>Chargement...</p>
     </div>
 
-    <!-- SCRIPTS FRONT -->
+
+    <!-- ============================================================
+         SCRIPTS FRONT
+         ============================================================ -->
     <script src="scripts/admin/spa.js"></script>
-<script src="scripts/admin/navigation.js"></script>
-<script src="scripts/admin/app.js"></script>
+    <script src="scripts/admin/navigation.js"></script>
+    <script src="scripts/admin/app.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,24 @@
+<!-- ************************************************************
+     FICHIER : login.html
+     ARCHITECTURE : PRO 2026
+     AUTEUR : Stephen
+     DESCRIPTION :
+       - Page d’accueil / connexion RP
+       - Saisie du jeton + nom RP + prénom RP
+       - Redirection automatique si déjà connecté
+************************************************************* -->
+
+<section class="login-page">
+    <h1>Connexion RP Manager</h1>
+
+    <label>Jeton d’accès</label>
+    <input id="token" type="text" placeholder="Votre clé RP">
+
+    <label>Nom RP</label>
+    <input id="nom" type="text" placeholder="Nom RP">
+
+    <label>Prénom RP</label>
+    <input id="prenom" type="text" placeholder="Prénom RP">
+
+    <button onclick="login()">Valider</button>
+</section>

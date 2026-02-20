@@ -2,31 +2,42 @@
  * FICHIER : navigation.js
  * ARCHITECTURE : PRO 2026
  * AUTEUR : Stephen
+ *
  * DESCRIPTION :
+ *   - Menu hamburger déroulant en haut à gauche
  *   - Gère les clics du menu
- *   - Appelle spa.loadPage(<path>)
+ *   - Charge login au démarrage
  ***************************************************************/
 
 console.log("🟦 [navigation] Module navigation chargé.");
 
 function setupNavigation() {
+
+    // Gestion des boutons du menu
     const buttons = document.querySelectorAll("#menu button");
 
     buttons.forEach(btn => {
         btn.addEventListener("click", () => {
             const page = btn.dataset.page;
-
             console.log(`🟦 [navigation] Navigation vers : ${page}`);
-
-            // Appelle le SPA PRO 2026
             spa.loadPage(page);
+
+            // refermer le menu après clic
+            document.getElementById("menu").classList.add("hidden");
         });
+    });
+
+    // Toggle du menu hamburger
+    const toggle = document.getElementById("menu-toggle");
+    toggle.addEventListener("click", () => {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle("hidden");
+        console.log("🟦 [navigation] Menu toggled.");
     });
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+    console.log("🟦 [navigation] Initialisation DOM…");
     setupNavigation();
-
-    // Page par défaut
-    spa.loadPage("admin/core");
+    spa.loadPage("login"); // PAGE DE DÉMARRAGE
 });
