@@ -12,6 +12,8 @@ yarn.lock
 tools/service-account.json
 tools/credentials.json
 tools/.clasp.json
+sync_git.js
+sync_git.json
 
 # IDE and editor
 .vscode/
