@@ -24,12 +24,11 @@ const SERVICE_ACCOUNT = JSON.parse(fs.readFileSync("./service-account.json"));
 // -----------------------------
 // GOOGLE SHEETS CLIENT
 // -----------------------------
-const auth = new google.auth.JWT(
-  SERVICE_ACCOUNT.client_email,
-  null,
-  SERVICE_ACCOUNT.private_key,
-  ["https://www.googleapis.com/auth/spreadsheets"]
-);
+const auth = new google.auth.JWT({
+  email: SERVICE_ACCOUNT.client_email,
+  key: SERVICE_ACCOUNT.private_key,
+  scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+});
 
 const sheets = google.sheets({ version: "v4", auth });
 
