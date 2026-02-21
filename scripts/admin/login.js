@@ -1,10 +1,10 @@
 /***************************************************************
- * FICHIER : login.js
+ * FICHIER : scripts/admin/login.js
  * ARCHITECTURE : PRO 2026
  * AUTEUR : Stephen
  *
  * DESCRIPTION :
- *   - Nouveau système de connexion RP
+ *   - Connexion RP via API REST Apps Script
  *   - Envoi nomRP + prenomRP au backend
  *   - Cas 1 : Première connexion → auto-admin
  *   - Cas 2 : Demande en attente admin
@@ -17,7 +17,7 @@ console.log("🟦 [login] Script login chargé.");
 /***************************************************************
  * ÉVÉNEMENT : Clic sur "Connexion"
  ***************************************************************/
-function login() {
+async function login() {
     console.log("🟦 [login] Tentative de connexion…");
 
     const nomRP = document.getElementById("nom").value.trim();
@@ -31,15 +31,34 @@ function login() {
 
     console.log(`🟦 [login] Envoi demande → ${nomRP} ${prenomRP}`);
 
-    google.script.run
-        .withSuccessHandler(handleLoginResponse)
-        .withFailureHandler(err => {
-            console.error("❌ [login] Erreur API :", err);
-            alert("Erreur serveur.");
-        })
-        .api_requestConnexion(nomRP, prenomRP, "web");
-}
+    const payload = {
+        action: "login",
+        nom: nomRP,
+        prenom: prenomRP,
+        source: "web"
+    };
 
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            console.error("❌ [login] HTTP error :", res.status, res.statusText);
+            alert("Erreur serveur (HTTP).");
+            return;
+        }
+
+        const data = await res.json();
+        handleLoginResponse(data);
+
+    } catch (err) {
+        console.error("❌ [login] Erreur API :", err);
+        alert("Erreur serveur (réseau).");
+    }
+}
 
 /***************************************************************
  * TRAITEMENT DE LA RÉPONSE BACKEND
@@ -47,12 +66,12 @@ function login() {
 function handleLoginResponse(res) {
     console.log("🟦 [login] Réponse backend :", res);
 
-    if (!res.success) {
-        alert("Erreur : " + res.error);
+    if (!res || !res.success) {
+        alert("Erreur : " + (res && res.error ? res.error : "Réponse invalide."));
         return;
     }
 
-    const data = res.data;
+    const data = res.data || {};
 
     /***********************************************************
      * CAS 1 : Première connexion → auto-admin
@@ -73,15 +92,19 @@ function handleLoginResponse(res) {
      ***********************************************************/
     console.log("🟧 [login] Demande en attente admin");
 
-    document.getElementById("loginStatus").innerHTML =
-        "<span style='color: orange;'>Votre demande est en attente de validation par un administrateur.</span>";
+    const statusEl = document.getElementById("loginStatus");
+    if (statusEl) {
+        statusEl.innerHTML =
+            "<span style='color: orange;'>Votre demande est en attente de validation par un administrateur.</span>";
+    } else {
+        alert("Votre demande est en attente de validation par un administrateur.");
+    }
 }
-
 
 /***************************************************************
  * AUTO-LOGIN SI SESSION EXISTE
  ***************************************************************/
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
     const userId = localStorage.getItem("userId");
     const jeton = localStorage.getItem("jeton");
 
@@ -89,18 +112,36 @@ window.addEventListener("DOMContentLoaded", () => {
 
     console.log("🟦 [login] Session locale détectée → vérification backend…");
 
-    google.script.run
-        .withSuccessHandler(res => {
-            if (res.success && res.data.success) {
-                console.log("🟩 [login] Session valide → redirection core");
-                spa.loadPage("core");
-            } else {
-                console.warn("🟥 [login] Session invalide → nettoyage");
-                localStorage.clear();
-            }
-        })
-        .withFailureHandler(err => {
-            console.error("❌ [login] Erreur check session :", err);
-        })
-        .api_checkUserSession(userId, jeton);
+    const payload = {
+        action: "checkSession",
+        userId,
+        jeton
+    };
+
+    try {
+        const res = await fetch(API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+            console.error("❌ [login] HTTP error checkSession :", res.status, res.statusText);
+            return;
+        }
+
+        const data = await res.json();
+        console.log("🟦 [login] Réponse checkSession :", data);
+
+        if (data.success && data.data && data.data.valid === true) {
+            console.log("🟩 [login] Session valide → redirection core");
+            spa.loadPage("core");
+        } else {
+            console.warn("🟥 [login] Session invalide → nettoyage");
+            localStorage.clear();
+        }
+
+    } catch (err) {
+        console.error("❌ [login] Erreur checkSession :", err);
+    }
 });
