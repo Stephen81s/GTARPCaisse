@@ -47,3 +47,6 @@ out/
 # Node
 .npm
 .eslintcache
+
+# Tools folder
+tools/
