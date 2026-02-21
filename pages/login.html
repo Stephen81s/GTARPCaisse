@@ -1,18 +1,18 @@
-<!-- ************************************************************
-     FICHIER : login.html
+<!-- ===========================================================
+     PAGE : login.html
      ARCHITECTURE : PRO 2026
-     AUTEUR : Stephen
+     AUTEUR : Stephen + Copilot PRO
+     -----------------------------------------------------------
      DESCRIPTION :
-       - Page d’accueil / connexion RP
-       - Saisie du jeton + nom RP + prénom RP
-       - Redirection automatique si déjà connecté
-************************************************************* -->
+       - Nouveau système de connexion RP
+       - Envoi nomRP + prenomRP au backend
+       - Auto-admin si USERS est vide
+       - Demande en attente sinon
+   =========================================================== -->
 
-<section class="login-page">
-    <h1>Connexion RP Manager</h1>
+<div class="page" id="login">
 
-    <label>Jeton d’accès</label>
-    <input id="token" type="text" placeholder="Votre clé RP">
+    <h2>Connexion RP Manager</h2>
 
     <label>Nom RP</label>
     <input id="nom" type="text" placeholder="Nom RP">
@@ -21,4 +21,7 @@
     <input id="prenom" type="text" placeholder="Prénom RP">
 
     <button onclick="login()">Valider</button>
-</section>
+
+    <div id="loginStatus" style="margin-top:10px;"></div>
+
+</div>
