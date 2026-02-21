@@ -9,9 +9,9 @@ yarn.lock
 .env.*.local
 
 # Credentials and secrets
-service-account.json
-.clasp.json
-credentials.json
+tools/service-account.json
+tools/credentials.json
+tools/.clasp.json
 
 # IDE and editor
 .vscode/
@@ -41,12 +41,7 @@ out/
 # IDE files
 *.sublime-project
 *.sublime-workspace
-.vscode/
-.idea/
 
 # Node
 .npm
 .eslintcache
-
-# Tools folder
-tools/
