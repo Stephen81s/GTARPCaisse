@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RP Manager PRO 2026</title>
 
-    <!-- STYLES GLOBAUX -->
+    <!-- ============================================================
+         STYLES GLOBAUX
+         ============================================================ -->
     <link rel="stylesheet" href="styles/main.css" />
 
     <!--
@@ -16,13 +19,14 @@
 
         DESCRIPTION :
             - Point d’entrée principal du front
-            - Charge dynamiquement les pages HTML via spa.js
-            - Initialise l’interface et la navigation
+            - Initialise le SPA (Single Page Application)
+            - Charge dynamiquement les pages HTML dans #page-frame
+            - Gère le header global + menu hamburger
 
         NOTES :
-            - Toutes les pages sont injectées dans #page-frame
-            - Le menu est un hamburger déroulant en haut à gauche
-            - Le header est fixe en haut
+            - Toutes les pages sont dans /pages/
+            - Tous les scripts sont dans /scripts/
+            - Le SPA gère la navigation interne sans recharger la page
         ============================================================
     -->
 </head>
@@ -69,11 +73,22 @@
 
 
     <!-- ============================================================
-         SCRIPTS FRONT
+         SCRIPTS FRONT — BASE SPA
          ============================================================ -->
     <script src="scripts/admin/spa.js"></script>
     <script src="scripts/admin/navigation.js"></script>
     <script src="scripts/admin/app.js"></script>
+
+    <!-- ============================================================
+         MODULES FONCTIONNELS — PAGES & LOGIQUE RP
+         ============================================================ -->
+    <script src="scripts/admin/login.js"></script>
+    <script src="scripts/admin/home.js"></script>
+    <script src="scripts/admin/admin_panel.js"></script>
+    <script src="scripts/admin/accueil.js"></script>
+    <script src="scripts/admin/entreprises.js"></script>
+    <script src="scripts/admin/employes.js"></script>
+    <script src="scripts/admin/config.js"></script>
 
 </body>
 </html>
