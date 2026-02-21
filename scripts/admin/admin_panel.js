@@ -5,127 +5,216 @@
    AUTEUR  : Stephen + Copilot PRO
    ------------------------------------------------------------
    DESCRIPTION :
-   Gère les actions administratives :
-     - Création joueur
-     - Création entreprise
-     - Rafraîchissement caches
-     - Reconstruction types RP
-     - Reconstruction système complet
+   Gère toutes les actions administratives :
+     - Création de joueurs
+     - Création d’entreprises
+     - Rafraîchissement des caches
+     - Reconstruction des types RP
+     - Reconstruction complète du système
+     - Affichage des logs
+     - Gestion des demandes de connexion (CONNEXIONS_EN_ATTENTE)
    ------------------------------------------------------------
    LOGS :
-   🟦 [admin_panel] Script chargé.
+   🟦 [admin] Module Admin Panel chargé.
    ============================================================ */
 
-console.log("🟦 [admin_panel] Script chargé.");
+console.log("🟦 [admin] Module Admin Panel chargé.");
 
-/* ============================================================
-   FONCTION PRINCIPALE — appelée automatiquement par spa.js
-   ============================================================ */
-function admin_panel() {
-  console.log("🔧 [admin_panel] Initialisation de la page Admin Panel…");
-  setAdminLog("Panel chargé. En attente d'action.");
-}
+const adminPanel = {
 
-/* ============================================================
-   LOGS
-   ============================================================ */
-function setAdminLog(text) {
-  document.getElementById("admin_logs").textContent = text;
-}
+  /* ------------------------------------------------------------
+     UTILITAIRE — Ajoute un message dans la zone de logs
+     ------------------------------------------------------------ */
+  log(msg) {
+    const box = document.getElementById("admin_logs");
+    if (!box) {
+      console.error("❌ [admin] Zone #admin_logs introuvable.");
+      return;
+    }
 
-/* ============================================================
-   MODULE ADMIN PANEL
-   ============================================================ */
-var adminPanel = {
+    const time = new Date().toLocaleTimeString();
+    box.textContent += `[${time}] ${msg}\n`;
+  },
 
-  /* -----------------------------------------
-     CRÉATION JOUEUR
-  ----------------------------------------- */
+  /* ------------------------------------------------------------
+     CRÉATION — Joueur
+     ------------------------------------------------------------ */
   async createJoueur() {
     const nom = document.getElementById("admin_nom").value.trim();
     const prenom = document.getElementById("admin_prenom").value.trim();
 
     if (!nom || !prenom) {
-      setAdminLog("❌ Nom et prénom requis.");
+      this.log("❌ Impossible de créer un joueur : champs incomplets.");
       return;
     }
 
-    setAdminLog("⏳ Création du joueur…");
+    this.log(`🧍 Création du joueur : ${prenom} ${nom}…`);
 
     try {
       const result = await api("admin_createJoueur", { nom, prenom });
-      setAdminLog("🟩 Joueur créé : " + result.id);
+      this.log(`🟩 Joueur créé : ${JSON.stringify(result)}`);
     } catch (err) {
-      console.error(err);
-      setAdminLog("❌ Erreur création joueur.");
+      this.log(`❌ Erreur création joueur : ${err}`);
     }
   },
 
-  /* -----------------------------------------
-     CRÉATION ENTREPRISE
-  ----------------------------------------- */
+  /* ------------------------------------------------------------
+     CRÉATION — Entreprise
+     ------------------------------------------------------------ */
   async createEntreprise() {
     const nom = document.getElementById("admin_ent_nom").value.trim();
     const type = document.getElementById("admin_ent_type").value.trim();
 
     if (!nom || !type) {
-      setAdminLog("❌ Nom entreprise et type requis.");
+      this.log("❌ Impossible de créer une entreprise : champs incomplets.");
       return;
     }
 
-    setAdminLog("⏳ Création de l’entreprise…");
+    this.log(`🏢 Création entreprise : ${nom} (${type})…`);
 
     try {
       const result = await api("admin_createEntreprise", { nom, type });
-      setAdminLog("🟩 Entreprise créée : " + result.id);
+      this.log(`🟩 Entreprise créée : ${JSON.stringify(result)}`);
     } catch (err) {
-      console.error(err);
-      setAdminLog("❌ Erreur création entreprise.");
+      this.log(`❌ Erreur création entreprise : ${err}`);
     }
   },
 
-  /* -----------------------------------------
-     RAFRAÎCHIR LES CACHES
-  ----------------------------------------- */
+  /* ------------------------------------------------------------
+     OUTILS — Rafraîchir les caches
+     ------------------------------------------------------------ */
   async refreshCaches() {
-    setAdminLog("⏳ Rafraîchissement des caches…");
+    this.log("🔄 Rafraîchissement des caches…");
 
     try {
-      await api("admin_refreshCaches");
-      setAdminLog("🟩 Caches rafraîchis.");
+      const result = await api("admin_refreshCaches");
+      this.log(`🟩 Caches rafraîchis : ${JSON.stringify(result)}`);
     } catch (err) {
-      console.error(err);
-      setAdminLog("❌ Erreur rafraîchissement caches.");
+      this.log(`❌ Erreur refresh caches : ${err}`);
     }
   },
 
-  /* -----------------------------------------
-     RECHARGER TYPES RP
-  ----------------------------------------- */
+  /* ------------------------------------------------------------
+     OUTILS — Recharger les types RP
+     ------------------------------------------------------------ */
   async rebuildTypes() {
-    setAdminLog("⏳ Reconstruction des types RP…");
+    this.log("📚 Reconstruction des types RP…");
 
     try {
-      await api("admin_rebuildTypes");
-      setAdminLog("🟩 Types RP rechargés.");
+      const result = await api("admin_rebuildTypes");
+      this.log(`🟩 Types RP reconstruits : ${JSON.stringify(result)}`);
     } catch (err) {
-      console.error(err);
-      setAdminLog("❌ Erreur reconstruction types.");
+      this.log(`❌ Erreur rebuild types : ${err}`);
     }
   },
 
-  /* -----------------------------------------
-     RECONSTRUIRE TOUT LE SYSTÈME
-  ----------------------------------------- */
+  /* ------------------------------------------------------------
+     OUTILS — Reconstruction complète du système
+     ------------------------------------------------------------ */
   async rebuildAll() {
-    setAdminLog("⏳ Reconstruction complète du système…");
+    this.log("⚙️ Reconstruction complète du système…");
 
     try {
-      await api("admin_rebuildAll");
-      setAdminLog("🟩 Reconstruction complète terminée.");
+      const result = await api("admin_rebuildAll");
+      this.log(`🟩 Reconstruction terminée : ${JSON.stringify(result)}`);
     } catch (err) {
-      console.error(err);
-      setAdminLog("❌ Erreur reconstruction système.");
+      this.log(`❌ Erreur rebuild all : ${err}`);
+    }
+  },
+
+  /* ------------------------------------------------------------
+     OUTILS — Afficher les logs système
+     ------------------------------------------------------------ */
+  async showLogs() {
+    this.log("📜 Récupération des logs système…");
+
+    try {
+      const logs = await api("admin_getLogs");
+      this.log(`🟩 Logs système :\n${logs.join("\n")}`);
+    } catch (err) {
+      this.log(`❌ Erreur récupération logs : ${err}`);
+    }
+  },
+
+  /* ------------------------------------------------------------
+     CONNEXIONS — Charger les demandes en attente
+     ------------------------------------------------------------ */
+  async loadPendingConnexions() {
+    this.log("📥 Chargement des demandes de connexion en attente…");
+
+    try {
+      const res = await api("api_getSheet", { sheetName: "CONNEXIONS_EN_ATTENTE" });
+
+      if (!res.success) {
+        this.log(`❌ Erreur API getSheet : ${res.error}`);
+        return;
+      }
+
+      const rows = res.data;
+      const tbody = document.getElementById("admin_connexions_body");
+      if (!tbody) {
+        this.log("❌ Zone #admin_connexions_body introuvable.");
+        return;
+      }
+
+      tbody.innerHTML = "";
+
+      rows.forEach(row => {
+        if (row.status !== "pending") return;
+
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+          <td>${row.id}</td>
+          <td>${row.nomRP}</td>
+          <td>${row.prenomRP}</td>
+          <td>${row.timestamp}</td>
+          <td>
+            <button class="btn-accept" onclick="adminPanel.approveConnexion(${row.id})">
+              Accepter
+            </button>
+          </td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+
+      this.log("🟩 Demandes de connexion chargées.");
+
+    } catch (err) {
+      this.log(`❌ Erreur chargement demandes : ${err}`);
+    }
+  },
+
+  /* ------------------------------------------------------------
+     CONNEXIONS — Valider une demande
+     ------------------------------------------------------------ */
+  async approveConnexion(demandeId) {
+    const adminId = localStorage.getItem("userId");
+
+    if (!adminId) {
+      this.log("❌ Impossible d’approuver : session admin invalide.");
+      return;
+    }
+
+    this.log(`🟦 Validation demande ${demandeId} par admin ${adminId}…`);
+
+    try {
+      const res = await api("api_approveConnexion", {
+        demandeId,
+        adminId
+      });
+
+      if (!res.success) {
+        this.log(`❌ Erreur validation : ${res.error}`);
+        return;
+      }
+
+      this.log(`🟩 Demande ${demandeId} approuvée → user ${res.data.userId}`);
+      this.loadPendingConnexions();
+
+    } catch (err) {
+      this.log(`❌ Erreur approveConnexion : ${err}`);
     }
   }
 };

@@ -4,39 +4,103 @@
  * AUTEUR : Stephen
  *
  * DESCRIPTION :
- *   - Page de connexion RP
- *   - Stocke jeton + nom RP + prénom RP dans localStorage
- *   - Redirige vers la page d’accueil si déjà connecté
+ *   - Nouveau système de connexion RP
+ *   - Envoi nomRP + prenomRP au backend
+ *   - Cas 1 : Première connexion → auto-admin
+ *   - Cas 2 : Demande en attente admin
+ *   - Stockage userId + jeton dans localStorage
+ *   - Redirection SPA vers "core"
  ***************************************************************/
 
 console.log("🟦 [login] Script login chargé.");
 
+/***************************************************************
+ * ÉVÉNEMENT : Clic sur "Connexion"
+ ***************************************************************/
 function login() {
     console.log("🟦 [login] Tentative de connexion…");
 
-    const token = document.getElementById("token").value.trim();
-    const nom = document.getElementById("nom").value.trim();
-    const prenom = document.getElementById("prenom").value.trim();
+    const nomRP = document.getElementById("nom").value.trim();
+    const prenomRP = document.getElementById("prenom").value.trim();
 
-    if (!token || !nom || !prenom) {
+    if (!nomRP || !prenomRP) {
         console.warn("⚠️ [login] Champs manquants.");
-        alert("Merci de remplir tous les champs.");
+        alert("Merci de remplir Nom RP et Prénom RP.");
         return;
     }
 
-    localStorage.setItem("rp_token", token);
-    localStorage.setItem("rp_nom", nom);
-    localStorage.setItem("rp_prenom", prenom);
+    console.log(`🟦 [login] Envoi demande → ${nomRP} ${prenomRP}`);
 
-    console.log("🟩 [login] Infos RP enregistrées dans localStorage.");
-
-    spa.loadPage("core");
+    google.script.run
+        .withSuccessHandler(handleLoginResponse)
+        .withFailureHandler(err => {
+            console.error("❌ [login] Erreur API :", err);
+            alert("Erreur serveur.");
+        })
+        .api_requestConnexion(nomRP, prenomRP, "web");
 }
 
-// Auto-login si déjà enregistré
-window.addEventListener("DOMContentLoaded", () => {
-    if (localStorage.getItem("rp_token")) {
-        console.log("🟩 [login] Déjà connecté → redirection vers core.");
-        spa.loadPage("core");
+
+/***************************************************************
+ * TRAITEMENT DE LA RÉPONSE BACKEND
+ ***************************************************************/
+function handleLoginResponse(res) {
+    console.log("🟦 [login] Réponse backend :", res);
+
+    if (!res.success) {
+        alert("Erreur : " + res.error);
+        return;
     }
+
+    const data = res.data;
+
+    /***********************************************************
+     * CAS 1 : Première connexion → auto-admin
+     ***********************************************************/
+    if (data.autoAdmin === true) {
+        console.log("🟩 [login] Première connexion → auto-admin");
+
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("jeton", data.jeton);
+        localStorage.setItem("role", "admin");
+
+        spa.loadPage("core");
+        return;
+    }
+
+    /***********************************************************
+     * CAS 2 : Demande en attente admin
+     ***********************************************************/
+    console.log("🟧 [login] Demande en attente admin");
+
+    document.getElementById("loginStatus").innerHTML =
+        "<span style='color: orange;'>Votre demande est en attente de validation par un administrateur.</span>";
+}
+
+
+/***************************************************************
+ * AUTO-LOGIN SI SESSION EXISTE
+ ***************************************************************/
+window.addEventListener("DOMContentLoaded", () => {
+    const userId = localStorage.getItem("userId");
+    const jeton = localStorage.getItem("jeton");
+
+    if (!userId || !jeton) return;
+
+    console.log("🟦 [login] Session locale détectée → vérification backend…");
+
+    google.script.run
+        .withSuccessHandler(res => {
+            if (res.success && res.data.success) {
+                console.log("🟩 [login] Session valide → redirection core");
+                spa.loadPage("core");
+            } else {
+                console.warn("🟥 [login] Session invalide → nettoyage");
+                localStorage.clear();
+            }
+        })
+        .withFailureHandler(err => {
+            console.error("❌ [login] Erreur check session :", err);
+        })
+        .api_checkUserSession(userId, jeton);
 });
