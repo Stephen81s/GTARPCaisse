@@ -4,6 +4,7 @@
    Charge automatiquement :
    - pages/<path>.html
    - scripts/<path>.js
+   - sous‑modules admin via loadSubModule()
    ============================================================ */
 
 console.log("🟦 [spa] Module SPA PRO 2026 chargé.");
@@ -12,11 +13,23 @@ const spa = {
   cache: {},
 
   /* ------------------------------------------------------------
+     Affiche le loader global
+     ------------------------------------------------------------ */
+  showLoader() {
+    const loader = document.getElementById("loader");
+    if (loader) loader.classList.remove("hidden");
+  },
+
+  /* ------------------------------------------------------------
+     Cache le loader global
+     ------------------------------------------------------------ */
+  hideLoader() {
+    const loader = document.getElementById("loader");
+    if (loader) loader.classList.add("hidden");
+  },
+
+  /* ------------------------------------------------------------
      Charge une page HTML depuis /pages/<path>.html
-     Exemple :
-       spa.loadPage("admin/activation")
-       spa.loadPage("entreprise/banque")
-       spa.loadPage("accueil")
      ------------------------------------------------------------ */
   async loadPage(path) {
     console.log(`🟦 [spa] Chargement de la page : ${path}`);
@@ -27,7 +40,8 @@ const spa = {
       return;
     }
 
-    // Normalisation du chemin
+    this.showLoader();
+
     const cleanPath = path.replace(/^\/+|\/+$/g, "");
     const pageUrl = `pages/${cleanPath}.html`;
 
@@ -36,27 +50,21 @@ const spa = {
       console.log(`🟦 [spa] Page ${cleanPath} chargée depuis le cache.`);
       frame.innerHTML = this.cache[cleanPath];
       this.initPageScript(cleanPath);
+      this.hideLoader();
+      window.scrollTo(0, 0);
       return;
     }
 
     try {
       const response = await fetch(pageUrl);
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Erreur HTTP ${response.status}`);
 
       const html = await response.text();
-
-      // Mise en cache
       this.cache[cleanPath] = html;
 
-      // Injection
       frame.innerHTML = html;
-
       console.log(`🟦 [spa] Page ${cleanPath} chargée avec succès.`);
 
-      // Script associé
       this.initPageScript(cleanPath);
 
     } catch (err) {
@@ -68,13 +76,13 @@ const spa = {
         </div>
       `;
     }
+
+    this.hideLoader();
+    window.scrollTo(0, 0);
   },
 
   /* ------------------------------------------------------------
-     Charge automatiquement le script correspondant :
-       pages/admin/activation.html → scripts/admin/activation.js
-       pages/entreprise/banque.html → scripts/entreprise/banque.js
-       pages/accueil.html → scripts/accueil.js
+     Charge automatiquement le script correspondant
      ------------------------------------------------------------ */
   initPageScript(path) {
     const scriptUrl = `scripts/${path}.js`;
@@ -87,12 +95,38 @@ const spa = {
       return;
     }
 
-    // Injection dynamique
     const script = document.createElement("script");
     script.src = scriptUrl;
     script.onload = () => console.log(`🟦 [spa] Script ${scriptUrl} chargé.`);
-    script.onerror = () => console.warn(`⚠️ [spa] Aucun script trouvé pour ${scriptUrl} (normal si optionnel).`);
+    script.onerror = () =>
+      console.warn(`⚠️ [spa] Aucun script trouvé pour ${scriptUrl} (normal si optionnel).`);
 
     document.body.appendChild(script);
+  },
+
+  /* ------------------------------------------------------------
+     Charge un sous-module dans un conteneur spécifique
+     Exemple :
+       spa.loadSubModule("admin/demandes", zone)
+     ------------------------------------------------------------ */
+  async loadSubModule(path, container) {
+    console.log(`🟧 [spa] Chargement sous-module : ${path}`);
+
+    const cleanPath = path.replace(/^\/+|\/+$/g, "");
+    const htmlPath = `pages/${cleanPath}.html`;
+    const jsPath = `scripts/${cleanPath}.js`;
+
+    try {
+      const html = await fetch(htmlPath).then(r => r.text());
+      container.innerHTML = html;
+    } catch (e) {
+      container.innerHTML = "<p>Erreur : impossible de charger le module.</p>";
+      return;
+    }
+
+    // Script associé
+    import(`../${jsPath}`).catch(() => {
+      console.warn(`⚠️ [spa] Aucun script pour ${jsPath}`);
+    });
   }
 };
