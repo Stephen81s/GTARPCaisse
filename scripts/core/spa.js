@@ -1,13 +1,16 @@
 /* ============================================================
-   SPA.JS — Version GitHub Pages + Local PRO 2026
+   SCRIPT : scripts/core/spa.js
+   MODULE : Core
+   DESCRIPTION :
+      - Système SPA PRO 2026
+      - Détection auto ROOT (local / GitHub Pages)
+      - Chargement dynamique des pages + scripts
+      - Compatible sous-modules admin
    ============================================================ */
 
 console.log("🟦 [spa] Module SPA PRO 2026 chargé.");
 
-// Détection automatique du chemin racine
-const ROOT = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
-    ? ""
-    : "/GTARPCaisse";
+const ROOT = window.ROOT || "";
 
 const spa = {
   cache: {},

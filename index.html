@@ -1,3 +1,12 @@
+<!-- ============================================================
+     PAGE : index.html
+     MODULE : Core
+     DESCRIPTION :
+        - Point d'entrée principal du SPA
+        - Charge les includes + scripts core
+        - Initialise le SPA PRO 2026
+     ============================================================ -->
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -13,7 +22,7 @@
             : "/GTARPCaisse";
     </script>
 
-    <link rel="stylesheet" href="/GTARPCaisse/styles/main.css" />
+    <link rel="stylesheet" href="styles/main.css" />
 </head>
 
 <body>
@@ -26,16 +35,14 @@
     <script>
         fetch(`${ROOT}/includes/global.html`)
             .then(r => r.text())
-            .then(html => document.getElementById("includes").innerHTML = html)
-            .catch(err => console.error("Erreur include global :", err));
+            .then(html => document.getElementById("includes").innerHTML = html);
     </script>
 
     <!-- Includes scripts -->
     <script>
         fetch(`${ROOT}/includes/scripts.html`)
             .then(r => r.text())
-            .then(html => document.body.insertAdjacentHTML("beforeend", html))
-            .catch(err => console.error("Erreur include scripts :", err));
+            .then(html => document.body.insertAdjacentHTML("beforeend", html));
     </script>
 
 </body>

@@ -1,5 +1,9 @@
 /* ============================================================
-   APP.JS — Initialisation du site
+   SCRIPT : scripts/core/app.js
+   MODULE : Core
+   DESCRIPTION :
+      - Initialise le SPA
+      - Charge la page d'accueil
    ============================================================ */
 
 console.log("🟦 [app] Initialisation de l'application");

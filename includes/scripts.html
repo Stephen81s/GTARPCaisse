@@ -1,5 +1,15 @@
-<script src="${ROOT}/scripts/core/spa.js"></script>
-<script src="${ROOT}/scripts/core/api.js"></script>
-<script src="${ROOT}/scripts/core/auth.js"></script>
-<script src="${ROOT}/scripts/core/navigation.js"></script>
-<script src="${ROOT}/scripts/core/app.js"></script>
+<!-- ============================================================
+     PAGE : includes/scripts.html
+     MODULE : Core
+     DESCRIPTION :
+        - Charge les scripts principaux du SPA
+        - Tous les chemins utilisent ROOT automatiquement
+     ============================================================ -->
+
+<script>
+    document.write(`<script src="${ROOT}/scripts/core/spa.js"><\/script>`);
+    document.write(`<script src="${ROOT}/scripts/core/api.js"><\/script>`);
+    document.write(`<script src="${ROOT}/scripts/core/auth.js"><\/script>`);
+    document.write(`<script src="${ROOT}/scripts/core/navigation.js"><\/script>`);
+    document.write(`<script src="${ROOT}/scripts/core/app.js"><\/script>`);
+</script>
