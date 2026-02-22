@@ -6,89 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RP Manager PRO 2026</title>
 
-    <!-- ============================================================
-         STYLES GLOBAUX
-         ============================================================ -->
+    <!-- Styles globaux -->
     <link rel="stylesheet" href="styles/main.css" />
-
-    <!--
-        ============================================================
-        FICHIER : index.html
-        ARCHITECTURE : PRO 2026
-        AUTEUR : Stephen
-
-        DESCRIPTION :
-            - Point d’entrée principal du front
-            - Initialise le SPA (Single Page Application)
-            - Charge dynamiquement les pages HTML dans #page-frame
-            - Gère le header global + menu hamburger
-
-        NOTES :
-            - Toutes les pages sont dans /pages/
-            - Tous les scripts sont dans /scripts/
-            - Le SPA gère la navigation interne sans recharger la page
-        ============================================================
-    -->
 </head>
 
 <body>
 
     <!-- ============================================================
-         HEADER GLOBAL — RP MANAGER PRO + MENU DÉROULANT
+         HEADER GLOBAL — LOGO + MENU (dynamique via navigation.js)
          ============================================================ -->
     <header id="topbar">
-
-        <!-- Logo -->
         <div class="logo">RP Manager PRO</div>
-
-        <!-- Bouton hamburger -->
         <div id="menu-toggle">☰</div>
 
-        <!-- Menu déroulant -->
-        <nav id="menu" class="hidden">
-            <button data-page="core">Accueil</button>
-            <button data-page="banque">Banque</button>
-            <button data-page="caisse">Caisse</button>
-            <button data-page="entreprises">Entreprises</button>
-            <button data-page="joueurs">Joueurs</button>
-            <button data-page="services">Services</button>
-        </nav>
-
+        <!-- Menu généré dynamiquement -->
+        <nav id="menu" class="hidden"></nav>
     </header>
-
 
     <!-- ============================================================
          ZONE CENTRALE — PAGES CHARGÉES PAR LE SPA
          ============================================================ -->
     <main id="page-frame"></main>
 
-
-    <!-- ============================================================
-         LOADER GLOBAL
-         ============================================================ -->
+    <!-- Loader global -->
     <div id="loader" class="hidden">
         <div class="spinner"></div>
         <p>Chargement...</p>
     </div>
 
-
     <!-- ============================================================
-         SCRIPTS FRONT — BASE SPA
+         SCRIPTS CORE — SPA + API + AUTH + NAVIGATION
          ============================================================ -->
-    <script src="scripts/admin/spa.js"></script>
-    <script src="scripts/admin/navigation.js"></script>
-    <script src="scripts/admin/app.js"></script>
+    <script src="scripts/core/spa.js"></script>
+    <script src="scripts/core/api.js"></script>
+    <script src="scripts/core/auth.js"></script>
+    <script src="scripts/core/navigation.js"></script>
 
-    <!-- ============================================================
-         MODULES FONCTIONNELS — PAGES & LOGIQUE RP
-         ============================================================ -->
-    <script src="scripts/admin/login.js"></script>
-    <script src="scripts/admin/home.js"></script>
-    <script src="scripts/admin/admin_panel.js"></script>
-    <script src="scripts/admin/accueil.js"></script>
-    <script src="scripts/admin/entreprises.js"></script>
-    <script src="scripts/admin/employes.js"></script>
-    <script src="scripts/admin/config.js"></script>
+    <!-- Script d'initialisation -->
+    <script src="scripts/core/app.js"></script>
 
 </body>
 </html>
