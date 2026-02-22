@@ -1,8 +1,13 @@
 /* ============================================================
-   SPA.JS — Version GitHub Pages PRO 2026
+   SPA.JS — Version GitHub Pages + Local PRO 2026
    ============================================================ */
 
 console.log("🟦 [spa] Module SPA PRO 2026 chargé.");
+
+// Détection automatique du chemin racine
+const ROOT = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+    ? ""
+    : "/GTARPCaisse";
 
 const spa = {
   cache: {},
@@ -26,7 +31,7 @@ const spa = {
     this.showLoader();
 
     const cleanPath = path.replace(/^\/+|\/+$/g, "");
-    const pageUrl = `/GTARPCaisse/pages/${cleanPath}.html`;
+    const pageUrl = `${ROOT}/pages/${cleanPath}.html`;
 
     if (this.cache[cleanPath]) {
       frame.innerHTML = this.cache[cleanPath];
@@ -57,7 +62,7 @@ const spa = {
   },
 
   initPageScript(path) {
-    const scriptUrl = `/GTARPCaisse/scripts/${path}.js`;
+    const scriptUrl = `${ROOT}/scripts/${path}.js`;
 
     if (document.querySelector(`script[src="${scriptUrl}"]`)) return;
 
@@ -70,8 +75,8 @@ const spa = {
 
   async loadSubModule(path, container) {
     const cleanPath = path.replace(/^\/+|\/+$/g, "");
-    const htmlPath = `/GTARPCaisse/pages/${cleanPath}.html`;
-    const jsPath = `/GTARPCaisse/scripts/${cleanPath}.js`;
+    const htmlPath = `${ROOT}/pages/${cleanPath}.html`;
+    const jsPath = `${ROOT}/scripts/${cleanPath}.js`;
 
     try {
       const html = await fetch(htmlPath).then(r => r.text());

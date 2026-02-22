@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RP Manager PRO 2026</title>
 
+    <script>
+        // Détection automatique du chemin racine
+        window.ROOT = (location.hostname === "localhost" || location.hostname === "127.0.0.1")
+            ? ""
+            : "/GTARPCaisse";
+    </script>
+
     <link rel="stylesheet" href="/GTARPCaisse/styles/main.css" />
 </head>
 
@@ -17,15 +24,15 @@
 
     <!-- Includes HTML -->
     <script>
-        fetch("/GTARPCaisse/includes/global.html")
+        fetch(`${ROOT}/includes/global.html`)
             .then(r => r.text())
             .then(html => document.getElementById("includes").innerHTML = html)
             .catch(err => console.error("Erreur include global :", err));
     </script>
 
-    <!-- Includes scripts core -->
+    <!-- Includes scripts -->
     <script>
-        fetch("/GTARPCaisse/includes/scripts.html")
+        fetch(`${ROOT}/includes/scripts.html`)
             .then(r => r.text())
             .then(html => document.body.insertAdjacentHTML("beforeend", html))
             .catch(err => console.error("Erreur include scripts :", err));
