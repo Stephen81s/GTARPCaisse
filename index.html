@@ -6,39 +6,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RP Manager PRO 2026</title>
 
-    <!-- Styles globaux -->
-    <link rel="stylesheet" href="styles/main.css" />
+    <link rel="stylesheet" href="/GTARPCaisse/styles/main.css" />
 </head>
 
 <body>
 
-    <!-- Zone où seront injectés les includes HTML (header, menu, loader, footer...) -->
     <div id="includes"></div>
 
-    <!-- Zone centrale où le SPA charge les pages -->
     <main id="page-frame"></main>
 
-    <!-- ============================================================
-         CHARGEMENT AUTOMATIQUE DES INCLUDES HTML
-         ============================================================ -->
+    <!-- Includes HTML -->
     <script>
-        fetch("includes/global.html")
+        fetch("/GTARPCaisse/includes/global.html")
             .then(r => r.text())
-            .then(html => {
-                document.getElementById("includes").innerHTML = html;
-            })
+            .then(html => document.getElementById("includes").innerHTML = html)
             .catch(err => console.error("Erreur include global :", err));
     </script>
 
-    <!-- ============================================================
-         CHARGEMENT AUTOMATIQUE DES SCRIPTS CORE
-         ============================================================ -->
+    <!-- Includes scripts core -->
     <script>
-        fetch("includes/scripts.html")
+        fetch("/GTARPCaisse/includes/scripts.html")
             .then(r => r.text())
-            .then(html => {
-                document.body.insertAdjacentHTML("beforeend", html);
-            })
+            .then(html => document.body.insertAdjacentHTML("beforeend", html))
             .catch(err => console.error("Erreur include scripts :", err));
     </script>
 
