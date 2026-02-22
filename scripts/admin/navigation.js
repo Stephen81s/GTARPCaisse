@@ -6,7 +6,7 @@
  * DESCRIPTION :
  *   - Menu hamburger déroulant en haut à gauche
  *   - Gère les clics du menu
- *   - Charge login au démarrage
+ *   - ⚠️ Ne lance plus le SPA (déplacé dans app.js)
  ***************************************************************/
 
 console.log("🟦 [navigation] Module navigation chargé.");
@@ -39,5 +39,5 @@ function setupNavigation() {
 window.addEventListener("DOMContentLoaded", () => {
     console.log("🟦 [navigation] Initialisation DOM…");
     setupNavigation();
-    spa.loadPage("login"); // PAGE DE DÉMARRAGE
+    // ❌ spa.loadPage("login") supprimé
 });
