@@ -12,38 +12,35 @@
 
 <body>
 
-    <!-- ============================================================
-         HEADER GLOBAL — LOGO + MENU (dynamique via navigation.js)
-         ============================================================ -->
-    <header id="topbar">
-        <div class="logo">RP Manager PRO</div>
-        <div id="menu-toggle">☰</div>
+    <!-- Zone où seront injectés les includes HTML (header, menu, loader, footer...) -->
+    <div id="includes"></div>
 
-        <!-- Menu généré dynamiquement -->
-        <nav id="menu" class="hidden"></nav>
-    </header>
-
-    <!-- ============================================================
-         ZONE CENTRALE — PAGES CHARGÉES PAR LE SPA
-         ============================================================ -->
+    <!-- Zone centrale où le SPA charge les pages -->
     <main id="page-frame"></main>
 
-    <!-- Loader global -->
-    <div id="loader" class="hidden">
-        <div class="spinner"></div>
-        <p>Chargement...</p>
-    </div>
+    <!-- ============================================================
+         CHARGEMENT AUTOMATIQUE DES INCLUDES HTML
+         ============================================================ -->
+    <script>
+        fetch("includes/global.html")
+            .then(r => r.text())
+            .then(html => {
+                document.getElementById("includes").innerHTML = html;
+            })
+            .catch(err => console.error("Erreur include global :", err));
+    </script>
 
     <!-- ============================================================
-         SCRIPTS CORE — SPA + API + AUTH + NAVIGATION
+         CHARGEMENT AUTOMATIQUE DES SCRIPTS CORE
          ============================================================ -->
-    <script src="scripts/core/spa.js"></script>
-    <script src="scripts/core/api.js"></script>
-    <script src="scripts/core/auth.js"></script>
-    <script src="scripts/core/navigation.js"></script>
-
-    <!-- Script d'initialisation -->
-    <script src="scripts/core/app.js"></script>
+    <script>
+        fetch("includes/scripts.html")
+            .then(r => r.text())
+            .then(html => {
+                document.body.insertAdjacentHTML("beforeend", html);
+            })
+            .catch(err => console.error("Erreur include scripts :", err));
+    </script>
 
 </body>
 </html>
