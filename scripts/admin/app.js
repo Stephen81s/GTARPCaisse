@@ -157,8 +157,11 @@ window.addEventListener("unhandledrejection", (event) => {
 
 
 /***************************************************************
- * INITIALISATION GLOBALE
+ * INITIALISATION GLOBALE — DÉMARRAGE OFFICIEL DU SPA
  ***************************************************************/
 window.addEventListener("DOMContentLoaded", () => {
     log("Application PRO 2026 initialisée.");
+
+    // 🚀 DÉMARRAGE OFFICIEL DU SPA
+    spa.loadPage("login");
 });
