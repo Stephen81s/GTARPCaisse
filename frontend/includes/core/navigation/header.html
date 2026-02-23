@@ -1,0 +1,53 @@
+<!-- ***************************************************************
+     INCLUDE : frontend/includes/core/navigation/header.html
+     MODULE  : Navigation principale
+     DESCRIPTION :
+        - Barre de navigation du SPA
+        - Chemins complets pour lisibilité dans VS Code
+        - Appels SPA compatibles Apps Script (fichiers aplatis)
+        - Les fichiers HTML sont aplatis par Clasp → Apps Script
+     *************************************************************** -->
+
+<nav class="top-nav">
+
+    <!-- Logo -->
+    <div class="logo">GTARP Caisse</div>
+
+    <!-- Menu principal -->
+    <ul>
+
+        <!-- ============================================================
+             PAGE SOURCE VS CODE :
+             frontend/pages/public/accueil.html
+
+             FICHIER APPS SCRIPT :
+             accueil.html
+             ============================================================ -->
+        <li onclick="spa.loadPage('accueil')">
+            /frontend/pages/public/accueil.html
+        </li>
+
+        <!-- ============================================================
+             PAGE SOURCE VS CODE :
+             frontend/pages/public/login.html
+
+             FICHIER APPS SCRIPT :
+             login.html
+             ============================================================ -->
+        <li onclick="spa.loadPage('login')">
+            /frontend/pages/public/login.html
+        </li>
+
+        <!-- ============================================================
+             PAGE SOURCE VS CODE :
+             frontend/pages/admin/dashboard.html
+
+             FICHIER APPS SCRIPT :
+             dashboard.html
+             ============================================================ -->
+        <li onclick="spa.loadPage('dashboard')">
+            /frontend/pages/admin/dashboard.html
+        </li>
+
+    </ul>
+</nav>
