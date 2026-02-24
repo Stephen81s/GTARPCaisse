@@ -1,0 +1,43 @@
+<!-- ===============================
+     File: index.html
+     Source: src\styles\index.html
+     =============================== -->
+
+<!-- ============================================================
+     FICHIER : index.html
+     MODULE : Core
+     DESCRIPTION :
+        - Point d'entrée principal du SPA
+        - Charge les includes (head, header, footer, scripts)
+        - Initialise le SPA PRO 2026
+        - Compatible Apps Script + Clasp
+     ============================================================ -->
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <!-- Include du head -->
+    <?!= include('head'); ?>
+</head>
+
+<body>
+
+    <!-- Include du header -->
+    <header>
+        <?!= include('header'); ?>
+    </header>
+
+    <!-- Conteneur principal du SPA -->
+    <main id="page-frame"></main>
+
+    <!-- Include du footer -->
+    <footer>
+        <?!= include('footer'); ?>
+    </footer>
+
+    <!-- Include des scripts -->
+    <?!= include('scripts'); ?>
+
+</body>
+</html>
