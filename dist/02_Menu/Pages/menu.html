@@ -1,0 +1,49 @@
+<!-- ==========================================
+     File: menu.html
+     Project: GTARP Caisse
+     Module: NAVIGATION
+     Description: Menu principal SPA + toggle + admin
+     Author: Stephen (Architecte PRO 2026)
+     Build: PRO 2026
+     Last Update: 2026-02-24
+========================================== -->
+
+<nav class="menu-container">
+    <div class="menu-header" onclick="toggleMenu()">
+        ☰ Menu
+    </div>
+
+    <ul id="menu-list" class="menu-list hidden">
+        <li onclick="loadView('accueil'); closeMenu();">🏠 Accueil</li>
+        <li onclick="loadView('banque_page'); closeMenu();">🏦 Banque</li>
+
+        <!-- Bouton Admin (caché par défaut) -->
+        <li id="admin-menu-item" style="display:none;" onclick="loadView('admin_page'); closeMenu();">
+            ⚙️ Admin
+        </li>
+    </ul>
+</nav>
+
+<script>
+/* ==========================================
+   Script: Menu Navigation
+   Description: Toggle + affichage Admin
+========================================== */
+
+function toggleMenu() {
+    document.getElementById("menu-list").classList.toggle("hidden");
+}
+
+function closeMenu() {
+    document.getElementById("menu-list").classList.add("hidden");
+}
+
+// Affiche le bouton Admin si l'utilisateur est Admin
+document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (user && user.role === "Admin") {
+        document.getElementById("admin-menu-item").style.display = "block";
+    }
+});
+</script>

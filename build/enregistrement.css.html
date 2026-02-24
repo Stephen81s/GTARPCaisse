@@ -1,0 +1,83 @@
+<style>
+/* ==========================================
+   POPUP RP — VRAIE POPUP CENTRÉE
+   Thème vert/violet PRO 2026
+========================================== */
+
+/* Fond de la popup */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+
+    /* Centrage parfait */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 9999;
+}
+
+/* Fenêtre popup */
+.popup-box {
+    background: #ffffff;
+    padding: 28px;
+    width: 360px;
+    border-radius: 16px;
+
+    /* Ombre moderne */
+    box-shadow: 0 10px 35px rgba(0,0,0,0.25);
+
+    /* Bordure thème */
+    border: 3px solid #7C4DFF; /* violet */
+    text-align: center;
+}
+
+/* Titre */
+.popup-box h2 {
+    margin-top: 0;
+    color: #4CAF50; /* vert */
+    font-weight: 700;
+}
+
+/* Texte */
+.popup-box p {
+    color: #444;
+    margin-bottom: 15px;
+}
+
+/* Champs */
+.popup-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 2px solid #7C4DFF;
+    font-size: 1rem;
+}
+
+.popup-box input:focus {
+    border-color: #4CAF50;
+}
+
+/* Bouton */
+.popup-box button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #4CAF50, #7C4DFF);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.popup-box button:hover {
+    opacity: 0.9;
+}
+</style>

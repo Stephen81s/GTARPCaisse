@@ -1,0 +1,97 @@
+<!-- ==========================================
+     File: enregistrement.html
+     Project: GTARP Caisse
+     Module: Enregistrement RP
+     Build: PRO 2026
+========================================== -->
+
+<!-- POPUP ENREGISTREMENT -->
+<div id="popup-enregistrement" class="popup-overlay" style="display:none;">
+    <div class="popup-box">
+        <h2>Bienvenue</h2>
+        <p>Veuillez entrer votre nom RP et prénom RP</p>
+
+        <input id="nomRP" placeholder="Nom RP">
+        <input id="prenomRP" placeholder="Prénom RP">
+
+        <button onclick="submitEnregistrement()">Valider</button>
+    </div>
+</div>
+
+<script>
+/* ==========================================
+   Gestion de session locale (localStorage)
+========================================== */
+
+// Récupère l'utilisateur connecté
+function getUser() {
+    return JSON.parse(localStorage.getItem("user"));
+}
+
+// Vérifie si l'utilisateur est connecté
+function isUserConnected() {
+    const user = getUser();
+    if (!user) return false;
+    if (!user.id || !user.jeton || !user.nomRP || !user.prenomRP) return false;
+    return true;
+}
+
+// Vérifie si l'utilisateur doit s'enregistrer
+function checkUserRegistration() {
+    if (!isUserConnected()) {
+        openPopupEnregistrement();
+        return false;
+    }
+    return true;
+}
+
+// Ouvre la popup d'enregistrement
+function openPopupEnregistrement() {
+    const popup = document.getElementById("popup-enregistrement");
+    if (popup) popup.style.display = "flex";
+}
+
+/* ==========================================
+   Enregistrement RP → backend loginRP()
+========================================== */
+function submitEnregistrement() {
+    const nomRP = document.getElementById("nomRP").value.trim();
+    const prenomRP = document.getElementById("prenomRP").value.trim();
+
+    if (!nomRP || !prenomRP) {
+        alert("Veuillez remplir les deux champs.");
+        return;
+    }
+
+    google.script.run
+        .withSuccessHandler(user => {
+
+            // Stockage local
+            localStorage.setItem("user", JSON.stringify(user));
+
+            // Refresh pour recharger le menu avec le rôle
+            location.reload();
+
+        })
+        .loginRP(nomRP, prenomRP);
+}
+
+/* ==========================================
+   Affiche nom + prénom dans ACCUEIL
+========================================== */
+function displayAccueilUserName() {
+    const user = getUser();
+    if (!user) return;
+
+    const el = document.getElementById("accueil-user-name");
+    if (el) el.textContent = user.nomRP + " " + user.prenomRP;
+}
+
+/* ==========================================
+   Déconnexion
+========================================== */
+function logoutUser() {
+    localStorage.removeItem("user");
+    location.reload();
+}
+</script>

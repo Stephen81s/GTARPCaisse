@@ -1,6 +1,6 @@
 // ==========================================
 // File: push.js
-// Purpose: Build + Header + Flatten + Push
+// Purpose: Build + Flatten + Push (NO HEADER)
 // Author: Stephen (PRO 2026)
 // ==========================================
 
@@ -12,17 +12,6 @@ const DIST = './dist';
 const BUILD = './build';
 
 // ==========================================
-// HEADER PRO 2026 (RÈGLE ABSOLUE)
-// ==========================================
-const HEADER = `// ==========================================
-// Project: GTARP Caisse
-// Build: PRO 2026
-// Generated: ${new Date().toISOString()}
-// ==========================================
-
-`;
-
-// ==========================================
 // Supprime build/
 // ==========================================
 function rmDir(dir) {
@@ -32,7 +21,7 @@ function rmDir(dir) {
 }
 
 // ==========================================
-// Copie dist → build
+// Copie dist → build (SANS MODIFIER LES FICHIERS)
 // ==========================================
 function copyDir(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
@@ -44,13 +33,8 @@ function copyDir(src, dest) {
     if (entry.isDirectory()) {
       copyDir(srcPath, destPath);
     } else {
-      let content = fs.readFileSync(srcPath, 'utf8');
-
-      // Ne PAS ajouter de header dans appsscript.json
-      if (entry.name !== "appsscript.json") {
-        content = HEADER + content;
-      }
-
+      // On copie tel quel, sans rien ajouter
+      const content = fs.readFileSync(srcPath, 'utf8');
       fs.writeFileSync(destPath, content, 'utf8');
     }
   }
@@ -95,7 +79,7 @@ function flatten(dir) {
 console.log("[PUSH] Nettoyage build...");
 rmDir(BUILD);
 
-console.log("[PUSH] Copie dist → build + HEADER PRO...");
+console.log("[PUSH] Copie dist → build (sans modification)...");
 copyDir(DIST, BUILD);
 
 console.log("[PUSH] Flatten build...");
@@ -104,4 +88,4 @@ flatten(BUILD);
 console.log("[PUSH] Push vers Apps Script...");
 execSync('clasp push', { cwd: BUILD, stdio: 'inherit' });
 
-console.log("[PUSH] ✔ Push terminé PRO 2026");
+console.log("[PUSH] ✔ Push terminé PRO 2026 (aucune modification des fichiers)");

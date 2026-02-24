@@ -1,0 +1,51 @@
+<style>
+/* ==========================================================================
+   FICHIER : 07-tables.css.html
+   DESCRIPTION : Tables globales
+   VERSION : 2026.02
+   ========================================================================== */
+
+.table-wrapper {
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  overflow: hidden;
+  background: rgba(15, 23, 42, 0.96);
+  box-shadow: var(--shadow-subtle);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+thead {
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.98), rgba(30, 64, 175, 0.9));
+}
+
+th, td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(31, 41, 55, 0.9);
+}
+
+th {
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #e5e7eb;
+}
+
+tbody tr:nth-child(even) {
+  background: rgba(15, 23, 42, 0.96);
+}
+
+tbody tr:nth-child(odd) {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+tbody tr:hover {
+  background: radial-gradient(circle at top left, rgba(74, 222, 128, 0.12), rgba(15, 23, 42, 0.98));
+}
+</style>

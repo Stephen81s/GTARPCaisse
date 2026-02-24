@@ -1,0 +1,40 @@
+<!-- ==========================================
+     File: admin_page.html
+     Module: ADMIN PANEL
+     Build: PRO 2026
+========================================== -->
+
+<?!= include('admin_style.css.html'); ?>
+<?!= include('admin_script.html'); ?>
+
+<div class="admin-container">
+
+    <h1 class="admin-title">⚙️ Panel Administrateur</h1>
+
+    <div class="admin-grid">
+
+        <div class="admin-card" onclick="adminLoadUsers()">
+            <h2>👤 Utilisateurs</h2>
+            <p>Gestion des comptes RP</p>
+        </div>
+
+        <div class="admin-card" onclick="adminLoadEntreprises()">
+            <h2>🏢 Entreprises</h2>
+            <p>Gestion des sociétés RP</p>
+        </div>
+
+        <div class="admin-card" onclick="adminLoadModules()">
+            <h2>🧩 Modules</h2>
+            <p>Activation / désactivation</p>
+        </div>
+
+        <div class="admin-card" onclick="adminLoadSystem()">
+            <h2>🛠️ Système</h2>
+            <p>Logs, maintenance, version</p>
+        </div>
+
+    </div>
+
+    <div id="admin-content" class="admin-content"></div>
+
+</div>

@@ -1,0 +1,112 @@
+<script>
+/* ==========================================
+   File: banque_script.gs
+   Module: BANQUE ENTREPRISES
+   Build: PRO 2026
+   Description:
+   - Chargement des comptes
+   - Popups dépôt / retrait
+   - Appels backend Apps Script
+========================================== */
+
+let BANQUE_USER = null;
+let BANQUE_COMPTES = [];
+let BANQUE_SELECTED = null;
+
+// Chargement initial
+document.addEventListener("DOMContentLoaded", () => {
+    loadBanque();
+});
+
+// Charge les comptes du joueur
+function loadBanque() {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+        console.error("Utilisateur non connecté");
+        return;
+    }
+
+    google.script.run
+        .withSuccessHandler(data => {
+            BANQUE_USER = data.user;
+            BANQUE_COMPTES = data.comptes;
+            renderComptes();
+        })
+        .withFailureHandler(err => alert(err.message))
+        .getComptesUtilisateur(user.id);
+}
+
+// Affiche les comptes
+function renderComptes() {
+    const container = document.getElementById("banque-comptes");
+    container.innerHTML = "";
+
+    BANQUE_COMPTES.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "banque-carte";
+
+        div.innerHTML = `
+            <h3>${c.nom}</h3>
+            <p class="solde">${c.solde} $</p>
+
+            <div class="banque-actions">
+                ${c.permissions.deposit ? `<button class="btn-vert" onclick="openPopupDepot(${c.entreprise_id})">Dépôt</button>` : ""}
+                ${c.permissions.withdraw ? `<button class="btn-rouge" onclick="openPopupRetrait(${c.entreprise_id})">Retrait</button>` : ""}
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+// POPUP DEPOT
+function openPopupDepot(id) {
+    BANQUE_SELECTED = id;
+    const compte = BANQUE_COMPTES.find(c => c.entreprise_id === id);
+    document.getElementById("popup-depot-nom").innerText = compte.nom;
+    document.getElementById("popup-depot").classList.remove("hidden");
+}
+
+function closePopupDepot() {
+    document.getElementById("popup-depot").classList.add("hidden");
+}
+
+function submitDepot() {
+    const montant = document.getElementById("popup-depot-montant").value;
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    google.script.run
+        .withSuccessHandler(res => {
+            closePopupDepot();
+            loadBanque();
+        })
+        .withFailureHandler(err => alert(err.message))
+        .depotEntreprise(BANQUE_SELECTED, montant, user.id, "Dépôt joueur");
+}
+
+// POPUP RETRAIT
+function openPopupRetrait(id) {
+    BANQUE_SELECTED = id;
+    const compte = BANQUE_COMPTES.find(c => c.entreprise_id === id);
+    document.getElementById("popup-retrait-nom").innerText = compte.nom;
+    document.getElementById("popup-retrait").classList.remove("hidden");
+}
+
+function closePopupRetrait() {
+    document.getElementById("popup-retrait").classList.add("hidden");
+}
+
+function submitRetrait() {
+    const montant = document.getElementById("popup-retrait-montant").value;
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    google.script.run
+        .withSuccessHandler(res => {
+            closePopupRetrait();
+            loadBanque();
+        })
+        .withFailureHandler(err => alert(err.message))
+        .retraitEntreprise(BANQUE_SELECTED, montant, user.id, "Retrait joueur");
+}
+
+</script>

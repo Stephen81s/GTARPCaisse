@@ -1,0 +1,90 @@
+<!-- ==========================================
+     File: banque_style.html
+     Module: BANQUE ENTREPRISES
+     Build: PRO 2026
+========================================== -->
+
+<style>
+.banque-container {
+    padding: 20px;
+}
+
+.banque-title {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.banque-comptes-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.banque-carte {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.banque-carte h3 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.solde {
+    font-size: 20px;
+    margin: 10px 0;
+    color: #4CAF50;
+}
+
+.banque-actions {
+    margin-top: 15px;
+}
+
+.btn-vert {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.btn-rouge {
+    background: #E53935;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    width: 350px;
+    text-align: center;
+}
+
+.hidden {
+    display: none;
+}
+</style>

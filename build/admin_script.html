@@ -1,0 +1,36 @@
+<script>
+/* ==========================================
+   File: admin_script.html
+   Project: GTARP Caisse
+   Module: Admin Panel (Front-End)
+   Description: Chargement dynamique des sections Admin
+   Author: Stephen (Architecte PRO 2026)
+   Build: PRO 2026
+   Last Update: 2026-02-24
+========================================== */
+
+function adminLoadUsers() {
+    google.script.run.withSuccessHandler(html => {
+        document.getElementById("admin-content").innerHTML = html;
+    }).adminGetUsers();
+}
+
+function adminLoadEntreprises() {
+    google.script.run.withSuccessHandler(html => {
+        document.getElementById("admin-content").innerHTML = html;
+    }).adminGetEntreprises();
+}
+
+function adminLoadModules() {
+    google.script.run.withSuccessHandler(html => {
+        document.getElementById("admin-content").innerHTML = html;
+    }).adminGetModules();
+}
+
+function adminLoadSystem() {
+    google.script.run.withSuccessHandler(html => {
+        document.getElementById("admin-content").innerHTML = html;
+    }).adminGetSystem();
+}
+
+</script>

@@ -1,0 +1,41 @@
+<!-- ==========================================
+     File: banque_page.html
+     Module: BANQUE ENTREPRISES
+     Build: PRO 2026
+========================================== -->
+
+<div class="banque-container">
+
+    <h1 class="banque-title">Comptes bancaires</h1>
+
+    <div id="banque-comptes" class="banque-comptes-list">
+        <!-- Comptes chargés dynamiquement -->
+    </div>
+
+</div>
+
+<!-- POPUP DEPOT -->
+<div id="popup-depot" class="popup-overlay hidden">
+    <div class="popup">
+        <h2>Dépôt</h2>
+        <p id="popup-depot-nom"></p>
+
+        <input type="number" id="popup-depot-montant" placeholder="Montant">
+
+        <button class="btn-vert" onclick="submitDepot()">Valider</button>
+        <button class="btn-rouge" onclick="closePopupDepot()">Annuler</button>
+    </div>
+</div>
+
+<!-- POPUP RETRAIT -->
+<div id="popup-retrait" class="popup-overlay hidden">
+    <div class="popup">
+        <h2>Retrait</h2>
+        <p id="popup-retrait-nom"></p>
+
+        <input type="number" id="popup-retrait-montant" placeholder="Montant">
+
+        <button class="btn-vert" onclick="submitRetrait()">Valider</button>
+        <button class="btn-rouge" onclick="closePopupRetrait()">Annuler</button>
+    </div>
+</div>

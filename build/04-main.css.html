@@ -1,0 +1,55 @@
+<style>
+/* ==========================================================================
+   FICHIER : 04-main.css.html
+   DESCRIPTION : Styles du contenu central
+   VERSION : 2026.02
+   ========================================================================== */
+
+.card {
+  background: radial-gradient(circle at top left, rgba(74, 222, 128, 0.08), rgba(15, 23, 42, 0.96));
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: var(--shadow-soft);
+  padding: 20px 20px 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background:
+    radial-gradient(circle at 0 0, rgba(74, 222, 128, 0.16), transparent 55%),
+    radial-gradient(circle at 100% 0, rgba(168, 85, 247, 0.16), transparent 55%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.card-header {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.card-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.card-body {
+  position: relative;
+  margin-top: 4px;
+}
+</style>

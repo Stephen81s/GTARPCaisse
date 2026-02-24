@@ -1,0 +1,56 @@
+<style>
+/* ==========================================================================
+   FICHIER : 05-buttons.css.html
+   DESCRIPTION : Boutons globaux
+   VERSION : 2026.02
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  background: rgba(15, 23, 42, 0.9);
+  color: var(--color-text);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.btn:hover {
+  background: radial-gradient(circle at top left, rgba(74, 222, 128, 0.18), rgba(15, 23, 42, 0.95));
+  border-color: rgba(74, 222, 128, 0.7);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.9);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4ade80, #22c55e, #a855f7);
+  border-color: transparent;
+  color: #020617;
+  font-weight: 500;
+  box-shadow:
+    0 12px 28px rgba(34, 197, 94, 0.5),
+    0 0 26px rgba(168, 85, 247, 0.6);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px) scale(1.01);
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: rgba(148, 163, 184, 0.4);
+  color: var(--color-text-muted);
+}
+
+.btn-ghost:hover {
+  color: var(--color-text);
+  border-color: rgba(74, 222, 128, 0.7);
+  background: radial-gradient(circle at top left, rgba(74, 222, 128, 0.12), rgba(15, 23, 42, 0.96));
+}
+</style>
